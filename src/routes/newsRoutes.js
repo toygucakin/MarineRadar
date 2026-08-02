@@ -1,18 +1,20 @@
 import { Router } from 'express';
-import { getAllNews, getNewsById } from '../controllers/newsController.js';
+import { getAllNews, getNewsById, createNews } from '../controllers/newsController.js';
+import { validateCreateNews } from '../middlewares/validateNews.js';
 
-// Express Router modülünü başlatıyoruz
 const router = Router();
 
 /**
  * Route Katmanı (Yönlendirme)
- * Hangi URL ve HTTP metodunun hangi Controller fonksiyonunu tetikleyeceğini haritalar.
  */
 
-// GET /api/news -> Tüm haberleri getirir
+// GET /api/news -> Tüm haberleri getirme
 router.get('/', getAllNews);
 
-// GET /api/news/:id -> ID parametresine göre tek bir haber getirir (Ör: /api/news/news-101)
+// GET /api/news/:id -> ID bazlı haber getirme
 router.get('/:id', getNewsById);
+
+// POST /api/news -> Yeni haber ekleme (Önce validateCreateNews middleware'i çalışır)
+router.post('/', validateCreateNews, createNews);
 
 export default router;

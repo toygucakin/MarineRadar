@@ -1,5 +1,6 @@
 import express from 'express';
 import newsRoutes from './src/routes/newsRoutes.js';
+import { errorHandler } from './src/middlewares/errorHandler.js';
 
 // Express uygulamasını (app) başlatıyoruz
 const app = express();
@@ -20,6 +21,9 @@ app.use((req, res) => {
     message: `İstenen endpoint '${req.originalUrl}' bu sunucuda bulunamadı.`
   });
 });
+
+// Merkezi Hata Yönetimi Middleware (Centralized Error Handler)
+app.use(errorHandler);
 
 // Otomatik testlerde port çakışmasını (EADDRINUSE) önlemek için
 // sunucuyu sadece test ortamında değilsek dinlemeye alıyoruz.

@@ -2,12 +2,10 @@ import { mockNews } from '../data/mockNews.js';
 
 /**
  * Controller (İş Mantığı Katmanı)
- * Gelen HTTP isteklerini karşılar, veriyi işler ve uygun HTTP yanıtını döner.
  */
 
-// Tüm gemicilik haberlerini getiren fonksiyon
+// GET /api/news -> Tüm haberleri getirir
 export const getAllNews = (req, res) => {
-  // HTTP status 200 ve tüm haber listesini JSON dizisi (array) olarak döndürüyoruz
   res.status(200).json({
     success: true,
     count: mockNews.length,
@@ -15,14 +13,11 @@ export const getAllNews = (req, res) => {
   });
 };
 
-// ID bazlı tek bir gemicilik haberini getiren fonksiyon
+// GET /api/news/:id -> Tek bir haberi getirir
 export const getNewsById = (req, res) => {
-  const { id } = req.params; // URL'den gelen id parametresini alıyoruz (ör. /api/news/news-101)
-
-  // Veri kümemizde ilgili id'ye sahip haberi arıyoruz
+  const { id } = req.params;
   const newsItem = mockNews.find(item => item.id === id);
 
-  // Eğer haber bulunamadıysa HTTP 404 (Not Found) status kodu döndürüyoruz
   if (!newsItem) {
     return res.status(404).json({
       success: false,
@@ -30,9 +25,34 @@ export const getNewsById = (req, res) => {
     });
   }
 
-  // Haber bulunduysa HTTP 200 (OK) ile haberi döndürüyoruz
   res.status(200).json({
     success: true,
     data: newsItem
+  });
+};
+
+// POST /api/news -> Yeni gemicilik haberi ekler
+export const createNews = (req, res) => {
+  const { title, summary, category, author, impactScore } = req.body;
+
+  // Yeni benzersiz id ve tarih üretiyoruz
+  const newNewsItem = {
+    id: `news-${Date.now()}`,
+    title,
+    summary,
+    category,
+    publishedAt: new Date().toISOString(),
+    author: author || 'Anonim Analist',
+    impactScore
+  };
+
+  // Dizimize ekliyoruz (Veritabanı yerine belleğe yazıyoruz)
+  mockNews.push(newNewsItem);
+
+  // HTTP Status 201 (Created) ile yeni oluşturulan veriyi dönüyoruz
+  res.status(201).json({
+    success: true,
+    message: 'Yeni gemicilik haberi başarıyla eklendi.',
+    data: newNewsItem
   });
 };
