@@ -20,94 +20,56 @@
 
 ## 📰 Veri Kazınacak Hedef Gemicilik Bültenleri ve Kaynakları
 
-Sistemin veri toplayacağı temel denizcilik ve karbon emisyon haber kaynakları:
-
-1. **IMO (International Maritime Organization) News:**
-   - *Kapsam:* Uluslararası denizcilik düzenlemeleri, CII/EEXI karbon oranları ve resmi IMO duyuruları.
-   - *Yöntem:* Official Press Releases Scraping & RSS.
-2. **Ship & Bunker / BunkerEx:**
-   - *Kapsam:* Denizcilik yakıt piyasaları, LNG, yeşil amonyak, hidrojen fiyatları ve karbon kredisi bültenleri.
-   - *Yöntem:* Cheerio / Axios HTML Scraping.
-3. **The Maritime Executive & Splash247:**
-   - *Kapsam:* Küresel armatörlük haberleri, filo karbonsuzlaştırma stratejileri ve yeşil koridor projeleri.
-   - *Yöntem:* RSS Feed Parser & HTML Scraping.
-4. **Safety4Sea & Green4Sea:**
-   - *Kapsam:* Deniz çevresi koruma, sürdürülebilirlik raporları ve yeşil gemi teknolojisi bültenleri.
-   - *Yöntem:* RSS & Article Extraction.
-5. **Yeşil Liman Bültenleri (Port of Rotterdam, Port of Antwerp-Bruges):**
-   - *Kapsam:* Avrupa limanlarındaki emisyon takip raporları ve elektrikli şarj/römorkör gelişmeleri.
+1. **IMO (International Maritime Organization) News:** Uluslararası denizcilik düzenlemeleri, CII/EEXI karbon oranları.
+2. **Ship & Bunker / BunkerEx:** Denizcilik yakıt piyasaları, LNG, yeşil amonyak fiyatları ve karbon kredileri.
+3. **The Maritime Executive & Splash247:** Küresel armatörlük haberleri ve filo karbonsuzlaştırma projeleri.
+4. **Safety4Sea & Green4Sea:** Deniz çevresi koruma ve yeşil gemi teknolojisi bültenleri.
+5. **Yeşil Liman Bültenleri (Port of Rotterdam, Port of Antwerp-Bruges):** Liman emisyon takip raporları.
 
 ---
 
-## 🏗️ Projenin Mimari Yapılanması ve Geliştirme Adımları
+## 🗺️ Detaylandırılmış Öğrenme Yol Haritası (Learning Roadmap)
 
-Projeyi adım adım modüler ve ölçeklenebilir bir mimaride şöyle inşa edeceğiz:
+Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular küçük, anlaşılır ve sindirilebilir aşamalara bölünmüştür:
 
-```text
-               ┌─────────────────────────────────────────────────────────┐
-               │           Hedef Bültenler & Web Kaynakları               │
-               │  (IMO, Ship&Bunker, Maritime Executive, Safety4Sea)     │
-               └───────────────────────────┬─────────────────────────────┘
-                                           │ (Cron Job / Cheerio / Axios)
-                                           ▼
-               ┌─────────────────────────────────────────────────────────┐
-               │              Scraper & Data Parser Modülü               │
-               │     (Veri Kazıma, Temizleme & Deduplication)             │
-               └───────────────────────────┬─────────────────────────────┘
-                                           │
-                                           ▼
-               ┌─────────────────────────────────────────────────────────┐
-               │                  MongoDB Veritabanı                     │
-               │        (Collections: news, newsletters, sources)        │
-               └───────────────────────────┬─────────────────────────────┘
-                                           │
-                                           ▼
-               ┌─────────────────────────────────────────────────────────┐
-               │               Express.js REST API Katmanı                │
-               │     (GET /api/news, POST /api/newsletters/generate)     │
-               └───────────────────────────┬─────────────────────────────┘
-                                           │
-                                           ▼
-               ┌─────────────────────────────────────────────────────────┐
-               │          Otomatik Test Suite (Jest & Supertest)         │
-               └─────────────────────────────────────────────────────────┘
-```
-
-### Önerilen Teknolojik Araçlar:
-- **Web Scraping:** `axios` + `cheerio` (Statik HTML kazıma için) veya `rss-parser` (RSS akışları için).
-- **Veritabanı (Database):** `mongoose` (MongoDB ORM/ODM kütüphanesi).
-- **Zamanlanmış Görevler:** `node-cron` (Otomatik günlük kazıma için).
-- **REST API & Testing:** `express`, `jest`, `supertest`.
+### 🟢 Tamamlanan Aşamalar
+- **Aşama 1 (TAMAMLANDI ✅):** Node.js & Express.js İlk API İskeleti ve Jest/Supertest Test Altyapısı.
+- **Aşama 2 (TAMAMLANDI ✅):** Katmanlı Mimari (MVC), Dinamik Rotallar (`/api/news`, `/api/news/:id`) & Merkezi 404 Fallback.
+- **Aşama 3 (TAMAMLANDI ✅):** `Nodemon` Canlı Yeniden Başlatma, `validateNews` Middleware, `POST /api/news` Endpoint'i, Merkezi Hata Yönetimi & GitHub Yayınlaması ([MarineRadar Repo](https://github.com/toygucakin/MarineRadar)).
 
 ---
 
-## 🗺️ Sıfırdan İlerleme Yol Haritası (Learning Roadmap)
+### ⏳ Gelecek Aşamalar (Detaylandırılmış Küçük Adımlar)
 
-### Aşama 1: Temel Mimarinin Kurulması (TAMAMLANDI ✅)
-- ES Modules (`"type": "module"`) standartlarında ilk API iskeleti.
-- Jest & Supertest ilk entegrasyon testi.
-- Postman ile manuel doğrulama.
+#### 🔹 Aşama 4: Ortam Değişkenleri (`.env`) ve MongoDB Bağlantı Hazırlığı
+- **Kavram:** Neden şifreler, portlar ve DB adresleri koda yazılmaz? (`dotenv` kütüphanesi).
+- **Uygulama:** MongoDB Atlas (Bulut veritabanı) veya lokal MongoDB bağlantı dizesinin hazırlanması ve Express içinde `src/config/db.js` ile güvenli DB bağlantısının kurulması.
 
-### Aşama 2: API'yi Genişletme ve Katmanlı Mimari (TAMAMLANDI ✅)
-- Katmanlı Mimari (MVC - Data, Controller, Route modülleri).
-- `GET /api/news` ve `GET /api/news/:id` dinamik endpointleri.
-- Merkezi 404 Fallback Middleware.
+#### 🔹 Aşama 5: Mongoose ODM & `News` Veri Şeması (Schema & Model)
+- **Kavram:** ORM/ODM (Object Data Modeling) nedir? Mongoose neden kullanılır?
+- **Uygulama:** `src/models/News.js` şemasının oluşturulması (Title, Summary, SourceUrl, Category, ImpactScore, PublishedAt) ve veri tipi/zorunluluk doğrulamalarının Mongoose seviyesinde yapılması.
 
-### Aşama 3: Giriş Doğrulama (Validation), Hata Yönetimi & POST Endpoint (TAMAMLANDI ✅)
-- `nodemon` canlı geliştirme desteği.
-- `src/middlewares/validateNews.js` ile istek doğrulama.
-- `src/middlewares/errorHandler.js` merkezi hata yönetimi.
-- `POST /api/news` haber ekleme rotası ve 6/6 geçen Jest testleri.
-- GitHub deposuna aktarım ([MarineRadar Repository](https://github.com/toygucakin/MarineRadar)).
+#### 🔹 Aşama 6: Controller Katmanını Gerçek MongoDB Operasyonlarına (CRUD) Geçirme
+- **Kavram:** `async / await` ile asenkron veritabanı sorguları yönetimi.
+- **Uygulama:** Bellekteki `mockNews` dizisini kaldırıp `News.find()`, `News.findById()` ve `News.create()` gibi gerçek veritabanı sorgularına geçiş.
+- **Test:** Jest & Supertest testlerimizin MongoDB mimarisine göre güncellenmesi.
 
-### Aşama 4: MongoDB Veritabanı ve Mongoose Entegrasyonu (Gelecek Adım ⏳)
-- MongoDB Atlas / Local MongoDB bağlantısı.
-- Mongoose `News` ve `Newsletter` şemalarının tanımlanması.
-- Mock verilerden veritabanı CRUD operasyonlarına geçiş.
+#### 🔹 Aşama 7: Web Scraping Temelleri & RSS Feed Parser (İlk Otomatik Veri Kazıma)
+- **Kavram:** Web Scraping nedir? RSS Feed mantığı nasıl çalışır?
+- **Uygulama:** `rss-parser` kütüphanesi ile IMO ve Maritime Executive RSS akışlarından otomatik haber başlığı ve linklerinin çekilmesi, veritabanına otomatik kaydedilmesi.
 
-### Aşama 5: Web Scraping Modülü & Bülten Oluşturucu (Gelecek Adım ⏳)
-- `axios`, `cheerio` ve `rss-parser` ile denizcilik kaynaklarından canlı veri kazıma.
-- `node-cron` ile günlük otomatik bülten derleme algoritması.
+#### 🔹 Aşama 8: Advanced HTML Scraping (Axios & Cheerio ile HTML Kazıma)
+- **Kavram:** HTML etiketlerinden (DOM/CSS Selectors) veri süzme.
+- **Uygulama:** `axios` ve `cheerio` kullanarak RSS akışı olmayan gemicilik haber sitelerinin sayfalarını indirme, haber metinlerini ayıklama ve **Deduplication** (Aynı haberin tekrar eklenmesini önleme) algoritması.
+
+#### 🔹 Aşama 9: Akıllı Bülten Derleyici Modülü (Automated Newsletter Generator)
+- **Kavram:** İlişkili veri şemaları (Referencing & Populate).
+- **Uygulama:** `src/models/Newsletter.js` şemasının yazılması. Veritabanındaki haberlerden etki puanına (`impactScore`) göre en önemli haberleri seçip otomatik **MyCarbons Özel Bülteni** üreten `POST /api/newsletters/generate` endpoint'inin yazılması.
+
+#### 🔹 Aşama 10: Zamanlanmış Görevler (Cron Jobs) & Canlı API Dokümantasyonu (Swagger)
+- **Kavram:** Arka planda periyodik çalışan görevler (Background Jobs).
+- **Uygulama:** `node-cron` ile her gece saat 00:00'da otomatik veri kazıma görevinin çalıştırılması.
+- **Dokümantasyon:** Swagger UI ile `/api-docs` adresi üzerinden canlı interaktif API dokümantasyonu oluşturulması.
 
 ---
 
