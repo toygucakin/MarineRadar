@@ -1,9 +1,83 @@
-# MyCarbons (MarineRadar) - Backend & Test Mühendisliği Yol Haritası
+# MyCarbons (MarineRadar) - Otomatik Gemicilik Bülten & Karbon Analiz Platformu
 
-## 🚢 Proje Vizyonu ve Kapsamı
-**MyCarbons / MarineRadar**, gemicilik ve deniz taşımacılığı sektörüne yönelik karbon emisyonu takibi, denizcilik haberleri ve veri analitiği sağlayan modern bir RESTful API platformudur.
+## ⚓ Uygulamanın Vizyonu ve Temel Özellikleri
 
-Senior Backend Developer ve Test Mühendisi perspektifinden hedefimiz; temiz, sürdürülebilir, test edilebilir ve ölçeklenebilir bir mimari kurmaktır.
+**MyCarbons (MarineRadar)**; Node.js, Express.js, REST API ve MongoDB teknolojilerini kullanarak küresel gemicilik ve deniz taşımacılığı bültenlerinden **otomatik veri kazıma (Web Scraping / Data Harvesting)** yapan, elde edilen verileri anlamlandırıp kendi özel denizcilik ve karbon emisyonu bültenlerini oluşturan akıllı bir backend sistemidir.
+
+### 🌟 Ana İşlevler ve Sistem Bileşenleri
+1. **Otomatik Veri Kazıma (Web Scraping & RSS Service):**
+   - Küresel denizcilik haber siteleri ve sektörel bültenlerden düzenli aralıklarla (Cron Jobs) haber, rapor ve emisyon verilerini toplar.
+2. **Veri Temizleme & Çift Kayıt Engelleme (Deduplication & Normalization):**
+   - Kazınan ham verileri (HTML/RSS) temizler, aynı haberin tekrar eklenmesini engeller ve standart JSON yapısına dönüştürür.
+3. **Akıllı Bülten Derleyici (Automated Newsletter Generator):**
+   - Karbon emisyonu, yeşil limanlar ve alternatif yakıtlar gibi kategorilere göre en yüksek etki puanına (`impactScore`) sahip haberleri seçerek günlük/haftalık **MyCarbons Özel Bülteni** oluşturur.
+4. **MongoDB Veri Katmanı:**
+   - Kazınan tüm makaleleri, bülten arşivlerini, kaynak metadatalarını ve kullanıcı tercihlerini esnek MongoDB (Mongoose) koleksiyonlarında saklar.
+5. **REST API & Test Mühendisliği:**
+   - Frontend uygulamalarına veya üçüncü parti servislere veri sağlayan Express.js REST API katmanı ve Jest/Supertest ile otomatize edilmiş entegrasyon testleri.
+
+---
+
+## 📰 Veri Kazınacak Hedef Gemicilik Bültenleri ve Kaynakları
+
+Sistemin veri toplayacağı temel denizcilik ve karbon emisyon haber kaynakları:
+
+1. **IMO (International Maritime Organization) News:**
+   - *Kapsam:* Uluslararası denizcilik düzenlemeleri, CII/EEXI karbon oranları ve resmi IMO duyuruları.
+   - *Yöntem:* Official Press Releases Scraping & RSS.
+2. **Ship & Bunker / BunkerEx:**
+   - *Kapsam:* Denizcilik yakıt piyasaları, LNG, yeşil amonyak, hidrojen fiyatları ve karbon kredisi bültenleri.
+   - *Yöntem:* Cheerio / Axios HTML Scraping.
+3. **The Maritime Executive & Splash247:**
+   - *Kapsam:* Küresel armatörlük haberleri, filo karbonsuzlaştırma stratejileri ve yeşil koridor projeleri.
+   - *Yöntem:* RSS Feed Parser & HTML Scraping.
+4. **Safety4Sea & Green4Sea:**
+   - *Kapsam:* Deniz çevresi koruma, sürdürülebilirlik raporları ve yeşil gemi teknolojisi bültenleri.
+   - *Yöntem:* RSS & Article Extraction.
+5. **Yeşil Liman Bültenleri (Port of Rotterdam, Port of Antwerp-Bruges):**
+   - *Kapsam:* Avrupa limanlarındaki emisyon takip raporları ve elektrikli şarj/römorkör gelişmeleri.
+
+---
+
+## 🏗️ Projenin Mimari Yapılanması ve Geliştirme Adımları
+
+Projeyi adım adım modüler ve ölçeklenebilir bir mimaride şöyle inşa edeceğiz:
+
+```text
+               ┌─────────────────────────────────────────────────────────┐
+               │           Hedef Bültenler & Web Kaynakları               │
+               │  (IMO, Ship&Bunker, Maritime Executive, Safety4Sea)     │
+               └───────────────────────────┬─────────────────────────────┘
+                                           │ (Cron Job / Cheerio / Axios)
+                                           ▼
+               ┌─────────────────────────────────────────────────────────┐
+               │              Scraper & Data Parser Modülü               │
+               │     (Veri Kazıma, Temizleme & Deduplication)             │
+               └───────────────────────────┬─────────────────────────────┘
+                                           │
+                                           ▼
+               ┌─────────────────────────────────────────────────────────┐
+               │                  MongoDB Veritabanı                     │
+               │        (Collections: news, newsletters, sources)        │
+               └───────────────────────────┬─────────────────────────────┘
+                                           │
+                                           ▼
+               ┌─────────────────────────────────────────────────────────┐
+               │               Express.js REST API Katmanı                │
+               │     (GET /api/news, POST /api/newsletters/generate)     │
+               └───────────────────────────┬─────────────────────────────┘
+                                           │
+                                           ▼
+               ┌─────────────────────────────────────────────────────────┐
+               │          Otomatik Test Suite (Jest & Supertest)         │
+               └─────────────────────────────────────────────────────────┘
+```
+
+### Önerilen Teknolojik Araçlar:
+- **Web Scraping:** `axios` + `cheerio` (Statik HTML kazıma için) veya `rss-parser` (RSS akışları için).
+- **Veritabanı (Database):** `mongoose` (MongoDB ORM/ODM kütüphanesi).
+- **Zamanlanmış Görevler:** `node-cron` (Otomatik günlük kazıma için).
+- **REST API & Testing:** `express`, `jest`, `supertest`.
 
 ---
 
@@ -15,32 +89,34 @@ Senior Backend Developer ve Test Mühendisi perspektifinden hedefimiz; temiz, s�
 - Postman ile manuel doğrulama.
 
 ### Aşama 2: API'yi Genişletme ve Katmanlı Mimari (TAMAMLANDI ✅)
-1. **Katmanlı Mimari (MVC Pattern / Separation of Concerns):**
-   - **Data Layer:** `src/data/mockNews.js` ile tip güvenli mock haber verileri.
-   - **Controller Layer:** `src/controllers/newsController.js` ile iş mantığı (`getAllNews`, `getNewsById`).
-   - **Route Layer:** `src/routes/newsRoutes.js` ile URL haritalaması (`/` ve `/:id`).
+- Katmanlı Mimari (MVC - Data, Controller, Route modülleri).
+- `GET /api/news` ve `GET /api/news/:id` dinamik endpointleri.
+- Merkezi 404 Fallback Middleware.
 
-2. **Dinamik Endpointler & Hata Yönetimi:**
-   - `GET /api/news`: Tüm haberlerin listesini döner (`200 OK`).
-   - `GET /api/news/:id`: Belirli bir haberi getirir (`200 OK` veya `404 Not Found`).
-   - Merkezi 404 Middleware entegrasyonu.
+### Aşama 3: Giriş Doğrulama (Validation), Hata Yönetimi & POST Endpoint (TAMAMLANDI ✅)
+- `nodemon` canlı geliştirme desteği.
+- `src/middlewares/validateNews.js` ile istek doğrulama.
+- `src/middlewares/errorHandler.js` merkezi hata yönetimi.
+- `POST /api/news` haber ekleme rotası ve 6/6 geçen Jest testleri.
+- GitHub deposuna aktarım ([MarineRadar Repository](https://github.com/toygucakin/MarineRadar)).
 
-3. **Gelişmiş Jest & Supertest Otomatik Testleri:**
-   - 4 ayrı test senaryosu yazıldı ve başarıyla doğrulandı (`4/4 PASS`).
+### Aşama 4: MongoDB Veritabanı ve Mongoose Entegrasyonu (Gelecek Adım ⏳)
+- MongoDB Atlas / Local MongoDB bağlantısı.
+- Mongoose `News` ve `Newsletter` şemalarının tanımlanması.
+- Mock verilerden veritabanı CRUD operasyonlarına geçiş.
 
----
-
-### Aşama 3: Veritabanı ve Gelişmiş Test Mühendisliği (Gelecek Adım - Onay Bekliyor ⏳)
-- **Validation (Giriş Doğrulama):** Zod veya Joi ile istek parametrelerinin ve body doğrulaması.
-- **Veritabanı Entegrasyonu:** PostgreSQL / MongoDB entegrasyonu hazırlığı ve ORM kullanımı.
-- **Gelişmiş Mocking & CI/CD:** GitHub Actions ile otomatik test süreçleri.
+### Aşama 5: Web Scraping Modülü & Bülten Oluşturucu (Gelecek Adım ⏳)
+- `axios`, `cheerio` ve `rss-parser` ile denizcilik kaynaklarından canlı veri kazıma.
+- `node-cron` ile günlük otomatik bülten derleme algoritması.
 
 ---
 
 ## 🛠️ Tamamlanan Proje Dosyaları
-- [package.json](file:///c:/MyApps/MarineRadar/package.json): Paketler ve test betikleri.
-- [index.js](file:///c:/MyApps/MarineRadar/index.js): Express uygulaması ve route montajı.
-- [src/data/mockNews.js](file:///c:/MyApps/MarineRadar/src/data/mockNews.js): Mock veri katmanı.
+- [package.json](file:///c:/MyApps/MarineRadar/package.json): Paketler ve betikler.
+- [index.js](file:///c:/MyApps/MarineRadar/index.js): Express uygulaması ve rota konfigürasyonu.
+- [src/data/mockNews.js](file:///c:/MyApps/MarineRadar/src/data/mockNews.js): Mock veri seti.
 - [src/controllers/newsController.js](file:///c:/MyApps/MarineRadar/src/controllers/newsController.js): İş mantığı katmanı.
-- [src/routes/newsRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/newsRoutes.js): Rota yönetimi katmanı.
-- [index.test.js](file:///c:/MyApps/MarineRadar/index.test.js): 4 senaryolu entegrasyon testi.
+- [src/routes/newsRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/newsRoutes.js): REST rotaları.
+- [src/middlewares/validateNews.js](file:///c:/MyApps/MarineRadar/src/middlewares/validateNews.js): Doğrulama katmanı.
+- [src/middlewares/errorHandler.js](file:///c:/MyApps/MarineRadar/src/middlewares/errorHandler.js): Hata katmanı.
+- [index.test.js](file:///c:/MyApps/MarineRadar/index.test.js): Entegrasyon testleri.
