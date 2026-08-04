@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllNews, getNewsById, createNews, scrapeRssNews } from '../controllers/newsController.js';
+import { getAllNews, getNewsById, createNews, scrapeRssNews, scrapeHtmlNews } from '../controllers/newsController.js';
 import { validateCreateNews } from '../middlewares/validateNews.js';
 
 const router = Router();
@@ -11,8 +11,11 @@ const router = Router();
 // GET /api/news -> Tüm haberleri getirme
 router.get('/', getAllNews);
 
-// POST /api/news/scrape/rss -> Otomatik RSS Akışı Kazıma (Dinamik :id'den ÖNCE tanımlanmalı!)
+// POST /api/news/scrape/rss -> Otomatik RSS Akışı Kazıma
 router.post('/scrape/rss', scrapeRssNews);
+
+// POST /api/news/scrape/html -> Otomatik HTML Sayfa Kazıma
+router.post('/scrape/html', scrapeHtmlNews);
 
 // GET /api/news/:id -> ID bazlı haber getirme
 router.get('/:id', getNewsById);

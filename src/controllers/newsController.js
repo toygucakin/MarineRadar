@@ -1,6 +1,7 @@
 import { News } from '../models/News.js';
 import mongoose from 'mongoose';
 import { scrapeRssFeeds } from '../services/rssService.js';
+import { scrapeHtmlTargets } from '../services/htmlService.js';
 
 /**
  * Controller (MongoDB / Mongoose İş Mantığı Katmanı)
@@ -85,6 +86,22 @@ export const scrapeRssNews = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: `RSS Kazıma İşlemi Tamamlandı: ${result.addedCount} yeni haber veritabanına eklendi, ${result.skippedCount} mevcut haber atlandı.`,
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/news/scrape/html -> HTML Web Sayfalarından otomatik haber kazıma tetikler
+export const scrapeHtmlNews = async (req, res, next) => {
+  try {
+    const { targets } = req.body || {};
+    const result = await scrapeHtmlTargets(targets);
+
+    res.status(200).json({
+      success: true,
+      message: `HTML Kazıma İşlemi Tamamlandı: ${result.addedCount} yeni haber veritabanına eklendi, ${result.skippedCount} mevcut haber atlandı.`,
       data: result
     });
   } catch (error) {

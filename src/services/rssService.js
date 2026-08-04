@@ -18,7 +18,7 @@ const DEFAULT_RSS_FEEDS = [
 /**
  * Anahtar kelimelere göre etki puanı (impactScore) ve kategori hesaplama yardımcısı
  */
-const analyzeContent = (title = '', summary = '') => {
+export const analyzeContent = (title = '', summary = '') => {
   const text = `${title} ${summary}`.toLowerCase();
   
   let impactScore = 6.0; // Varsayılan etki puanı
