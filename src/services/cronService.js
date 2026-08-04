@@ -29,10 +29,10 @@ export const initCronJobs = () => {
     runScrapingJob('Sunucu Açılış Taraması');
   }, 2000);
 
-  // 2. Her 2 dakikada bir ("*/2 * * * *") arka planda otomatik periyodik tarama yap
-  cron.schedule('*/2 * * * *', () => {
-    runScrapingJob('2 Dakikalık Periyodik Tarama');
+  // 2. Her 6 saatte bir ("0 */6 * * *") arka planda otomatik periyodik tarama yap
+  cron.schedule('0 */6 * * *', () => {
+    runScrapingJob('6 Saatlik Periyodik Tarama');
   });
 
-  console.log('⚡ Zamanlanmış Görevler Aktif: Sunucu açıldığında otomatik 1 defa ve her 2 dakikada bir arka planda haber tarayacak.');
+  console.log('⚡ Zamanlanmış Görevler Aktif: Sunucu açıldığında otomatik 1 defa ve her 6 saatte bir arka planda haber tarayacak.');
 };
