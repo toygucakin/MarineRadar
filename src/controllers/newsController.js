@@ -1,58 +1,76 @@
-import { mockNews } from '../data/mockNews.js';
+import { News } from '../models/News.js';
+import mongoose from 'mongoose';
 
 /**
- * Controller (İş Mantığı Katmanı)
+ * Controller (MongoDB / Mongoose İş Mantığı Katmanı)
  */
 
-// GET /api/news -> Tüm haberleri getirir
-export const getAllNews = (req, res) => {
-  res.status(200).json({
-    success: true,
-    count: mockNews.length,
-    data: mockNews
-  });
+// GET /api/news -> Tüm haberleri veritabanından getirir
+export const getAllNews = async (req, res, next) => {
+  try {
+    const newsList = await News.find().sort({ publishedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: newsList.length,
+      data: newsList
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // GET /api/news/:id -> Tek bir haberi getirir
-export const getNewsById = (req, res) => {
-  const { id } = req.params;
-  const newsItem = mockNews.find(item => item.id === id);
+export const getNewsById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-  if (!newsItem) {
-    return res.status(404).json({
-      success: false,
-      message: `ID değeri '${id}' olan haber bulunamadı.`
+    // Mongo ObjectId formatında geçerlilik kontrolü
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        success: false,
+        message: `ID değeri '${id}' olan haber bulunamadı.`
+      });
+    }
+
+    const newsItem = await News.findById(id);
+
+    if (!newsItem) {
+      return res.status(404).json({
+        success: false,
+        message: `ID değeri '${id}' olan haber bulunamadı.`
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: newsItem
     });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json({
-    success: true,
-    data: newsItem
-  });
 };
 
 // POST /api/news -> Yeni gemicilik haberi ekler
-export const createNews = (req, res) => {
-  const { title, summary, category, author, impactScore } = req.body;
+export const createNews = async (req, res, next) => {
+  try {
+    const { title, summary, category, author, impactScore, sourceUrl } = req.body;
 
-  // Yeni benzersiz id ve tarih üretiyoruz
-  const newNewsItem = {
-    id: `news-${Date.now()}`,
-    title,
-    summary,
-    category,
-    publishedAt: new Date().toISOString(),
-    author: author || 'Anonim Analist',
-    impactScore
-  };
+    const newNewsItem = await News.create({
+      title,
+      summary,
+      category,
+      author: author || 'Anonim Analist',
+      impactScore,
+      sourceUrl
+    });
 
-  // Dizimize ekliyoruz (Veritabanı yerine belleğe yazıyoruz)
-  mockNews.push(newNewsItem);
-
-  // HTTP Status 201 (Created) ile yeni oluşturulan veriyi dönüyoruz
-  res.status(201).json({
-    success: true,
-    message: 'Yeni gemicilik haberi başarıyla eklendi.',
-    data: newNewsItem
-  });
+    res.status(201).json({
+      success: true,
+      message: 'Yeni gemicilik haberi başarıyla veritabanına eklendi.',
+      data: newNewsItem
+    });
+  } catch (error) {
+    next(error);
+  }
 };

@@ -1,7 +1,33 @@
 import request from 'supertest';
+import mongoose from 'mongoose';
 import app from './index.js';
+import { News } from './src/models/News.js';
 
-describe('MyCarbons REST API Integration Tests (Stage 3)', () => {
+describe('MyCarbons REST API Integration Tests (MongoDB Katmanı - Aşama 5 & 6)', () => {
+  let createdNewsId;
+
+  beforeAll(async () => {
+    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/marineradar_test';
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(mongoUri);
+    }
+    await News.deleteMany({});
+
+    const sampleNews = await News.create({
+      title: 'Yeni IMO Karbon Düzenlemeleri ve Yeşil Liman Girişimleri',
+      summary: 'Uluslararası Denizcilik Örgütü (IMO), deniz taşımacılığında karbon ayak izini azaltacak standartları açıkladı.',
+      category: 'Clean Energy',
+      author: 'MarineRadar Analiz Ekibi',
+      impactScore: 8.5
+    });
+
+    createdNewsId = sampleNews._id.toString();
+  });
+
+  afterAll(async () => {
+    await News.deleteMany({});
+    await mongoose.connection.close();
+  });
 
   // GET /api/news Testi
   describe('GET /api/news', () => {
@@ -19,18 +45,19 @@ describe('MyCarbons REST API Integration Tests (Stage 3)', () => {
   // GET /api/news/:id (Geçerli ID) Testi
   describe('GET /api/news/:id (Geçerli ID)', () => {
     it('var olan bir ID verilince status 200 ve ilgili haber detayını dönmelidir', async () => {
-      const response = await request(app).get('/api/news/news-101');
+      const response = await request(app).get(`/api/news/${createdNewsId}`);
 
       expect(response.statusCode).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.data.id).toBe('news-101');
+      expect(response.body.data.id).toBe(createdNewsId);
     });
   });
 
   // GET /api/news/:id (Geçersiz ID) Testi
   describe('GET /api/news/:id (Geçersiz ID)', () => {
     it('sistemde olmayan bir ID verilince status 404 ve hata mesajı dönmelidir', async () => {
-      const response = await request(app).get('/api/news/news-999');
+      const fakeMongoId = new mongoose.Types.ObjectId().toString();
+      const response = await request(app).get(`/api/news/${fakeMongoId}`);
 
       expect(response.statusCode).toBe(404);
       expect(response.body.success).toBe(false);
@@ -64,7 +91,7 @@ describe('MyCarbons REST API Integration Tests (Stage 3)', () => {
   describe('POST /api/news (Eksik/Hatalı Veri - Validation Error)', () => {
     it('eksik alan veya hatalı impactScore gönderilirse 400 Bad Request ve ayrıntılı hata listesi dönmelidir', async () => {
       const invalidPayload = {
-        title: 'Kısa', // En az 3 karakter olmalı ama summary ve impactScore eksik
+        title: 'Kısa',
         summary: 'Küçük'
       };
 
@@ -89,5 +116,4 @@ describe('MyCarbons REST API Integration Tests (Stage 3)', () => {
       expect(response.body.success).toBe(false);
     });
   });
-
 });

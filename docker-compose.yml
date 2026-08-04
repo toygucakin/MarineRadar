@@ -1,0 +1,29 @@
+services:
+  # MongoDB Servisi (Veritabanı)
+  mongodb:
+    image: mongo:latest
+    container_name: marineradar-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=marineradar
+    volumes:
+      - mongo_data:/data/db
+
+  # Express.js REST API Servisi
+  app:
+    build: .
+    container_name: marineradar-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGO_URI=mongodb://mongodb:27017/marineradar
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:

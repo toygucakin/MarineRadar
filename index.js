@@ -1,4 +1,6 @@
 import express from 'express';
+import 'dotenv/config';
+import { connectDB } from './src/config/db.js';
 import newsRoutes from './src/routes/newsRoutes.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 
@@ -8,13 +10,18 @@ const app = express();
 // Sunucunun çalışacağı port (varsayılan: 3000)
 const PORT = process.env.PORT || 3000;
 
-// Gelen isteklerdeki JSON verilerini otomatik ayrıştırmak (parse) için middleware ekliyoruz
+// Veritabanı Bağlantısı (Test modunda değilsek başlatılır)
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
+
+// Gelen isteklerdeki JSON verilerini otomatik ayrıştırmak için middleware
 app.use(express.json());
 
-// Rota (Route) Montajı: '/api/news' ile başlayan tüm istekleri newsRoutes modülüne yönlendiriyoruz
+// Rota (Route) Montajı
 app.use('/api/news', newsRoutes);
 
-// 404 Fallback Middleware: Tanımlanmayan adreslere atılan istekleri yakalar
+// 404 Fallback Middleware
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -22,16 +29,15 @@ app.use((req, res) => {
   });
 });
 
-// Merkezi Hata Yönetimi Middleware (Centralized Error Handler)
+// Merkezi Hata Yönetimi Middleware
 app.use(errorHandler);
 
-// Otomatik testlerde port çakışmasını (EADDRINUSE) önlemek için
-// sunucuyu sadece test ortamında değilsek dinlemeye alıyoruz.
+// Otomatik testlerde port çakışmasını önlemek için
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`🚀 MyCarbons API Sunucusu http://localhost:${PORT} üzerinde çalışıyor.`);
   });
 }
 
-// Test dosyalarında (index.test.js) Supertest ile kullanabilmek için app nesnesini dışa aktarıyoruz
+// Testler için dışa aktarım
 export default app;
