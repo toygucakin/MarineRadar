@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import app from './index.js';
 import { News } from './src/models/News.js';
 
-describe('MyCarbons REST API Integration Tests (MongoDB Katmanı - Aşama 5 & 6)', () => {
+describe('MyCarbons REST API Integration Tests (MongoDB & RSS Scraping Katmanı - Aşama 7)', () => {
   let createdNewsId;
 
   beforeAll(async () => {
@@ -84,6 +84,20 @@ describe('MyCarbons REST API Integration Tests (MongoDB Katmanı - Aşama 5 & 6)
       expect(response.body.data).toHaveProperty('id');
       expect(response.body.data.title).toBe(newPayload.title);
       expect(response.body.data.impactScore).toBe(8.9);
+    });
+  });
+
+  // POST /api/news/scrape/rss (RSS Kazıma Testi)
+  describe('POST /api/news/scrape/rss (RSS Feed Kazıma)', () => {
+    it('RSS kazıma tetiklendiğinde 200 OK ve kazıma raporu dönmelidir', async () => {
+      const response = await request(app)
+        .post('/api/news/scrape/rss')
+        .send({ feeds: [] }); // Boş dizi ile hızlı test
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('addedCount');
+      expect(response.body.data).toHaveProperty('skippedCount');
     });
   });
 
