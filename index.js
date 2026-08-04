@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 import { connectDB } from './src/config/db.js';
 import newsRoutes from './src/routes/newsRoutes.js';
+import newsletterRoutes from './src/routes/newsletterRoutes.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 
 // Express uygulamasını (app) başlatıyoruz
@@ -18,8 +19,9 @@ if (process.env.NODE_ENV !== 'test') {
 // Gelen isteklerdeki JSON verilerini otomatik ayrıştırmak için middleware
 app.use(express.json());
 
-// Rota (Route) Montajı
+// Rota (Route) Montajları
 app.use('/api/news', newsRoutes);
+app.use('/api/newsletters', newsletterRoutes);
 
 // 404 Fallback Middleware
 app.use((req, res) => {
