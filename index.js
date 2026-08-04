@@ -1,6 +1,9 @@
 import express from 'express';
 import 'dotenv/config';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './src/config/swagger.js';
 import { connectDB } from './src/config/db.js';
+import { initCronJobs } from './src/services/cronService.js';
 import newsRoutes from './src/routes/newsRoutes.js';
 import newsletterRoutes from './src/routes/newsletterRoutes.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
@@ -11,13 +14,17 @@ const app = express();
 // Sunucunun çalışacağı port (varsayılan: 3000)
 const PORT = process.env.PORT || 3000;
 
-// Veritabanı Bağlantısı (Test modunda değilsek başlatılır)
+// Veritabanı ve Cron Hizmetleri (Test modunda değilsek başlatılır)
 if (process.env.NODE_ENV !== 'test') {
   connectDB();
+  initCronJobs();
 }
 
 // Gelen isteklerdeki JSON verilerini otomatik ayrıştırmak için middleware
 app.use(express.json());
+
+// Canlı İnteraktif Swagger API Dokümantasyonu (/api-docs)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rota (Route) Montajları
 app.use('/api/news', newsRoutes);
@@ -38,6 +45,7 @@ app.use(errorHandler);
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`🚀 MyCarbons API Sunucusu http://localhost:${PORT} üzerinde çalışıyor.`);
+    console.log(`📖 Canlı Swagger API Dokümantasyonu: http://localhost:${PORT}/api-docs`);
   });
 }
 

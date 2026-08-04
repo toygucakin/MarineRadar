@@ -4,7 +4,7 @@ import app from './index.js';
 import { News } from './src/models/News.js';
 import { Newsletter } from './src/models/Newsletter.js';
 
-describe('MyCarbons REST API Integration Tests (Aşama 9 - Newsletter Modülü)', () => {
+describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katmanı)', () => {
   let createdNewsId;
 
   beforeAll(async () => {
@@ -92,7 +92,7 @@ describe('MyCarbons REST API Integration Tests (Aşama 9 - Newsletter Modülü)'
       expect(response.body.data).toHaveProperty('title');
       expect(Array.isArray(response.body.data.featuredNews)).toBe(true);
       expect(response.body.data.featuredNews.length).toBeGreaterThan(0);
-      expect(response.body.data.featuredNews[0]).toHaveProperty('title'); // Populate kontrolü
+      expect(response.body.data.featuredNews[0]).toHaveProperty('title');
     });
   });
 
@@ -105,6 +105,15 @@ describe('MyCarbons REST API Integration Tests (Aşama 9 - Newsletter Modülü)'
       expect(response.body.success).toBe(true);
       expect(Array.isArray(response.body.data)).toBe(true);
       expect(response.body.data.length).toBeGreaterThan(0);
+    });
+  });
+
+  // GET /api-docs (Swagger UI Dokümantasyon Testi)
+  describe('GET /api-docs (Swagger UI Dokümantasyonu)', () => {
+    it('Swagger UI arayüzü isteğine 200 veya 301/302 yönlendirmesi dönmelidir', async () => {
+      const response = await request(app).get('/api-docs/');
+
+      expect([200, 301, 302]).toContain(response.statusCode);
     });
   });
 

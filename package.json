@@ -23,7 +23,10 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.9.1",
-    "rss-parser": "^3.13.0"
+    "node-cron": "^4.6.0",
+    "rss-parser": "^3.13.0",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",
