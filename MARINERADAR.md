@@ -87,24 +87,7 @@ Haberler kazındığı anda başlık ve özet metinleri otomatik olarak doğal d
 
 ### ⏳ Gelecek Aşamalar (Modern Web Dashboard & Ön Yüz Geliştirme)
 
-Sistemi ham JSON/XML çıktılarından kurtarıp, şık, akıcı ve filtreleme yapılabilen modern bir web portalına dönüştürecek aşamalar:
-
-#### 🔹 Aşama 11: Statik Arayüz İskeleti ve Modern Dark-Mode Tasarım Sistemi
-- **Kavram:** HTML5 Semantik Düzen, Vanilla CSS3 Değişkenleri, CSS Grid/Flexbox Layout, Cam Efekti (Glassmorphism).
-- **Uygulama:** `public/index.html` ve `public/styles.css` dosyalarının oluşturulması; lacivert/gece mavisi koyu tema (`#0A111E`), neon turkuaz ve yeşil vurgu renkleri, Google Fonts `Inter` tipografisi.
-- **Bileşenler:** Header (Logo & Durum Rozetleri), Hero İstatistik Paneli (Toplam Haber, Karbon Haber Sayısı, Ortalama Etki Puanı), Arama & Filtreleme Barı, Haber Kartları Izgarası (News Grid).
-
-#### 🔹 Aşama 12: İstemci JavaScript Mantığı ve Canlı API Bağlantısı (`public/app.js`)
-- **Kavram:** Asenkron Veri Çekme (`fetch API`), Dinamik DOM Manipülasyonu ve Kart Oluşturma.
-- **Uygulama:** `public/app.js` dosyasının yazılması; `/api/news` endpoint'inden canlı haber verilerinin çekilmesi ve akıcı HTML kartları halinde ekrana basılması.
-- **Görsel Rozetler:** Etki puanı `8.0` üstü haberler için neon yeşil rozet, kategoriler için renkli etiketler ve yayın tarihi formatlama.
-
-#### 🔹 Aşama 13: Anlık Canlı Arama, Kategori Filtreleme ve Tetikleyici Butonlar
-- **Kavram:** İstemci Tarafı Anlık Süzme (Client-Side Live Filtering) ve API Tetikleme.
-- **Uygulama:** 
-  - Kategori Sekmeleri (Hepsi, Carbon Emissions, Alternative Fuels, Clean Energy, Green Ports, Regulations) tıklanınca haberleri anında süzme.
-  - Arama Çubuğuna yazıldığı anda başlık ve özette canlı arama yapma.
-  - Arayüze **"Şimdi Kazı (RSS/HTML)"** butonlarının eklenmesi ve tek tıkla arka planda kazıma yapıp ekranı yenileme.
+Sistemi ham JSON/XML çıktılarından kurtarıp, şık, akıcı ve filtreleme yapılabilen modern bir web portalına dönüştürecek kalan aşamalar:
 
 #### 🔹 Aşama 14: Akıllı Bülten Arayüzü & Bülten Arşivi Modalı (Newsletter UI)
 - **Kavram:** Modaller (Pop-up), İlişkili Veriyi Görselleştirme.
