@@ -8,7 +8,7 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
   let createdNewsId;
 
   beforeAll(async () => {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/marineradar_test';
+    const mongoUri = process.env.TEST_MONGO_URI || 'mongodb://127.0.0.1:27017/marineradar_test';
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(mongoUri);
     }
