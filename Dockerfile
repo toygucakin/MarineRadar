@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Bağımlılık tanımları
 COPY package*.json ./
+COPY scripts/ ./scripts/
 
 # Bağımlılıkların kurulması
 RUN npm install
