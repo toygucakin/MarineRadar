@@ -1,39 +1,46 @@
 /* ==========================================================================
-   MyCarbons (MarineRadar) - Design System & Modern Maritime Dark Theme
+   MyCarbons (CO2 Emission Monitoring & MarineRadar) - Official Design System
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Maritime Dark Color Palette */
-  --bg-deep: #050B14;
-  --bg-surface: #0A1424;
-  --bg-card: rgba(13, 25, 44, 0.65);
-  --bg-card-hover: rgba(20, 36, 62, 0.85);
-  --bg-glass: rgba(15, 28, 48, 0.5);
+  /* Official MyCarbons Color Palette */
+  --brand-green: #22C55E;
+  --brand-green-dark: #15803D;
+  --brand-green-light: #4ADE80;
+  --brand-green-glow: rgba(34, 197, 94, 0.25);
   
-  /* Glowing Accent Colors */
-  --accent-cyan: #00F2FE;
-  --accent-blue: #4FACFE;
-  --accent-green: #10B981;
-  --accent-green-glow: rgba(16, 185, 129, 0.25);
-  --accent-amber: #F59E0B;
-  --accent-purple: #8B5CF6;
+  --brand-blue: #2563EB;
+  --brand-blue-glow: rgba(37, 99, 235, 0.25);
   
-  /* Text & Border Colors */
+  --brand-teal: #0D9488;
+  --brand-teal-glow: rgba(13, 148, 136, 0.25);
+  
+  --brand-orange: #F97316;
+  --brand-orange-glow: rgba(249, 115, 22, 0.25);
+  
+  /* Dark Emerald Surface Palette */
+  --bg-deep: #05120D;
+  --bg-surface: #0A1E15;
+  --bg-card: rgba(10, 30, 22, 0.7);
+  --bg-card-hover: rgba(16, 44, 32, 0.88);
+  --bg-glass: rgba(12, 34, 25, 0.55);
+  
+  /* Text & Borders */
   --text-main: #F1F5F9;
   --text-muted: #94A3B8;
   --text-dim: #64748B;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(0, 242, 254, 0.3);
+  --border-subtle: rgba(74, 222, 128, 0.12);
+  --border-glow: rgba(34, 197, 94, 0.35);
   
   /* Shadows & Glassmorphism */
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --shadow-glow-cyan: 0 0 20px rgba(0, 242, 254, 0.2);
-  --shadow-glow-green: 0 0 20px rgba(16, 185, 129, 0.25);
+  --shadow-glass: 0 10px 32px 0 rgba(0, 0, 0, 0.45);
+  --shadow-glow-green: 0 0 22px rgba(34, 197, 94, 0.25);
+  --shadow-glow-blue: 0 0 22px rgba(37, 99, 235, 0.25);
   --blur-glass: blur(16px);
   
-  /* Layout Dimensions */
+  /* Dimensions & Transitions */
   --container-max: 1280px;
   --header-height: 80px;
   --radius-lg: 16px;
@@ -67,9 +74,9 @@ body {
   display: flex;
   flex-direction: column;
   background-image: 
-    radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 85% 65%, rgba(16, 185, 129, 0.04) 0%, transparent 45%),
-    linear-gradient(to bottom, var(--bg-deep), #03070E);
+    radial-gradient(circle at 85% 15%, rgba(74, 222, 128, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 15% 65%, rgba(37, 99, 235, 0.06) 0%, transparent 45%),
+    linear-gradient(to bottom, var(--bg-deep), #020906);
   background-attachment: fixed;
   overflow-x: hidden;
 }
@@ -94,7 +101,7 @@ button {
 }
 
 /* ==========================================================================
-   Radar Animations & Icons
+   Animations & Icons
    ========================================================================== */
 
 @keyframes radarSpin {
@@ -102,24 +109,19 @@ button {
   100% { transform: rotate(360deg); }
 }
 
-@keyframes radarPulse {
-  0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
-  70% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 0 14px rgba(0, 242, 254, 0); }
-  100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
-}
-
-@keyframes floatAnim {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  70% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
 }
 
 /* ==========================================================================
-   Header & Navigation Bar
+   Header & Navigation
    ========================================================================== */
 
 .site-header {
   height: var(--header-height);
-  background: rgba(5, 11, 20, 0.8);
+  background: rgba(5, 18, 13, 0.85);
   backdrop-filter: var(--blur-glass);
   -webkit-backdrop-filter: var(--blur-glass);
   border-bottom: 1px solid var(--border-subtle);
@@ -142,24 +144,25 @@ button {
   gap: 0.85rem;
 }
 
-.radar-icon-wrap {
+/* MyCarbons Leaf Eco-Logo */
+.logo-leaf-wrap {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(0, 242, 254, 0.1);
-  border: 1.5px solid var(--accent-cyan);
+  background: rgba(34, 197, 94, 0.12);
+  border: 1.5px solid var(--brand-green);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
-  animation: radarPulse 3s infinite ease-in-out;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+  animation: pulseGlow 3s infinite ease-in-out;
 }
 
-.radar-icon-wrap svg {
+.logo-leaf-wrap svg {
   width: 24px;
   height: 24px;
-  color: var(--accent-cyan);
+  color: var(--brand-green);
 }
 
 .radar-sweep {
@@ -169,25 +172,25 @@ button {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(0, 242, 254, 0.4) 360deg);
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(74, 222, 128, 0.4) 360deg);
   animation: radarSpin 4s linear infinite;
 }
 
 .brand-text h1 {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.4rem;
+  font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #FFFFFF 0%, var(--accent-cyan) 100%);
+  background: linear-gradient(135deg, #FFFFFF 30%, var(--brand-green-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .brand-text span {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--accent-green);
+  letter-spacing: 0.14em;
+  color: var(--brand-green-light);
   font-weight: 600;
   display: block;
 }
@@ -202,22 +205,22 @@ button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
   padding: 0.35rem 0.85rem;
   border-radius: 50px;
   font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--accent-green);
+  font-weight: 600;
+  color: var(--brand-green-light);
 }
 
 .status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--accent-green);
-  box-shadow: 0 0 8px var(--accent-green);
-  animation: radarPulse 2s infinite ease-in-out;
+  background-color: var(--brand-green);
+  box-shadow: 0 0 8px var(--brand-green);
+  animation: pulseGlow 2s infinite ease-in-out;
 }
 
 .btn-docs {
@@ -226,7 +229,7 @@ button {
   gap: 0.5rem;
   background: var(--bg-card);
   border: 1px solid var(--border-glow);
-  color: var(--accent-cyan);
+  color: var(--brand-green-light);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
   font-weight: 600;
@@ -235,13 +238,13 @@ button {
 }
 
 .btn-docs:hover {
-  background: rgba(0, 242, 254, 0.15);
-  box-shadow: var(--shadow-glow-cyan);
+  background: rgba(34, 197, 94, 0.15);
+  box-shadow: var(--shadow-glow-green);
   transform: translateY(-2px);
 }
 
 /* ==========================================================================
-   Hero Section & Stats Panel
+   Hero Section & Pill Badges
    ========================================================================== */
 
 .hero-section {
@@ -251,17 +254,47 @@ button {
 
 .hero-header {
   text-align: center;
-  max-width: 780px;
+  max-width: 820px;
   margin: 0 auto 2.5rem auto;
+}
+
+/* Official Compliance Pill Badge */
+.compliant-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: var(--brand-green-light);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
+}
+
+.compliant-pill .pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand-green);
+  box-shadow: 0 0 6px var(--brand-green);
 }
 
 .hero-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.5rem;
+  font-size: 2.6rem;
   font-weight: 800;
   line-height: 1.2;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #FFFFFF 30%, var(--accent-cyan) 70%, var(--accent-green) 100%);
+  color: #FFFFFF;
+}
+
+.hero-title .highlight {
+  background: linear-gradient(135deg, var(--brand-green-light) 0%, var(--brand-green) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -270,8 +303,10 @@ button {
   font-size: 1.05rem;
   color: var(--text-muted);
   font-weight: 400;
+  line-height: 1.6;
 }
 
+/* Stats Grid Mapped to Company 4 Pillars */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -297,8 +332,8 @@ button {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
-  opacity: 0.5;
+  background: linear-gradient(90deg, transparent, var(--brand-green), transparent);
+  opacity: 0.6;
 }
 
 .stat-card:hover {
@@ -315,23 +350,24 @@ button {
 }
 
 .stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.stat-icon.cyan { background: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); }
-.stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); }
-.stat-icon.amber { background: rgba(245, 158, 11, 0.1); color: var(--accent-amber); }
-.stat-icon.purple { background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); }
+/* Colors matching company badges: Green, Teal, Blue, Orange */
+.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: var(--brand-green-light); border: 1px solid rgba(34, 197, 94, 0.3); }
+.stat-icon.teal { background: rgba(13, 148, 136, 0.15); color: #14B8A6; border: 1px solid rgba(13, 148, 136, 0.3); }
+.stat-icon.blue { background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3); }
+.stat-icon.orange { background: rgba(249, 115, 22, 0.15); color: #FB923C; border: 1px solid rgba(249, 115, 22, 0.3); }
 
 .stat-value {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.1rem;
-  font-weight: 700;
+  font-size: 2.2rem;
+  font-weight: 800;
   color: var(--text-main);
   line-height: 1.1;
   margin-bottom: 0.25rem;
@@ -344,7 +380,7 @@ button {
 }
 
 /* ==========================================================================
-   Control Bar (Search, Category Filters & Actions)
+   Control Bar
    ========================================================================== */
 
 .control-bar {
@@ -387,7 +423,7 @@ button {
 
 .search-input {
   width: 100%;
-  background: rgba(5, 11, 20, 0.6);
+  background: rgba(5, 18, 13, 0.7);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem 0.75rem 2.75rem;
@@ -398,8 +434,8 @@ button {
 
 .search-input:focus {
   outline: none;
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
+  border-color: var(--brand-green);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
 }
 
 .action-buttons {
@@ -420,30 +456,31 @@ button {
 }
 
 .btn-action.btn-rss {
-  background: rgba(0, 242, 254, 0.1);
-  border: 1px solid rgba(0, 242, 254, 0.3);
-  color: var(--accent-cyan);
+  background: rgba(13, 148, 136, 0.15);
+  border: 1px solid rgba(13, 148, 136, 0.35);
+  color: #14B8A6;
 }
 
 .btn-action.btn-rss:hover {
-  background: var(--accent-cyan);
-  color: var(--bg-deep);
-  box-shadow: var(--shadow-glow-cyan);
+  background: #0D9488;
+  color: #FFFFFF;
+  box-shadow: 0 0 15px rgba(13, 148, 136, 0.3);
 }
 
 .btn-action.btn-html {
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  color: var(--accent-amber);
+  background: rgba(249, 115, 22, 0.15);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  color: #FB923C;
 }
 
 .btn-action.btn-html:hover {
-  background: var(--accent-amber);
-  color: var(--bg-deep);
+  background: #EA580C;
+  color: #FFFFFF;
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
 }
 
 .btn-action.btn-newsletter {
-  background: linear-gradient(135deg, var(--accent-green) 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-green-dark) 100%);
   color: #FFFFFF;
   box-shadow: var(--shadow-glow-green);
 }
@@ -459,15 +496,6 @@ button {
   gap: 0.5rem;
   overflow-x: auto;
   padding-bottom: 0.25rem;
-}
-
-.category-tabs::-webkit-scrollbar {
-  height: 4px;
-}
-
-.category-tabs::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
-  border-radius: 4px;
 }
 
 .tab-btn {
@@ -488,14 +516,14 @@ button {
 }
 
 .tab-btn.active {
-  background: rgba(0, 242, 254, 0.15);
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
+  background: rgba(34, 197, 94, 0.18);
+  border-color: var(--brand-green);
+  color: var(--brand-green-light);
   font-weight: 600;
 }
 
 /* ==========================================================================
-   News Cards Grid (Main Content Area)
+   News Cards Grid
    ========================================================================== */
 
 .news-grid-section {
@@ -520,7 +548,7 @@ button {
 }
 
 .section-title svg {
-  color: var(--accent-cyan);
+  color: var(--brand-green-light);
 }
 
 .news-count-badge {
@@ -535,7 +563,6 @@ button {
   gap: 1.5rem;
 }
 
-/* News Card Base & Glass Styling */
 .news-card {
   background: var(--bg-card);
   backdrop-filter: var(--blur-glass);
@@ -554,7 +581,7 @@ button {
   transform: translateY(-5px);
   background: var(--bg-card-hover);
   border-color: var(--border-glow);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), var(--shadow-glow-cyan);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), var(--shadow-glow-green);
 }
 
 .card-top-bar {
@@ -571,14 +598,14 @@ button {
   letter-spacing: 0.08em;
   padding: 0.25rem 0.65rem;
   border-radius: var(--radius-sm);
-  background: rgba(0, 242, 254, 0.1);
-  color: var(--accent-cyan);
-  border: 1px solid rgba(0, 242, 254, 0.25);
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--brand-green-light);
+  border: 1px solid rgba(34, 197, 94, 0.25);
 }
 
-.category-tag.carbon { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border-color: rgba(16, 185, 129, 0.3); }
-.category-tag.fuel { background: rgba(245, 158, 11, 0.1); color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3); }
-.category-tag.clean { background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); border-color: rgba(139, 92, 246, 0.3); }
+.category-tag.carbon { background: rgba(34, 197, 94, 0.15); color: var(--brand-green-light); border-color: rgba(34, 197, 94, 0.3); }
+.category-tag.fuel { background: rgba(249, 115, 22, 0.15); color: #FB923C; border-color: rgba(249, 115, 22, 0.3); }
+.category-tag.clean { background: rgba(37, 99, 235, 0.15); color: #60A5FA; border-color: rgba(37, 99, 235, 0.3); }
 
 .impact-badge {
   display: flex;
@@ -589,9 +616,9 @@ button {
   font-size: 0.85rem;
   padding: 0.2rem 0.6rem;
   border-radius: 50px;
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--accent-green);
-  border: 1px solid var(--accent-green-glow);
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--brand-green-light);
+  border: 1px solid var(--brand-green-glow);
 }
 
 .news-title {
@@ -639,7 +666,7 @@ button {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--accent-cyan);
+  color: var(--brand-green-light);
   font-weight: 600;
   font-size: 0.82rem;
   transition: var(--transition-fast);
@@ -650,25 +677,12 @@ button {
   transform: translateX(3px);
 }
 
-/* Skeleton Loading Effect */
-.skeleton {
-  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
-  background-size: 200% 100%;
-  animation: skeletonLoading 1.5s infinite;
-  border-radius: var(--radius-sm);
-}
-
-@keyframes skeletonLoading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
 /* ==========================================================================
    Footer Section
    ========================================================================== */
 
 .site-footer {
-  background: #03070E;
+  background: #020906;
   border-top: 1px solid var(--border-subtle);
   padding: 2.5rem 0;
   margin-top: auto;
@@ -699,10 +713,10 @@ button {
 }
 
 .footer-links a:hover {
-  color: var(--accent-cyan);
+  color: var(--brand-green-light);
 }
 
-/* Responsive Media Queries */
+/* Media Queries */
 @media (max-width: 1024px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -712,5 +726,5 @@ button {
   .control-top-row { flex-direction: column; align-items: stretch; }
   .action-buttons { flex-direction: column; width: 100%; }
   .btn-action { justify-content: center; width: 100%; }
-  .hero-title { font-size: 1.85rem; }
+  .hero-title { font-size: 1.9rem; }
 }
