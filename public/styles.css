@@ -187,9 +187,9 @@ button {
 }
 
 .brand-text span {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: 0.05em;
   color: var(--brand-green);
   font-weight: 700;
   display: block;
