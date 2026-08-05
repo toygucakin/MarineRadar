@@ -1,7 +1,36 @@
+# Dependencies
 node_modules/
-.env
-.env.example
-*.log
-.DS_Store
-MARINERADAR.md
 
+# Environment & Secrets
+.env
+.env.*
+.env.example
+
+# Logs & Debugging
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Editor & IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+
+# Temporary Directories
+.tmp/
+temp/
+
+# Project Internal Notes
+MARINERADAR.md
