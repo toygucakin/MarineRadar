@@ -51,57 +51,13 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 12 (TAMAMLANDI ✅):** İstemci JavaScript Mantığı & Canlı API Entegrasyonu (`public/app.js`), `/api/news` endpoint'inden canlı MongoDB verilerinin çekilmesi, dinamik DOM haber kartı oluşturma, etki puanına göre yeşil/altın rozetler ve canlı Hero istatistik hesaplamaları.
 - **Aşama 13 (TAMAMLANDI ✅):** Anlık Canlı Arama, Kategori Filtreleme, Scrape API Tetikleyicileri & Toast Bildirim Sistemi (`public/app.js`, `public/styles.css`), "RSS Şimdi Kazı" ve "HTML Web Kazı" eylem butonlarının canlı backend scraping servislerine bağlanması, doğru yeni haber sayısı hesaplayıcısı ve yüzen nane yeşili toast bildirim kutuları.
 - **Aşama 14 (TAMAMLANDI ✅):** Akıllı Bülten Arayüzü & Bülten Arşivi Modalı (`public/index.html`, `public/styles.css`, `public/app.js`), "Bülten Derle" butonuna tıklandığında `POST /api/newsletters/generate` API isteği atarak derlenen bülten kapağını ve seçilen haberleri şık bir dergi kapağı formatında modal pencerede açma; "Üretilen Özel Bültenler" kartına tıklandığında `GET /api/newsletters` arşivini gösterme.
+- **Aşama 15 (TAMAMLANDI ✅):** Express Statik Sunum (`express.static`), Kapsamlı Jest Entegrasyon Testleri (`index.test.js` - 11/11 Test PASS), Docker Compose Altyapısı & GitHub Yayınlaması.
 
 ---
 
-### 🔍 Aktif Aşama: Veri İzleme ve Sağlık Kontrolü (Data Health & Monitoring Phase)
-- **Amaç:** Önümüzdeki süreçte 6 saatlik `cronService` periyodik veri kazıma döngülerinin, MongoDB veritabanı kayıtlarının ve mükerrer engelleme (Deduplication) mekanizmasının sağlıklı çalıştığının canlı takibi.
-- **Takip Yöntemi:** `docker compose logs -f app` komutu ve `/api/news` endpoint'i üzerinden haber sayısındaki düzenli artışın izlenmesi.
+### 🎉 Tüm 15 Aşama Başarıyla Tamamlandı!
 
----
-
-## 📊 Otomatik Etki Puanlama Algoritması (`analyzeContent`) ve Kıstasları
-
-Haberler kazındığı anda başlık ve özet metinleri otomatik olarak doğal dil analizinden geçirilir:
-
-| Kategori | Tetikleyici Anahtar Kelimeler | Puan Artışı | Açıklama |
-| :--- | :--- | :---: | :--- |
-| **Varsayılan Baz Puan** | - | **6.0** | Tüm denizcilik haberleri için başlangıç puanı |
-| **Carbon Emissions** | `carbon`, `emission`, `cii`, `eexi` | **+2.5** | Karbon salınımı ve CII/EEXI derecelendirme haberleri |
-| **Alternative Fuels** | `lng`, `hydrogen`, `ammonia`, `methanol` | **+2.0** | Yeşil amonyak, hidrojen, metanol ve LNG yakıt haberleri |
-| **Clean Energy** | `green`, `environment`, `decarbonization` | **+2.0** | Çevre ve karbonsuzlaşma projeleri |
-| **Regulations** | `imo`, `regulation`, `policy` | **+1.8** | IMO düzenlemeleri ve küresel politika kararları |
-| **Green Ports** | `port`, `terminal` | **+1.5** | Liman emisyonları ve yeşil terminal teknolojileri |
-
-*Not: Etki puanları 0.0 ile 10.0 arasında sınırlandırılır (`Math.min(10.0, Math.max(0.0, score))`)*
-
----
-
-## 🌐 Aktif Canlı Veri Kaynakları ve Kazıma Yöntemleri
-
-1. **gCaptain (RSS):** `https://gcaptain.com/feed/` - Küresel denizcilik ve gemi işletmeciliği haberleri.
-2. **Splash247 (RSS):** `https://splash247.com/feed/` - Armatörlük, yeni gemi siparişleri ve alternatif yakıt haberleri.
-3. **Marine Insight (RSS):** `https://www.marineinsight.com/feed/` - Deniz teknolojisi, liman lojistiği ve sektör rehberleri.
-4. **Safety4Sea (HTML Web Scraper):** `https://safety4sea.com/` - Cheerio/Axios DOM parser ile `.td_module_wrap` makale bloğundan canlı çekilen deniz güvenliği ve yeşil gemi haberleri.
-
----
-
-### ⏳ Gelecek Aşamalar (Modern Web Dashboard & Ön Yüz Geliştirme)
-
-Sistemi ham JSON/XML çıktılarından kurtarıp, şık, akıcı ve filtreleme yapılabilen modern bir web portalına dönüştürecek kalan aşamalar:
-
-#### 🔹 Aşama 14: Akıllı Bülten Arayüzü & Bülten Arşivi Modalı (Newsletter UI)
-- **Kavram:** Modaller (Pop-up), İlişkili Veriyi Görselleştirme.
-- **Uygulama:** 
-  - Arayüze **"Yeni Bülten Üret"** butonu eklenmesi. Butona basılınca `/api/newsletters/generate` çağrısı yapıp derlenen bülteni şık bir dergi kapağı kartı halinde açılır pencerede (Modal) sunma.
-  - Oluşturulan tüm bültenleri ve içerisindeki seçilmiş haberleri listeleyen **"Bülten Arşivi"** sekmesinin hazırlanması.
-
-#### 🔹 Aşama 15: Express Statik Sunum (`express.static`), Entegrasyon Testleri & GitHub Yayınlaması
-- **Kavram:** Web Arayüzünün API Sunucusu Üzerinden Yayınlanması ve Son Doğrulamalar.
-- **Uygulama:** 
-  - `index.js` dosyasına `app.use(express.static('public'))` eklenerek `http://localhost:3000/` adresinde web sitesinin doğrudan yayına alınması.
-  - `index.test.js` dosyasına web ön yüzü için entegrasyon testlerinin eklenmesi.
-  - Tüm projenin `git push origin main` ile GitHub reposunda güncellenmesi.
+MyCarbons (MarineRadar) platformunun backend servislerinden (RSS/HTML Scrapers, NLP Impact Scoring, Mongoose Relational Models, Cron Jobs, Swagger UI) modern Light Eco web ön yüzüne (Live Search, Category Filtering, Scrape Triggers, Toast Notifications & Magazine Cover Newsletter Modals) kadar tüm mimari tamamlanmış ve GitHub reposunda canlıya alınmıştır.
 
 ---
 
