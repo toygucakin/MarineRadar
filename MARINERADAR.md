@@ -50,6 +50,7 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 11 (TAMAMLANDI ✅):** Statik Arayüz İskeleti ve MyCarbons Light Eco Tasarım Sistemi (`public/index.html`, `public/styles.css`), Şirket web sitesi ilhamlı nane yeşili gradiyentli zemin, saf beyaz yüzen kartlar, `IMO-DCS & EU-MRV COMPLIANT` rozetleri, `MyCarbons Marine Radar` logosu, Hero İstatistik Paneli ve Express Statik Sunum.
 - **Aşama 12 (TAMAMLANDI ✅):** İstemci JavaScript Mantığı & Canlı API Entegrasyonu (`public/app.js`), `/api/news` endpoint'inden canlı MongoDB verilerinin çekilmesi, dinamik DOM haber kartı oluşturma, etki puanına göre yeşil/altın rozetler ve canlı Hero istatistik hesaplamaları.
 - **Aşama 13 (TAMAMLANDI ✅):** Anlık Canlı Arama, Kategori Filtreleme, Scrape API Tetikleyicileri & Toast Bildirim Sistemi (`public/app.js`, `public/styles.css`), "RSS Şimdi Kazı" ve "HTML Web Kazı" eylem butonlarının canlı backend scraping servislerine bağlanması, doğru yeni haber sayısı hesaplayıcısı ve yüzen nane yeşili toast bildirim kutuları.
+- **Aşama 14 (TAMAMLANDI ✅):** Akıllı Bülten Arayüzü & Bülten Arşivi Modalı (`public/index.html`, `public/styles.css`, `public/app.js`), "Bülten Derle" butonuna tıklandığında `POST /api/newsletters/generate` API isteği atarak derlenen bülten kapağını ve seçilen haberleri şık bir dergi kapağı formatında modal pencerede açma; "Üretilen Özel Bültenler" kartına tıklandığında `GET /api/newsletters` arşivini gösterme.
 
 ---
 

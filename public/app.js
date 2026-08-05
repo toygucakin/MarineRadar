@@ -1,6 +1,6 @@
 /**
  * MyCarbons (MarineRadar) - Client-Side JavaScript Logic
- * Canlı API Bağlantısı, Scrape Tetikleyicileri, Dynamic Filtering & Toast Notifications
+ * Canlı API Bağlantısı, Scrape Tetikleyicileri, Dynamic Filtering, Toast Notifications & Newsletter Modal
  */
 
 // Uygulama İstemci Durumu (State)
@@ -18,6 +18,7 @@ const DOM = {
   statCarbonCount: document.getElementById('stat-carbon-count'),
   statAvgImpact: document.getElementById('stat-avg-impact'),
   statNewsletterCount: document.getElementById('stat-newsletter-count'),
+  statCardNewsletter: document.getElementById('stat-card-newsletter'),
 
   // Kontrol Elemanları
   searchInput: document.getElementById('search-input'),
@@ -29,7 +30,17 @@ const DOM = {
   // İçerik Alanları
   newsGridContainer: document.getElementById('news-grid-container'),
   visibleCountBadge: document.getElementById('visible-count-badge'),
-  toastContainer: null
+  toastContainer: null,
+
+  // Modallar
+  newsletterModal: document.getElementById('newsletter-modal'),
+  newsletterModalContent: document.getElementById('newsletter-modal-content'),
+  btnCloseNewsletterModal: document.getElementById('btn-close-newsletter-modal'),
+  
+  archiveModal: document.getElementById('archive-modal'),
+  archiveModalContent: document.getElementById('archive-modal-content'),
+  btnCloseArchiveModal: document.getElementById('btn-close-archive-modal'),
+  linkOpenArchive: document.getElementById('link-open-archive')
 };
 
 /**
@@ -268,6 +279,46 @@ function setupEventListeners() {
       await handleScrapeTrigger(DOM.btnScrapeHtml, '/api/news/scrape/html', 'HTML Web');
     });
   }
+
+  // 5. Bülten Derle Butonu Dinleyicisi (POST /api/newsletters/generate)
+  if (DOM.btnGenerateNewsletter) {
+    DOM.btnGenerateNewsletter.addEventListener('click', async () => {
+      await handleGenerateNewsletter();
+    });
+  }
+
+  // 6. Arşiv Açma Dinleyicileri
+  if (DOM.statCardNewsletter) {
+    DOM.statCardNewsletter.addEventListener('click', () => openArchiveModal());
+  }
+  if (DOM.linkOpenArchive) {
+    DOM.linkOpenArchive.addEventListener('click', (e) => {
+      e.preventDefault();
+      openArchiveModal();
+    });
+  }
+
+  // 7. Modal Kapatma Dinleyicileri
+  if (DOM.btnCloseNewsletterModal) {
+    DOM.btnCloseNewsletterModal.addEventListener('click', () => closeModal(DOM.newsletterModal));
+  }
+  if (DOM.btnCloseArchiveModal) {
+    DOM.btnCloseArchiveModal.addEventListener('click', () => closeModal(DOM.archiveModal));
+  }
+
+  // Modal Dışına Tıklayınca ve ESC Tuşu ile Kapatma
+  window.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-backdrop')) {
+      closeModal(e.target);
+    }
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal(DOM.newsletterModal);
+      closeModal(DOM.archiveModal);
+    }
+  });
 }
 
 /**
@@ -311,6 +362,168 @@ async function handleScrapeTrigger(button, endpointUrl, serviceName) {
     button.disabled = false;
     button.innerHTML = originalHTML;
   }
+}
+
+/**
+ * Akıllı Bülten Oluşturma Mantığı (POST /api/newsletters/generate)
+ */
+async function handleGenerateNewsletter() {
+  const btn = DOM.btnGenerateNewsletter;
+  const originalHTML = btn.innerHTML;
+
+  btn.disabled = true;
+  btn.innerHTML = `
+    <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+    Derleniyor...
+  `;
+
+  try {
+    const response = await fetch('/api/newsletters/generate', { method: 'POST' });
+    const result = await response.json();
+
+    if (result.success && result.data) {
+      const newsletter = result.data;
+      
+      // Bülten listenizi ve sayacı güncelle
+      await loadNewslettersData();
+
+      // Bülten dergi kapağı modalını derle ve aç
+      renderNewsletterModalContent(newsletter);
+      openModal(DOM.newsletterModal);
+
+      showToast(
+        'Bülten Başarıyla Derlendi',
+        `Sayı #${newsletter.issueNumber || 1} özel bülteni başarıyla oluşturuldu!`,
+        false
+      );
+    } else {
+      showToast('Bülten Hatası', result.message || 'Bülten derlenemedi.', true);
+    }
+  } catch (error) {
+    console.error('Bülten Üretme Hatası:', error);
+    showToast('Bağlantı Hatası', 'Bülten sunucu servisine erişilemedi.', true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+  }
+}
+
+/**
+ * Bülten Dergi Kapağı Modal İçerik Oluşturucu
+ */
+function renderNewsletterModalContent(newsletter) {
+  if (!DOM.newsletterModalContent) return;
+
+  const dateStr = formatDate(newsletter.createdAt);
+  const newsList = Array.isArray(newsletter.news) ? newsletter.news : [];
+  const issueNum = newsletter.issueNumber || 1;
+
+  DOM.newsletterModalContent.innerHTML = `
+    <div class="magazine-cover-card">
+      <div class="magazine-badge-row">
+        <span class="magazine-issue-pill">🌱 MYCARBONS DIGEST • SAYI #${issueNum}</span>
+        <span class="magazine-date">Yayın Tarihi: ${dateStr}</span>
+      </div>
+
+      <h3 class="magazine-title">${escapeHTML(newsletter.title || 'Denizcilik Karbonsuzlaştırma Bülteni')}</h3>
+      <p class="magazine-summary">${escapeHTML(newsletter.summary || 'IMO-DCS & EU-MRV uyumlu yüksek etkili denizcilik haberlerinden derlenmiştir.')}</p>
+    </div>
+
+    <h4 class="newsletter-section-heading">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-green)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+      Bültende Öne Çıkan Seçilmiş Haberler (${newsList.length})
+    </h4>
+
+    <div class="newsletter-news-list">
+      ${newsList.length === 0 ? '<p style="color: var(--text-muted);">Bu bültende gösterilecek haber bulunamadı.</p>' : newsList.map(item => `
+        <div class="newsletter-item-row">
+          <div class="newsletter-item-content">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+              <span class="category-tag carbon" style="font-size: 0.68rem;">${escapeHTML(item.category || 'Decarbonization')}</span>
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--brand-green);">Etki: ${(item.impactScore || 6.0).toFixed(1)}</span>
+            </div>
+            <h5>${escapeHTML(item.title)}</h5>
+            <p>${escapeHTML(item.summary || 'Detay açıklaması bulunmamaktadır.')}</p>
+          </div>
+          ${item.link ? `
+            <a href="${escapeHTML(item.link)}" target="_blank" class="btn-read-more" style="white-space: nowrap;">
+              Oku ➔
+            </a>
+          ` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+/**
+ * Bülten Arşivi Modalı Açma ve Listeleme (GET /api/newsletters)
+ */
+async function openArchiveModal() {
+  await loadNewslettersData();
+  
+  if (!DOM.archiveModalContent) return;
+
+  const archives = appState.newsletters;
+
+  if (archives.length === 0) {
+    DOM.archiveModalContent.innerHTML = `
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+        <h4>Henüz Derlenmiş Bülten Bulunmuyor</h4>
+        <p style="font-size: 0.9rem;">"Bülten Derle" butonuna basarak ilk özel bülteninizi üretebilirsiniz.</p>
+      </div>
+    `;
+  } else {
+    DOM.archiveModalContent.innerHTML = `
+      <div class="archive-list">
+        ${archives.map((item, index) => {
+          const newsItems = Array.isArray(item.news) ? item.news : [];
+          return `
+            <div class="archive-card">
+              <div class="archive-card-header">
+                <div>
+                  <span class="magazine-issue-pill" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">Sayı #${item.issueNumber || (archives.length - index)}</span>
+                  <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem;">${formatDate(item.createdAt)}</span>
+                </div>
+                <span style="font-size: 0.82rem; font-weight: 700; color: var(--brand-green);">${newsItems.length} Haber Seçildi</span>
+              </div>
+              <h4 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; color: var(--text-heading); margin-bottom: 0.4rem;">${escapeHTML(item.title)}</h4>
+              <p style="font-size: 0.88rem; color: var(--text-body); line-height: 1.5; margin-bottom: 0.85rem;">${escapeHTML(item.summary || '')}</p>
+              
+              <details style="margin-top: 0.5rem;">
+                <summary style="font-size: 0.82rem; font-weight: 700; color: var(--brand-green); cursor: pointer;">Seçilen Haberleri Göster (${newsItems.length})</summary>
+                <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; padding-left: 0.5rem; border-left: 2px solid var(--border-glow);">
+                  ${newsItems.map(news => `
+                    <div style="font-size: 0.85rem;">
+                      <strong style="color: var(--text-heading);">${escapeHTML(typeof news === 'object' ? news.title : 'Haber Detayı')}</strong>
+                    </div>
+                  `).join('')}
+                </div>
+              </details>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  openModal(DOM.archiveModal);
+}
+
+/**
+ * Modal Açma / Kapatma Yardımcı Fonksiyonları
+ */
+function openModal(modalElement) {
+  if (!modalElement) return;
+  modalElement.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(modalElement) {
+  if (!modalElement) return;
+  modalElement.classList.remove('active');
+  document.body.style.overflow = 'auto';
 }
 
 /**
