@@ -1,6 +1,6 @@
 /**
  * MyCarbons (MarineRadar) - Client-Side JavaScript Logic
- * Canlı API Bağlantısı, Dinamik DOM Kart Oluşturma & İstatistik Hesaplama
+ * Canlı API Bağlantısı, Scrape Tetikleyicileri, Dynamic Filtering & Toast Notifications
  */
 
 // Uygulama İstemci Durumu (State)
@@ -29,13 +29,14 @@ const DOM = {
   // İçerik Alanları
   newsGridContainer: document.getElementById('news-grid-container'),
   visibleCountBadge: document.getElementById('visible-count-badge'),
-  systemStatusBadge: document.getElementById('system-status-badge')
+  toastContainer: null
 };
 
 /**
  * Sayfa Yüklendiğinde Başlatıcı
  */
 document.addEventListener('DOMContentLoaded', () => {
+  initToastContainer();
   initApp();
 });
 
@@ -46,6 +47,19 @@ async function initApp() {
   ]);
 
   setupEventListeners();
+}
+
+/**
+ * Toast Bildirim Konteynırını İlklendirme
+ */
+function initToastContainer() {
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  DOM.toastContainer = container;
 }
 
 /**
@@ -145,9 +159,9 @@ function renderNewsGrid() {
   // Eğer filtre sonucu haber bulunamadıysa
   if (filteredNews.length === 0) {
     DOM.newsGridContainer.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-subtle);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-card);">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="1.5" style="margin-bottom: 1rem;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--text-main); margin-bottom: 0.5rem;">Aranan Kriterlere Uygun Haber Bulunamadı</h3>
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--text-heading); margin-bottom: 0.5rem;">Aranan Kriterlere Uygun Haber Bulunamadı</h3>
         <p style="color: var(--text-muted); font-size: 0.9rem;">Farklı bir arama kelimesi veya kategori seçmeyi deneyin.</p>
       </div>
     `;
@@ -176,7 +190,6 @@ function createNewsCardHTML(news) {
 
   // Tarih ve Okuma Süresi Formatlama
   const formattedDate = formatDate(news.publishedAt || news.createdAt);
-  const readTimeEst = Math.max(1, Math.ceil((news.summary || '').length / 250));
   const sourceName = news.author || 'MarineRadar Scraper';
   const targetUrl = news.link || '#';
 
@@ -217,10 +230,10 @@ function createNewsCardHTML(news) {
 }
 
 /**
- * Event Listener Bağlantıları
+ * Event Listener Bağlantıları & Tetikleyiciler
  */
 function setupEventListeners() {
-  // 1. Arama Girdisi Dinleyicisi
+  // 1. Arama Girdisi Dinleyicisi (Live Search)
   if (DOM.searchInput) {
     DOM.searchInput.addEventListener('input', (e) => {
       appState.searchQuery = e.target.value;
@@ -234,7 +247,6 @@ function setupEventListeners() {
       const tabBtn = e.target.closest('.tab-btn');
       if (!tabBtn) return;
 
-      // Aktif sekme görünümünü değiştirme
       DOM.categoryTabs.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       tabBtn.classList.add('active');
 
@@ -242,6 +254,93 @@ function setupEventListeners() {
       renderNewsGrid();
     });
   }
+
+  // 3. RSS Şimdi Kazı Butonu Dinleyicisi (POST /api/news/scrape/rss)
+  if (DOM.btnScrapeRss) {
+    DOM.btnScrapeRss.addEventListener('click', async () => {
+      await handleScrapeTrigger(DOM.btnScrapeRss, '/api/news/scrape/rss', 'RSS');
+    });
+  }
+
+  // 4. HTML Web Kazı Butonu Dinleyicisi (POST /api/news/scrape/html)
+  if (DOM.btnScrapeHtml) {
+    DOM.btnScrapeHtml.addEventListener('click', async () => {
+      await handleScrapeTrigger(DOM.btnScrapeHtml, '/api/news/scrape/html', 'HTML Web');
+    });
+  }
+}
+
+/**
+ * Kazıma API Tetikleyici Mantığı ve Buton Yüklenme Yönetimi
+ */
+async function handleScrapeTrigger(button, endpointUrl, serviceName) {
+  const originalHTML = button.innerHTML;
+  
+  // Yüklenme durumu
+  button.disabled = true;
+  button.innerHTML = `
+    <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+    Kazınıyor...
+  `;
+
+  try {
+    const response = await fetch(endpointUrl, { method: 'POST' });
+    const result = await response.json();
+
+    if (result.success) {
+      const added = result.addedCount || 0;
+      const skipped = result.skippedCount || 0;
+      showToast(
+        `${serviceName} Kazıma Tamamlandı`,
+        `${added} yeni haber eklendi, ${skipped} mükerrer haber atlandı.`,
+        false
+      );
+
+      // Verileri yeniden çek ve arayüzü güncelle
+      await loadNewsData();
+    } else {
+      showToast('Kazıma Hatası', result.message || 'Veri çekme başarısız oldu.', true);
+    }
+  } catch (error) {
+    console.error(`${serviceName} Kazıma Hatası:`, error);
+    showToast('Bağlantı Hatası', `${serviceName} servisine erişilemedi.`, true);
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalHTML;
+  }
+}
+
+/**
+ * Yüzen Toast Bildirim Sistemi Göstericisi
+ */
+function showToast(title, message, isError = false) {
+  if (!DOM.toastContainer) initToastContainer();
+
+  const toast = document.createElement('div');
+  toast.className = `toast-notification ${isError ? 'error' : ''}`;
+  
+  toast.innerHTML = `
+    <div class="toast-icon">
+      ${isError 
+        ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+      }
+    </div>
+    <div class="toast-body">
+      <div class="toast-title">${escapeHTML(title)}</div>
+      <div class="toast-message">${escapeHTML(message)}</div>
+    </div>
+  `;
+
+  DOM.toastContainer.appendChild(toast);
+
+  // 4.5 Saniye Sonra Otomatik Kapanma
+  setTimeout(() => {
+    toast.classList.add('hide');
+    setTimeout(() => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 400);
+  }, 4500);
 }
 
 /**
@@ -270,7 +369,7 @@ function escapeHTML(str) {
 function showErrorState(message) {
   if (DOM.newsGridContainer) {
     DOM.newsGridContainer.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-lg); border: 1px solid rgba(239, 68, 68, 0.3); color: #EF4444;">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; background: #FEE2E2; border-radius: var(--radius-lg); border: 1px solid #FCA5A5; color: #991B1B;">
         <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; margin-bottom: 0.5rem;">⚠️ Bağlantı Hatası</h3>
         <p style="font-size: 0.9rem;">${message}</p>
       </div>
