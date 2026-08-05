@@ -288,11 +288,14 @@ async function handleScrapeTrigger(button, endpointUrl, serviceName) {
     const result = await response.json();
 
     if (result.success) {
-      const added = result.addedCount || 0;
-      const skipped = result.skippedCount || 0;
+      const added = (result.data && typeof result.data.addedCount === 'number') ? result.data.addedCount : (result.addedCount || 0);
+      const toastMsg = added > 0 
+        ? `${added} yeni haber veritabanına eklendi.` 
+        : 'Tüm haberler güncel, yeni haber bulunamadı.';
+
       showToast(
         `${serviceName} Kazıma Tamamlandı`,
-        `${added} yeni haber eklendi, ${skipped} mükerrer haber atlandı.`,
+        toastMsg,
         false
       );
 
