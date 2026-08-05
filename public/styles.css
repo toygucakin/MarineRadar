@@ -1,49 +1,50 @@
 /* ==========================================================================
-   MyCarbons (CO2 Emission Monitoring & MarineRadar) - Official Design System
+   MyCarbons (CO2 Emission Monitoring & MarineRadar) - Light Eco Theme
+   Official Design System Inspired by Company Website (Image 1)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Official MyCarbons Color Palette */
-  --brand-green: #22C55E;
-  --brand-green-dark: #15803D;
-  --brand-green-light: #4ADE80;
-  --brand-green-glow: rgba(34, 197, 94, 0.25);
+  /* Official MyCarbons Light Eco Palette */
+  --brand-green: #16A34A;
+  --brand-green-dark: #14532D;
+  --brand-green-light: #22C55E;
+  --brand-green-highlight: #4ADE80;
+  --brand-green-bg: #E6F4EA;
+  --brand-green-glow: rgba(22, 163, 74, 0.25);
   
   --brand-blue: #2563EB;
-  --brand-blue-glow: rgba(37, 99, 235, 0.25);
-  
+  --brand-blue-bg: #DBEAFE;
   --brand-teal: #0D9488;
-  --brand-teal-glow: rgba(13, 148, 136, 0.25);
-  
+  --brand-teal-bg: #CCFBF1;
   --brand-orange: #F97316;
-  --brand-orange-glow: rgba(249, 115, 22, 0.25);
+  --brand-orange-bg: #FFEDD5;
   
-  /* Dark Emerald Surface Palette */
-  --bg-deep: #05120D;
-  --bg-surface: #0A1E15;
-  --bg-card: rgba(10, 30, 22, 0.7);
-  --bg-card-hover: rgba(16, 44, 32, 0.88);
-  --bg-glass: rgba(12, 34, 25, 0.55);
+  /* Light Eco Surface Palette */
+  --bg-main: #F8FAF8;
+  --bg-header: rgba(255, 255, 255, 0.92);
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F4FBF6;
   
-  /* Text & Borders */
-  --text-main: #F1F5F9;
-  --text-muted: #94A3B8;
-  --text-dim: #64748B;
-  --border-subtle: rgba(74, 222, 128, 0.12);
-  --border-glow: rgba(34, 197, 94, 0.35);
+  /* Typography Colors */
+  --text-heading: #0B2518;
+  --text-body: #2D4236;
+  --text-muted: #64748B;
+  --text-dim: #94A3B8;
   
-  /* Shadows & Glassmorphism */
-  --shadow-glass: 0 10px 32px 0 rgba(0, 0, 0, 0.45);
-  --shadow-glow-green: 0 0 22px rgba(34, 197, 94, 0.25);
-  --shadow-glow-blue: 0 0 22px rgba(37, 99, 235, 0.25);
+  /* Borders & Shadows */
+  --border-subtle: rgba(22, 163, 74, 0.15);
+  --border-card: #E2E8F0;
+  --border-glow: rgba(22, 163, 74, 0.35);
+  --shadow-card: 0 10px 30px rgba(12, 35, 23, 0.05);
+  --shadow-hover: 0 15px 35px rgba(22, 163, 74, 0.12);
   --blur-glass: blur(16px);
   
-  /* Dimensions & Transitions */
+  /* Layout Dimensions */
   --container-max: 1280px;
   --header-height: 80px;
-  --radius-lg: 16px;
+  --radius-lg: 20px;
   --radius-md: 12px;
   --radius-sm: 8px;
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -67,16 +68,17 @@ html {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--bg-deep);
-  color: var(--text-main);
+  background-color: var(--bg-main);
+  color: var(--text-body);
   line-height: 1.6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* Light Mint Radial Gradient (Matching Image 1 Top Right Glow) */
   background-image: 
-    radial-gradient(circle at 85% 15%, rgba(74, 222, 128, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 15% 65%, rgba(37, 99, 235, 0.06) 0%, transparent 45%),
-    linear-gradient(to bottom, var(--bg-deep), #020906);
+    radial-gradient(circle at 85% 15%, #DDF4E6 0%, transparent 48%),
+    radial-gradient(circle at 10% 65%, #E8F5EE 0%, transparent 45%),
+    linear-gradient(to bottom, #F8FAF8, #F0F7F2);
   background-attachment: fixed;
   overflow-x: hidden;
 }
@@ -101,7 +103,7 @@ button {
 }
 
 /* ==========================================================================
-   Animations & Icons
+   Animations
    ========================================================================== */
 
 @keyframes radarSpin {
@@ -110,9 +112,9 @@ button {
 }
 
 @keyframes pulseGlow {
-  0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-  70% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
-  100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  0% { transform: scale(0.95); opacity: 0.85; box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.3); }
+  70% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
+  100% { transform: scale(0.95); opacity: 0.85; box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
 }
 
 /* ==========================================================================
@@ -121,15 +123,16 @@ button {
 
 .site-header {
   height: var(--header-height);
-  background: rgba(5, 18, 13, 0.85);
+  background: var(--bg-header);
   backdrop-filter: var(--blur-glass);
   -webkit-backdrop-filter: var(--blur-glass);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid rgba(22, 163, 74, 0.12);
   position: sticky;
   top: 0;
   z-index: 1000;
   display: flex;
   align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .header-inner {
@@ -144,18 +147,17 @@ button {
   gap: 0.85rem;
 }
 
-/* MyCarbons Leaf Eco-Logo */
 .logo-leaf-wrap {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(34, 197, 94, 0.12);
+  background: var(--brand-green-bg);
   border: 1.5px solid var(--brand-green);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 15px rgba(22, 163, 74, 0.2);
   animation: pulseGlow 3s infinite ease-in-out;
 }
 
@@ -172,7 +174,7 @@ button {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(74, 222, 128, 0.4) 360deg);
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(34, 197, 94, 0.35) 360deg);
   animation: radarSpin 4s linear infinite;
 }
 
@@ -181,17 +183,15 @@ button {
   font-size: 1.4rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #FFFFFF 30%, var(--brand-green-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-heading);
 }
 
 .brand-text span {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--brand-green-light);
-  font-weight: 600;
+  color: var(--brand-green);
+  font-weight: 700;
   display: block;
 }
 
@@ -205,13 +205,13 @@ button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: var(--brand-green-bg);
+  border: 1px solid rgba(22, 163, 74, 0.25);
   padding: 0.35rem 0.85rem;
   border-radius: 50px;
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--brand-green-light);
+  color: var(--brand-green-dark);
 }
 
 .status-dot {
@@ -227,24 +227,26 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-glow);
-  color: var(--brand-green-light);
+  background: #FFFFFF;
+  border: 1.5px solid var(--brand-green);
+  color: var(--brand-green);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
   transition: var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
 }
 
 .btn-docs:hover {
-  background: rgba(34, 197, 94, 0.15);
-  box-shadow: var(--shadow-glow-green);
+  background: var(--brand-green);
+  color: #FFFFFF;
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.25);
 }
 
 /* ==========================================================================
-   Hero Section & Pill Badges
+   Hero Section & Pill Badges (Image 1 Theme)
    ========================================================================== */
 
 .hero-section {
@@ -258,22 +260,22 @@ button {
   margin: 0 auto 2.5rem auto;
 }
 
-/* Official Compliance Pill Badge */
+/* Official IMO-DCS Pill Badge */
 .compliant-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: var(--brand-green-light);
+  background: var(--brand-green-bg);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  color: var(--brand-green-dark);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.4rem 1rem;
+  padding: 0.45rem 1.1rem;
   border-radius: 50px;
   margin-bottom: 1.25rem;
-  box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.1);
 }
 
 .compliant-pill .pill-dot {
@@ -286,27 +288,26 @@ button {
 
 .hero-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.6rem;
+  font-size: 2.75rem;
   font-weight: 800;
   line-height: 1.2;
   margin-bottom: 1rem;
-  color: #FFFFFF;
+  color: var(--text-heading);
 }
 
 .hero-title .highlight {
-  background: linear-gradient(135deg, var(--brand-green-light) 0%, var(--brand-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--brand-green);
+  position: relative;
 }
 
 .hero-subtitle {
   font-size: 1.05rem;
-  color: var(--text-muted);
+  color: var(--text-body);
   font-weight: 400;
   line-height: 1.6;
 }
 
-/* Stats Grid Mapped to Company 4 Pillars */
+/* Stats Grid (White Floating Cards with Circular Icon Badges) */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -315,13 +316,12 @@ button {
 
 .stat-card {
   background: var(--bg-card);
-  backdrop-filter: var(--blur-glass);
-  -webkit-backdrop-filter: var(--blur-glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
-  padding: 1.35rem 1.25rem;
+  padding: 1.5rem 1.35rem;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
   transition: var(--transition-smooth);
 }
 
@@ -331,15 +331,15 @@ button {
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 3.5px;
   background: linear-gradient(90deg, transparent, var(--brand-green), transparent);
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
   border-color: var(--border-glow);
-  box-shadow: var(--shadow-glass);
+  box-shadow: var(--shadow-hover);
 }
 
 .stat-icon-row {
@@ -350,25 +350,25 @@ button {
 }
 
 .stat-icon {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Colors matching company badges: Green, Teal, Blue, Orange */
-.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: var(--brand-green-light); border: 1px solid rgba(34, 197, 94, 0.3); }
-.stat-icon.teal { background: rgba(13, 148, 136, 0.15); color: #14B8A6; border: 1px solid rgba(13, 148, 136, 0.3); }
-.stat-icon.blue { background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3); }
-.stat-icon.orange { background: rgba(249, 115, 22, 0.15); color: #FB923C; border: 1px solid rgba(249, 115, 22, 0.3); }
+/* Matching Image 1 Widget Colors: Green, Teal, Blue, Orange */
+.stat-icon.green { background: #DCFCE7; color: var(--brand-green); border: 1px solid rgba(22, 163, 74, 0.25); }
+.stat-icon.teal { background: #CCFBF1; color: var(--brand-teal); border: 1px solid rgba(13, 148, 136, 0.25); }
+.stat-icon.blue { background: #DBEAFE; color: var(--brand-blue); border: 1px solid rgba(37, 99, 235, 0.25); }
+.stat-icon.orange { background: #FFEDD5; color: var(--brand-orange); border: 1px solid rgba(249, 115, 22, 0.25); }
 
 .stat-value {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.2rem;
+  font-size: 2.25rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--text-heading);
   line-height: 1.1;
   margin-bottom: 0.25rem;
 }
@@ -376,7 +376,7 @@ button {
 .stat-label {
   font-size: 0.82rem;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* ==========================================================================
@@ -385,16 +385,14 @@ button {
 
 .control-bar {
   background: var(--bg-card);
-  backdrop-filter: var(--blur-glass);
-  -webkit-backdrop-filter: var(--blur-glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   padding: 1.25rem;
   margin-bottom: 2.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  box-shadow: var(--shadow-glass);
+  box-shadow: var(--shadow-card);
 }
 
 .control-top-row {
@@ -418,16 +416,16 @@ button {
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 .search-input {
   width: 100%;
-  background: rgba(5, 18, 13, 0.7);
-  border: 1px solid var(--border-subtle);
+  background: #F8FAF8;
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem 0.75rem 2.75rem;
-  color: var(--text-main);
+  color: var(--text-heading);
   font-size: 0.9rem;
   transition: var(--transition-fast);
 }
@@ -435,7 +433,8 @@ button {
 .search-input:focus {
   outline: none;
   border-color: var(--brand-green);
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
+  background: #FFFFFF;
+  box-shadow: 0 0 12px rgba(22, 163, 74, 0.2);
 }
 
 .action-buttons {
@@ -451,38 +450,38 @@ button {
   padding: 0.65rem 1.15rem;
   border-radius: var(--radius-md);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   transition: var(--transition-fast);
 }
 
 .btn-action.btn-rss {
-  background: rgba(13, 148, 136, 0.15);
-  border: 1px solid rgba(13, 148, 136, 0.35);
-  color: #14B8A6;
+  background: #CCFBF1;
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  color: var(--brand-teal);
 }
 
 .btn-action.btn-rss:hover {
-  background: #0D9488;
+  background: var(--brand-teal);
   color: #FFFFFF;
-  box-shadow: 0 0 15px rgba(13, 148, 136, 0.3);
+  box-shadow: 0 4px 15px rgba(13, 148, 136, 0.25);
 }
 
 .btn-action.btn-html {
-  background: rgba(249, 115, 22, 0.15);
-  border: 1px solid rgba(249, 115, 22, 0.35);
-  color: #FB923C;
+  background: #FFEDD5;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  color: var(--brand-orange);
 }
 
 .btn-action.btn-html:hover {
-  background: #EA580C;
+  background: var(--brand-orange);
   color: #FFFFFF;
-  box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.25);
 }
 
 .btn-action.btn-newsletter {
   background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-green-dark) 100%);
   color: #FFFFFF;
-  box-shadow: var(--shadow-glow-green);
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.25);
 }
 
 .btn-action.btn-newsletter:hover {
@@ -502,28 +501,27 @@ button {
   padding: 0.45rem 0.95rem;
   border-radius: 50px;
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-subtle);
+  background: #F1F5F9;
+  border: 1px solid var(--border-card);
   white-space: nowrap;
   transition: var(--transition-fast);
 }
 
 .tab-btn:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-heading);
+  background: #E2E8F0;
 }
 
 .tab-btn.active {
-  background: rgba(34, 197, 94, 0.18);
+  background: var(--brand-green);
   border-color: var(--brand-green);
-  color: var(--brand-green-light);
-  font-weight: 600;
+  color: #FFFFFF;
 }
 
 /* ==========================================================================
-   News Cards Grid
+   News Cards Grid (Pure White Floating Cards)
    ========================================================================== */
 
 .news-grid-section {
@@ -541,20 +539,21 @@ button {
 .section-title {
   font-family: 'Outfit', sans-serif;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
+  color: var(--text-heading);
   display: flex;
   align-items: center;
   gap: 0.65rem;
 }
 
 .section-title svg {
-  color: var(--brand-green-light);
+  color: var(--brand-green);
 }
 
 .news-count-badge {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  font-weight: 500;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .news-grid {
@@ -565,15 +564,14 @@ button {
 
 .news-card {
   background: var(--bg-card);
-  backdrop-filter: var(--blur-glass);
-  -webkit-backdrop-filter: var(--blur-glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
+  box-shadow: var(--shadow-card);
   transition: var(--transition-smooth);
 }
 
@@ -581,7 +579,7 @@ button {
   transform: translateY(-5px);
   background: var(--bg-card-hover);
   border-color: var(--border-glow);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), var(--shadow-glow-green);
+  box-shadow: var(--shadow-hover);
 }
 
 .card-top-bar {
@@ -598,27 +596,27 @@ button {
   letter-spacing: 0.08em;
   padding: 0.25rem 0.65rem;
   border-radius: var(--radius-sm);
-  background: rgba(34, 197, 94, 0.12);
-  color: var(--brand-green-light);
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  background: var(--brand-green-bg);
+  color: var(--brand-green-dark);
+  border: 1px solid rgba(22, 163, 74, 0.25);
 }
 
-.category-tag.carbon { background: rgba(34, 197, 94, 0.15); color: var(--brand-green-light); border-color: rgba(34, 197, 94, 0.3); }
-.category-tag.fuel { background: rgba(249, 115, 22, 0.15); color: #FB923C; border-color: rgba(249, 115, 22, 0.3); }
-.category-tag.clean { background: rgba(37, 99, 235, 0.15); color: #60A5FA; border-color: rgba(37, 99, 235, 0.3); }
+.category-tag.carbon { background: #DCFCE7; color: #15803D; border-color: rgba(22, 163, 74, 0.3); }
+.category-tag.fuel { background: #FFEDD5; color: #C2410C; border-color: rgba(249, 115, 22, 0.3); }
+.category-tag.clean { background: #DBEAFE; color: #1E40AF; border-color: rgba(37, 99, 235, 0.3); }
 
 .impact-badge {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   font-family: 'Outfit', sans-serif;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.85rem;
-  padding: 0.2rem 0.6rem;
+  padding: 0.2rem 0.65rem;
   border-radius: 50px;
-  background: rgba(34, 197, 94, 0.15);
-  color: var(--brand-green-light);
-  border: 1px solid var(--brand-green-glow);
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid rgba(22, 163, 74, 0.3);
 }
 
 .news-title {
@@ -626,7 +624,7 @@ button {
   font-size: 1.15rem;
   font-weight: 700;
   line-height: 1.35;
-  color: var(--text-main);
+  color: var(--text-heading);
   margin-bottom: 0.75rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -636,7 +634,7 @@ button {
 
 .news-summary {
   font-size: 0.88rem;
-  color: var(--text-muted);
+  color: var(--text-body);
   line-height: 1.5;
   margin-bottom: 1.25rem;
   display: -webkit-box;
@@ -650,30 +648,30 @@ button {
   align-items: center;
   justify-content: space-between;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--border-card);
   font-size: 0.78rem;
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 .source-info {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .btn-read-more {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--brand-green-light);
-  font-weight: 600;
+  color: var(--brand-green);
+  font-weight: 700;
   font-size: 0.82rem;
   transition: var(--transition-fast);
 }
 
 .btn-read-more:hover {
-  color: #FFFFFF;
+  color: var(--brand-green-dark);
   transform: translateX(3px);
 }
 
@@ -682,12 +680,12 @@ button {
    ========================================================================== */
 
 .site-footer {
-  background: #020906;
-  border-top: 1px solid var(--border-subtle);
+  background: #FFFFFF;
+  border-top: 1px solid var(--border-card);
   padding: 2.5rem 0;
   margin-top: auto;
   font-size: 0.85rem;
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 .footer-inner {
@@ -703,17 +701,18 @@ button {
   align-items: center;
   gap: 0.65rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-heading);
 }
 
 .footer-links {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  font-weight: 600;
 }
 
 .footer-links a:hover {
-  color: var(--brand-green-light);
+  color: var(--brand-green);
 }
 
 /* Media Queries */
@@ -726,5 +725,5 @@ button {
   .control-top-row { flex-direction: column; align-items: stretch; }
   .action-buttons { flex-direction: column; width: 100%; }
   .btn-action { justify-content: center; width: 100%; }
-  .hero-title { font-size: 1.9rem; }
+  .hero-title { font-size: 1.95rem; }
 }

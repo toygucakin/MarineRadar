@@ -185,7 +185,7 @@ function createNewsCardHTML(news) {
       <div>
         <div class="card-top-bar">
           <span class="category-tag ${categoryClass}">${escapeHTML(news.category || 'General')}</span>
-          <div class="impact-badge" style="${isHighImpact ? 'background: rgba(16, 185, 129, 0.2); border-color: var(--accent-green); color: var(--accent-green); box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);' : ''}">
+          <div class="impact-badge" style="${isHighImpact ? 'background: #DCFCE7; border-color: rgba(22, 163, 74, 0.4); color: #15803D; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);' : ''}">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             <span>${score}</span>
           </div>
