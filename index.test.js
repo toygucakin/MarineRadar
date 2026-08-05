@@ -116,6 +116,13 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toMatch(/html/);
     });
+
+    it('statik /app.js istemci betiği isteğine status 200 ve javascript içeriği dönmelidir', async () => {
+      const response = await request(app).get('/app.js');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.headers['content-type']).toMatch(/javascript/);
+    });
   });
 
   // GET /api-docs (Swagger UI Dokümantasyon Testi)
