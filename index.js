@@ -23,6 +23,9 @@ if (process.env.NODE_ENV !== 'test') {
 // Gelen isteklerdeki JSON verilerini otomatik ayrıştırmak için middleware
 app.use(express.json());
 
+// Statik Web Dashboard Dosyalarını Sunma (public/index.html)
+app.use(express.static('public'));
+
 // Canlı İnteraktif Swagger API Dokümantasyonu (/api-docs)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

@@ -108,6 +108,16 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
     });
   });
 
+  // GET / (Web Dashboard Statik Arayüz Testi)
+  describe('GET / (Web Dashboard Statik Arayüzü)', () => {
+    it('ana sayfaya istek atılınca status 200 ve index.html içeriği dönmelidir', async () => {
+      const response = await request(app).get('/');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.headers['content-type']).toMatch(/html/);
+    });
+  });
+
   // GET /api-docs (Swagger UI Dokümantasyon Testi)
   describe('GET /api-docs (Swagger UI Dokümantasyonu)', () => {
     it('Swagger UI arayüzü isteğine 200 veya 301/302 yönlendirmesi dönmelidir', async () => {
