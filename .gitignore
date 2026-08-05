@@ -31,6 +31,3 @@ coverage/
 # Temporary Directories
 .tmp/
 temp/
-
-# Project Internal Notes
-MARINERADAR.md
