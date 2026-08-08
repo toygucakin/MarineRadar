@@ -53,20 +53,17 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 14 (TAMAMLANDI ✅):** Akıllı Bülten Arayüzü & Bülten Arşivi Modalı (`public/index.html`, `public/styles.css`, `public/app.js`), "Bülten Derle" butonuna tıklandığında `POST /api/newsletters/generate` API isteği atarak derlenen bülten kapağını ve seçilen haberleri şık bir dergi kapağı formatında modal pencerede açma; "Üretilen Özel Bültenler" kartına tıklandığında `GET /api/newsletters` arşivini gösterme.
 - **Aşama 15 (TAMAMLANDI ✅):** Express Statik Sunum (`express.static`), Kapsamlı Jest Entegrasyon Testleri (`index.test.js` - 11/11 Test PASS), Docker Compose Altyapısı & GitHub Yayınlaması.
 - **Aşama 16 (TAMAMLANDI ✅):** Haber Detay Modalı HTML İskeleti ve CSS Tasarımı (`public/index.html`, `public/styles.css`), tıklanan haberlerin başlık, kaynak, yayın tarihi, tam içerik/özet metni, etki puanı ve orijinal makale yönlendirme butonlarını içeren modern Light Eco modal yapısı.
+- **Aşama 17 (TAMAMLANDI ✅):** Frontend Haber Kartı Tıklama ve Detay Gösterim Mantığı (`public/app.js`), kullanıcılar ana sayfadaki haber kartlarına veya "Detay" butonuna tıkladığında tıklanan haberin tüm detay verilerini (`data-id`) seçerek pop-up modal pencerede canlı gösterme ve kapatma işlevleri.
 
 ---
 
-### 🎉 16 Aşama Tamamlandı! Yeni İyileştirme Yol Haritası (Aşama 17-23)
+### 🎉 17 Aşama Tamamlandı! Yeni İyileştirme Yol Haritası (Aşama 18-23)
 
-MyCarbons (MarineRadar) platformunun backend servislerinden modern Light Eco web ön yüzüne ve haber detay modal tasarımına kadar 16 aşaması başarıyla tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
+MyCarbons (MarineRadar) platformunun backend servislerinden modern Light Eco web ön yüzüne, haber detay modal tasarımına ve canlı kart tıklama etkileşimlerine kadar 17 aşaması başarıyla tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
 
 ---
 
 ### ⏳ Gelecek Aşamalar (Geliştirme Yol Haritası)
-
-#### 🔹 Konu 1: Haber Detay Modalı ve Tam Metin Görünümü (News Detail View)
-- **Aşama 17 (BEKLEMEDE ⏳): Frontend Haber Kartı Tıklama ve Detay Gösterim Mantığı:**
-  - `public/app.js` içerisindeki dinamik haber kartı oluşturucusuna tıklama olayı (`click event listener` / `data-id` mantığı) eklenerek haber detay modalının tetiklenmesi, seçilen haber verilerinin modal içerisine dinamik doldurulması ve kapatma işlevlerinin yazılması.
 
 #### 🔹 Konu 2: HTML Web Scraping Servisi Onarımı ve Modernizasyonu (HTML Scraping Fix)
 - **Aşama 18 (BEKLEMEDE ⏳): HTML Scraping Backend Hata Tespiti ve Target Site Selector Güncellemesi:**

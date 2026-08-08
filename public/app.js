@@ -40,7 +40,11 @@ const DOM = {
   archiveModal: document.getElementById('archive-modal'),
   archiveModalContent: document.getElementById('archive-modal-content'),
   btnCloseArchiveModal: document.getElementById('btn-close-archive-modal'),
-  linkOpenArchive: document.getElementById('link-open-archive')
+  linkOpenArchive: document.getElementById('link-open-archive'),
+
+  newsDetailModal: document.getElementById('news-detail-modal'),
+  newsDetailModalContent: document.getElementById('news-detail-modal-content'),
+  btnCloseDetailModal: document.getElementById('btn-close-detail-modal')
 };
 
 /**
@@ -287,7 +291,26 @@ function setupEventListeners() {
     });
   }
 
-  // 6. Arşiv Açma Dinleyicileri
+  // 6. Haber Kartına Tıklama ve Detay Modalı Açma Dinleyicisi (Aşama 17)
+  if (DOM.newsGridContainer) {
+    DOM.newsGridContainer.addEventListener('click', (e) => {
+      const newsCard = e.target.closest('.news-card');
+      if (!newsCard) return;
+
+      // Eğer "Detay" butonuna basıldıysa varsayılan link yönlendirmesini engelle, modal aç
+      const readMoreBtn = e.target.closest('a.btn-read-more');
+      if (readMoreBtn) {
+        e.preventDefault();
+      }
+
+      const newsId = newsCard.dataset.id;
+      if (newsId) {
+        openNewsDetailModal(newsId);
+      }
+    });
+  }
+
+  // 7. Arşiv Açma Dinleyicileri
   if (DOM.statCardNewsletter) {
     DOM.statCardNewsletter.addEventListener('click', () => openArchiveModal());
   }
@@ -298,12 +321,15 @@ function setupEventListeners() {
     });
   }
 
-  // 7. Modal Kapatma Dinleyicileri
+  // 8. Modal Kapatma Dinleyicileri
   if (DOM.btnCloseNewsletterModal) {
     DOM.btnCloseNewsletterModal.addEventListener('click', () => closeModal(DOM.newsletterModal));
   }
   if (DOM.btnCloseArchiveModal) {
     DOM.btnCloseArchiveModal.addEventListener('click', () => closeModal(DOM.archiveModal));
+  }
+  if (DOM.btnCloseDetailModal) {
+    DOM.btnCloseDetailModal.addEventListener('click', () => closeModal(DOM.newsDetailModal));
   }
 
   // Modal Dışına Tıklayınca ve ESC Tuşu ile Kapatma
@@ -317,8 +343,96 @@ function setupEventListeners() {
     if (e.key === 'Escape') {
       closeModal(DOM.newsletterModal);
       closeModal(DOM.archiveModal);
+      closeModal(DOM.newsDetailModal);
     }
   });
+}
+
+/**
+ * Haber Detay Modalı Açma ve Dinamik İçerik Doldurma (Aşama 17)
+ */
+async function openNewsDetailModal(newsId) {
+  let news = appState.allNews.find(item => item._id === newsId);
+
+  // Eğer local state'te bulunamadıysa API'den tekil haberi çek (GET /api/news/:id)
+  if (!news) {
+    try {
+      const response = await fetch(`/api/news/${newsId}`);
+      const result = await response.json();
+      if (result.success && result.data) {
+        news = result.data;
+      }
+    } catch (err) {
+      console.error('Tekil haber detay çekme hatası:', err);
+    }
+  }
+
+  if (!news) {
+    showToast('Haber Detayı Hatası', 'Seçilen haberin detayları yüklenemedi.', true);
+    return;
+  }
+
+  renderNewsDetailModalContent(news);
+  openModal(DOM.newsDetailModal);
+}
+
+/**
+ * Haber Detay Modal İçeriği Şablon Oluşturucu
+ */
+function renderNewsDetailModalContent(news) {
+  if (!DOM.newsDetailModalContent) return;
+
+  const score = (news.impactScore || 6.0).toFixed(1);
+  const formattedDate = formatDate(news.publishedAt || news.createdAt);
+  const sourceName = news.author || 'MarineRadar Scraper';
+  const targetUrl = news.link || '#';
+
+  let categoryClass = '';
+  switch (news.category) {
+    case 'Carbon Emissions': categoryClass = 'carbon'; break;
+    case 'Alternative Fuels': categoryClass = 'fuel'; break;
+    case 'Clean Energy': categoryClass = 'clean'; break;
+    default: categoryClass = ''; break;
+  }
+
+  DOM.newsDetailModalContent.innerHTML = `
+    <div class="news-detail-wrap">
+      <div class="news-detail-header">
+        <div class="news-detail-meta-bar">
+          <span class="news-detail-source">⚓ Kaynak: ${escapeHTML(sourceName)}</span>
+          <span class="news-detail-date">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            ${formattedDate}
+          </span>
+        </div>
+
+        <h2 class="news-detail-title">${escapeHTML(news.title)}</h2>
+
+        <div class="news-detail-badges">
+          <span class="category-tag ${categoryClass}">${escapeHTML(news.category || 'General')}</span>
+          <div class="impact-badge" style="background: #DCFCE7; border-color: rgba(22, 163, 74, 0.4); color: #15803D;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <span>Etki Puanı: ${score}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="news-detail-body">
+        <p style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">📄 Haber Özeti & İnceleme Metni:</p>
+        <p>${escapeHTML(news.summary || news.content || 'Bu haber için özelleştirilmiş özet metni bulunmamaktadır.')}</p>
+      </div>
+
+      <div class="news-detail-footer">
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Sistem Kayıt Kimliği: <code>${news._id}</code></span>
+        ${targetUrl && targetUrl !== '#' ? `
+          <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-visit-source">
+            Orijinal Makaleyi Oku (Kaynağa Git)
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+        ` : ''}
+      </div>
+    </div>
+  `;
 }
 
 /**
