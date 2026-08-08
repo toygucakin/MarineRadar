@@ -54,12 +54,14 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 15 (TAMAMLANDI ✅):** Express Statik Sunum (`express.static`), Kapsamlı Jest Entegrasyon Testleri (`index.test.js` - 11/11 Test PASS), Docker Compose Altyapısı & GitHub Yayınlaması.
 - **Aşama 16 (TAMAMLANDI ✅):** Haber Detay Modalı HTML İskeleti ve CSS Tasarımı (`public/index.html`, `public/styles.css`), tıklanan haberlerin başlık, kaynak, yayın tarihi, tam içerik/özet metni, etki puanı ve orijinal makale yönlendirme butonlarını içeren modern Light Eco modal yapısı.
 - **Aşama 17 (TAMAMLANDI ✅):** Frontend Haber Kartı Tıklama ve Detay Gösterim Mantığı (`public/app.js`), kullanıcılar ana sayfadaki haber kartlarına veya "Detay" butonuna tıkladığında tıklanan haberin tüm detay verilerini (`data-id`) seçerek pop-up modal pencerede canlı gösterme ve kapatma işlevleri.
+- **Aşama 20 (TAMAMLANDI ✅):** Bülten Derleyici Backend Şema ve İlişkisel Sorgu Onarımı (`src/models/Newsletter.js`, `src/controllers/newsletterController.js`), `featuredNews` ilişkisel referans dizisi ve Mongoose `.populate()` transformatör uyumunun tam buluşması.
+- **Aşama 21 (TAMAMLANDI ✅):** Bülten Derleme Frontend & Dergi Kapağı Modal Render Düzeltmesi (`public/app.js`), derlenen bülten kapağında `featuredNews` dizisini eksiksiz çekerek öne çıkan 5 haberi kartlar, etki puanları ve kaynak bağlantıları ile canlı gösterme.
 
 ---
 
-### 🎉 17 Aşama Tamamlandı! Yeni İyileştirme Yol Haritası (Aşama 18-23)
+### 🎉 19 Aşama Tamamlandı! Yeni İyileştirme Yol Haritası (Aşama 18-23)
 
-MyCarbons (MarineRadar) platformunun backend servislerinden modern Light Eco web ön yüzüne, haber detay modal tasarımına ve canlı kart tıklama etkileşimlerine kadar 17 aşaması başarıyla tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
+MyCarbons (MarineRadar) platformunun backend bülten derleme motoru, ilişkisel MongoDB bağlamları ve dergi kapağı modal render fonksiyonlarına kadar 19 aşaması tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
 
 ---
 
@@ -70,12 +72,6 @@ MyCarbons (MarineRadar) platformunun backend servislerinden modern Light Eco web
   - `src/services/htmlService.js` içerisindeki Axios User-Agent başlıklarının (browser headers), hedef sitelerin (Safety4Sea / Splash247 / IMO) güncel CSS selector'larının ve HTML parse mantığının incelenmesi/onarılması.
 - **Aşama 19 (BEKLEMEDE ⏳): HTML Scrape API Yanıt & Toast Bildirim Entegrasyonu:**
   - Frontend `public/app.js` tarafındaki HTML Scrape isteğinin backend yanıtlarına göre hata/başarı durumlarının toast bildirimlerinde ve arayüzde doğru yansıtılmasının sağlanması.
-
-#### 🔹 Konu 3: Akıllı Bülten Derleme Algoritması Düzeltmesi (Newsletter Generator Fix)
-- **Aşama 20 (BEKLEMEDE ⏳): Bülten Derleyici Backend Sorgu & Etki Puanı Threshold Analizi:**
-  - `src/controllers/newsletterController.js` içerisindeki bülten derleme mantığının incelenmesi; veritabanındaki haberlerin etki puanı (`impactScore`) eşik değerleri, tarih filtreleri veya Mongoose `.populate('featuredNews')` ilişkisel sorgu uyuşmazlığının giderilerek bültenin en az 5 haber seçecek şekilde esnetilmesi.
-- **Aşama 21 (BEKLEMEDE ⏳): Bülten Derleme Frontend & Dergi Kapağı Modal Render Düzeltmesi:**
-  - `public/app.js` içerisindeki bülten oluşturma yanıtı işleme ve modal içerisine seçilen haber kartlarını render etme mantığının tam uyumlu hale getirilmesi.
 
 #### 🔹 Konu 4: Anahtar Kelime Analizi ve Etiket Tabanlı Haber Filtreleme (Keyword Analysis & Tag Cloud)
 - **Aşama 22 (BEKLEMEDE ⏳): Backend Anahtar Kelime Çıkarım (Keyword Extraction) & Arama API Endpoint'i:**

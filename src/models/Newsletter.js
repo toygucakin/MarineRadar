@@ -34,10 +34,11 @@ const newsletterSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// JSON yanıtlarında '_id' alanını 'id' yapma ve '__v' alanını gizleme
+// JSON yanıtlarında '_id' alanını 'id' yapma, 'featuredNews' alanını 'news' olarak da sunma
 newsletterSchema.set('toJSON', {
   transform: (doc, ret) => {
     ret.id = ret._id.toString();
+    ret.news = ret.featuredNews;
     delete ret._id;
     delete ret.__v;
     return ret;

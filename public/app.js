@@ -552,8 +552,8 @@ async function handleGenerateNewsletter() {
 function renderNewsletterModalContent(newsletter) {
   if (!DOM.newsletterModalContent) return;
 
-  const dateStr = formatDate(newsletter.createdAt);
-  const newsList = Array.isArray(newsletter.news) ? newsletter.news : [];
+  const dateStr = formatDate(newsletter.createdAt || newsletter.generatedAt);
+  const newsList = Array.isArray(newsletter.featuredNews) ? newsletter.featuredNews : (Array.isArray(newsletter.news) ? newsletter.news : []);
   const issueNum = newsletter.issueNumber || 1;
 
   DOM.newsletterModalContent.innerHTML = `
@@ -573,7 +573,9 @@ function renderNewsletterModalContent(newsletter) {
     </h4>
 
     <div class="newsletter-news-list">
-      ${newsList.length === 0 ? '<p style="color: var(--text-muted);">Bu bültende gösterilecek haber bulunamadı.</p>' : newsList.map(item => `
+      ${newsList.length === 0 ? '<p style="color: var(--text-muted);">Bu bültende gösterilecek haber bulunamadı.</p>' : newsList.map(item => {
+        const itemUrl = item.sourceUrl || item.link;
+        return `
         <div class="newsletter-item-row">
           <div class="newsletter-item-content">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
@@ -583,13 +585,14 @@ function renderNewsletterModalContent(newsletter) {
             <h5>${escapeHTML(item.title)}</h5>
             <p>${escapeHTML(item.summary || 'Detay açıklaması bulunmamaktadır.')}</p>
           </div>
-          ${item.link ? `
-            <a href="${escapeHTML(item.link)}" target="_blank" class="btn-read-more" style="white-space: nowrap;">
+          ${itemUrl ? `
+            <a href="${escapeHTML(itemUrl)}" target="_blank" rel="noopener noreferrer" class="btn-read-more" style="white-space: nowrap;">
               Oku ➔
             </a>
           ` : ''}
         </div>
-      `).join('')}
+      `;
+      }).join('')}
     </div>
   `;
 }
@@ -616,13 +619,13 @@ async function openArchiveModal() {
     DOM.archiveModalContent.innerHTML = `
       <div class="archive-list">
         ${archives.map((item, index) => {
-          const newsItems = Array.isArray(item.news) ? item.news : [];
+          const newsItems = Array.isArray(item.featuredNews) ? item.featuredNews : (Array.isArray(item.news) ? item.news : []);
           return `
             <div class="archive-card">
               <div class="archive-card-header">
                 <div>
                   <span class="magazine-issue-pill" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">Sayı #${item.issueNumber || (archives.length - index)}</span>
-                  <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem;">${formatDate(item.createdAt)}</span>
+                  <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem;">${formatDate(item.createdAt || item.generatedAt)}</span>
                 </div>
                 <span style="font-size: 0.82rem; font-weight: 700; color: var(--brand-green);">${newsItems.length} Haber Seçildi</span>
               </div>
@@ -633,8 +636,11 @@ async function openArchiveModal() {
                 <summary style="font-size: 0.82rem; font-weight: 700; color: var(--brand-green); cursor: pointer;">Seçilen Haberleri Göster (${newsItems.length})</summary>
                 <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; padding-left: 0.5rem; border-left: 2px solid var(--border-glow);">
                   ${newsItems.map(news => `
-                    <div style="font-size: 0.85rem;">
+                    <div style="font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                       <strong style="color: var(--text-heading);">${escapeHTML(typeof news === 'object' ? news.title : 'Haber Detayı')}</strong>
+                      ${(typeof news === 'object' && (news.sourceUrl || news.link)) ? `
+                        <a href="${escapeHTML(news.sourceUrl || news.link)}" target="_blank" rel="noopener noreferrer" style="color: var(--brand-green); font-size: 0.8rem; font-weight: 700; text-decoration: none;">Oku ➔</a>
+                      ` : ''}
                     </div>
                   `).join('')}
                 </div>
