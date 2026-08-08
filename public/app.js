@@ -191,6 +191,7 @@ function renderNewsGrid() {
  * Tekil Haber Kartı HTML Şablon Oluşturucu
  */
 function createNewsCardHTML(news) {
+  const newsId = news.id || news._id;
   const score = (news.impactScore || 6.0).toFixed(1);
   const isHighImpact = score >= 8.0;
 
@@ -205,11 +206,11 @@ function createNewsCardHTML(news) {
 
   // Tarih ve Okuma Süresi Formatlama
   const formattedDate = formatDate(news.publishedAt || news.createdAt);
-  const sourceName = news.author || 'MarineRadar Scraper';
-  const targetUrl = news.link || '#';
+  const sourceName = news.author || 'MarineRadar Scraper / RSS Akışı';
+  const targetUrl = news.sourceUrl || news.link || '#';
 
   return `
-    <article class="news-card" data-id="${news._id}">
+    <article class="news-card" data-id="${newsId}">
       <div>
         <div class="card-top-bar">
           <span class="category-tag ${categoryClass}">${escapeHTML(news.category || 'General')}</span>
@@ -230,12 +231,12 @@ function createNewsCardHTML(news) {
 
       <div class="card-footer-meta">
         <div class="source-info">
-          <span>⚓ ${escapeHTML(sourceName)}</span>
+          <span>⚓ Kaynak / RSS: ${escapeHTML(sourceName)}</span>
           <span style="opacity: 0.5;">•</span>
           <span>${formattedDate}</span>
         </div>
 
-        <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-read-more">
+        <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-read-more" title="Haber Detayını İncele">
           Detay
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </a>
@@ -352,7 +353,7 @@ function setupEventListeners() {
  * Haber Detay Modalı Açma ve Dinamik İçerik Doldurma (Aşama 17)
  */
 async function openNewsDetailModal(newsId) {
-  let news = appState.allNews.find(item => item._id === newsId);
+  let news = appState.allNews.find(item => (item.id || item._id) === newsId);
 
   // Eğer local state'te bulunamadıysa API'den tekil haberi çek (GET /api/news/:id)
   if (!news) {
@@ -382,10 +383,11 @@ async function openNewsDetailModal(newsId) {
 function renderNewsDetailModalContent(news) {
   if (!DOM.newsDetailModalContent) return;
 
+  const newsId = news.id || news._id;
   const score = (news.impactScore || 6.0).toFixed(1);
   const formattedDate = formatDate(news.publishedAt || news.createdAt);
-  const sourceName = news.author || 'MarineRadar Scraper';
-  const targetUrl = news.link || '#';
+  const sourceName = news.author || 'MarineRadar Scraper / RSS Akışı';
+  const targetUrl = news.sourceUrl || news.link || '#';
 
   let categoryClass = '';
   switch (news.category) {
@@ -399,7 +401,7 @@ function renderNewsDetailModalContent(news) {
     <div class="news-detail-wrap">
       <div class="news-detail-header">
         <div class="news-detail-meta-bar">
-          <span class="news-detail-source">⚓ Kaynak: ${escapeHTML(sourceName)}</span>
+          <span class="news-detail-source">📡 RSS Kaynağı / Yayıncı: ${escapeHTML(sourceName)}</span>
           <span class="news-detail-date">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             ${formattedDate}
@@ -423,10 +425,10 @@ function renderNewsDetailModalContent(news) {
       </div>
 
       <div class="news-detail-footer">
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Sistem Kayıt Kimliği: <code>${news._id}</code></span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Sistem Kayıt Kimliği: <code>${newsId}</code></span>
         ${targetUrl && targetUrl !== '#' ? `
           <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-visit-source">
-            Orijinal Makaleyi Oku (Kaynağa Git)
+            Orijinal Makaleyi Aç (RSS / Kaynak Site)
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
           </a>
         ` : ''}
