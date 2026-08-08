@@ -1041,6 +1041,7 @@ button {
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+  padding-right: 2.5rem; /* Prevent overlap with the top-right close modal (X) button */
 }
 
 .news-detail-source {
@@ -1106,7 +1107,7 @@ button {
 .news-detail-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding-top: 1.25rem;
   border-top: 1px solid var(--border-card);
   flex-wrap: wrap;

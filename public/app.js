@@ -443,7 +443,6 @@ function renderNewsDetailModalContent(news) {
       </div>
 
       <div class="news-detail-footer">
-        <span style="font-size: 0.85rem; color: var(--text-muted);">System Record ID: <code>${newsId}</code></span>
         ${targetUrl && targetUrl !== '#' ? `
           <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-visit-source">
             Read Original Article (Open Source)
