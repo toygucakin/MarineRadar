@@ -188,6 +188,28 @@ function renderNewsGrid() {
 }
 
 /**
+ * Yayıncı Editör ve Bağlı Olduğu Ana RSS Akış Bilgisini Birleştirici Yardımcı
+ */
+function getSourceFeedInfo(news) {
+  const author = news.author || 'MarineRadar Scraper';
+  const url = (news.sourceUrl || news.link || '').toLowerCase();
+
+  let mainFeed = 'Gemicilik Akışı';
+  if (url.includes('gcaptain.com')) mainFeed = 'gCaptain';
+  else if (url.includes('splash247.com')) mainFeed = 'Splash247';
+  else if (url.includes('marineinsight.com')) mainFeed = 'Marine Insight';
+  else if (url.includes('safety4sea.com')) mainFeed = 'Safety4Sea';
+
+  const authorLower = author.toLowerCase();
+  const feedLower = mainFeed.toLowerCase();
+
+  if (authorLower.includes(feedLower)) {
+    return `${author} (${mainFeed})`;
+  }
+  return `${author} • ${mainFeed}`;
+}
+
+/**
  * Tekil Haber Kartı HTML Şablon Oluşturucu
  */
 function createNewsCardHTML(news) {
@@ -204,9 +226,9 @@ function createNewsCardHTML(news) {
     default: categoryClass = ''; break;
   }
 
-  // Tarih ve Okuma Süresi Formatlama
+  // Tarih ve Yayıncı / Akış Kaynağı Formatlama
   const formattedDate = formatDate(news.publishedAt || news.createdAt);
-  const sourceName = news.author || 'MarineRadar Scraper / RSS Akışı';
+  const sourceFeedText = getSourceFeedInfo(news);
   const targetUrl = news.sourceUrl || news.link || '#';
 
   return `
@@ -231,7 +253,7 @@ function createNewsCardHTML(news) {
 
       <div class="card-footer-meta">
         <div class="source-info">
-          <span>⚓ Kaynak / RSS: ${escapeHTML(sourceName)}</span>
+          <span>⚓ ${escapeHTML(sourceFeedText)}</span>
           <span style="opacity: 0.5;">•</span>
           <span>${formattedDate}</span>
         </div>
@@ -386,7 +408,7 @@ function renderNewsDetailModalContent(news) {
   const newsId = news.id || news._id;
   const score = (news.impactScore || 6.0).toFixed(1);
   const formattedDate = formatDate(news.publishedAt || news.createdAt);
-  const sourceName = news.author || 'MarineRadar Scraper / RSS Akışı';
+  const sourceFeedText = getSourceFeedInfo(news);
   const targetUrl = news.sourceUrl || news.link || '#';
 
   let categoryClass = '';
@@ -401,7 +423,7 @@ function renderNewsDetailModalContent(news) {
     <div class="news-detail-wrap">
       <div class="news-detail-header">
         <div class="news-detail-meta-bar">
-          <span class="news-detail-source">📡 RSS Kaynağı / Yayıncı: ${escapeHTML(sourceName)}</span>
+          <span class="news-detail-source">📡 Kaynak & Ana Akış: ${escapeHTML(sourceFeedText)}</span>
           <span class="news-detail-date">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             ${formattedDate}
