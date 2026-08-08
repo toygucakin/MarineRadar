@@ -52,14 +52,43 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 13 (TAMAMLANDI ✅):** Anlık Canlı Arama, Kategori Filtreleme, Scrape API Tetikleyicileri & Toast Bildirim Sistemi (`public/app.js`, `public/styles.css`), "RSS Şimdi Kazı" ve "HTML Web Kazı" eylem butonlarının canlı backend scraping servislerine bağlanması, doğru yeni haber sayısı hesaplayıcısı ve yüzen nane yeşili toast bildirim kutuları.
 - **Aşama 14 (TAMAMLANDI ✅):** Akıllı Bülten Arayüzü & Bülten Arşivi Modalı (`public/index.html`, `public/styles.css`, `public/app.js`), "Bülten Derle" butonuna tıklandığında `POST /api/newsletters/generate` API isteği atarak derlenen bülten kapağını ve seçilen haberleri şık bir dergi kapağı formatında modal pencerede açma; "Üretilen Özel Bültenler" kartına tıklandığında `GET /api/newsletters` arşivini gösterme.
 - **Aşama 15 (TAMAMLANDI ✅):** Express Statik Sunum (`express.static`), Kapsamlı Jest Entegrasyon Testleri (`index.test.js` - 11/11 Test PASS), Docker Compose Altyapısı & GitHub Yayınlaması.
+- **Aşama 16 (TAMAMLANDI ✅):** Haber Detay Modalı HTML İskeleti ve CSS Tasarımı (`public/index.html`, `public/styles.css`), tıklanan haberlerin başlık, kaynak, yayın tarihi, tam içerik/özet metni, etki puanı ve orijinal makale yönlendirme butonlarını içeren modern Light Eco modal yapısı.
 
 ---
 
-### 🎉 Tüm 15 Aşama Başarıyla Tamamlandı!
+### 🎉 16 Aşama Tamamlandı! Yeni İyileştirme Yol Haritası (Aşama 17-23)
 
-MyCarbons (MarineRadar) platformunun backend servislerinden (RSS/HTML Scrapers, NLP Impact Scoring, Mongoose Relational Models, Cron Jobs, Swagger UI) modern Light Eco web ön yüzüne (Live Search, Category Filtering, Scrape Triggers, Toast Notifications & Magazine Cover Newsletter Modals) kadar tüm mimari tamamlanmış ve GitHub reposunda canlıya alınmıştır.
+MyCarbons (MarineRadar) platformunun backend servislerinden modern Light Eco web ön yüzüne ve haber detay modal tasarımına kadar 16 aşaması başarıyla tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
 
 ---
+
+### ⏳ Gelecek Aşamalar (Geliştirme Yol Haritası)
+
+#### 🔹 Konu 1: Haber Detay Modalı ve Tam Metin Görünümü (News Detail View)
+- **Aşama 17 (BEKLEMEDE ⏳): Frontend Haber Kartı Tıklama ve Detay Gösterim Mantığı:**
+  - `public/app.js` içerisindeki dinamik haber kartı oluşturucusuna tıklama olayı (`click event listener` / `data-id` mantığı) eklenerek haber detay modalının tetiklenmesi, seçilen haber verilerinin modal içerisine dinamik doldurulması ve kapatma işlevlerinin yazılması.
+
+#### 🔹 Konu 2: HTML Web Scraping Servisi Onarımı ve Modernizasyonu (HTML Scraping Fix)
+- **Aşama 18 (BEKLEMEDE ⏳): HTML Scraping Backend Hata Tespiti ve Target Site Selector Güncellemesi:**
+  - `src/services/htmlService.js` içerisindeki Axios User-Agent başlıklarının (browser headers), hedef sitelerin (Safety4Sea / Splash247 / IMO) güncel CSS selector'larının ve HTML parse mantığının incelenmesi/onarılması.
+- **Aşama 19 (BEKLEMEDE ⏳): HTML Scrape API Yanıt & Toast Bildirim Entegrasyonu:**
+  - Frontend `public/app.js` tarafındaki HTML Scrape isteğinin backend yanıtlarına göre hata/başarı durumlarının toast bildirimlerinde ve arayüzde doğru yansıtılmasının sağlanması.
+
+#### 🔹 Konu 3: Akıllı Bülten Derleme Algoritması Düzeltmesi (Newsletter Generator Fix)
+- **Aşama 20 (BEKLEMEDE ⏳): Bülten Derleyici Backend Sorgu & Etki Puanı Threshold Analizi:**
+  - `src/controllers/newsletterController.js` içerisindeki bülten derleme mantığının incelenmesi; veritabanındaki haberlerin etki puanı (`impactScore`) eşik değerleri, tarih filtreleri veya Mongoose `.populate('featuredNews')` ilişkisel sorgu uyuşmazlığının giderilerek bültenin en az 5 haber seçecek şekilde esnetilmesi.
+- **Aşama 21 (BEKLEMEDE ⏳): Bülten Derleme Frontend & Dergi Kapağı Modal Render Düzeltmesi:**
+  - `public/app.js` içerisindeki bülten oluşturma yanıtı işleme ve modal içerisine seçilen haber kartlarını render etme mantığının tam uyumlu hale getirilmesi.
+
+#### 🔹 Konu 4: Anahtar Kelime Analizi ve Etiket Tabanlı Haber Filtreleme (Keyword Analysis & Tag Cloud)
+- **Aşama 22 (BEKLEMEDE ⏳): Backend Anahtar Kelime Çıkarım (Keyword Extraction) & Arama API Endpoint'i:**
+  - Kazınan haberlerin başlık ve özet metinlerinden en çok geçen denizcilik ve karbon terimlerinin (`IMO`, `EEXI`, `EU-MRV`, `Ammonia`, `LNG`, `Decarbonization`, `Biofuel` vb.) frekans analizi ile tespit edilmesi, `News` modeline kelime etiketleri (`keywords`) alanının eklenmesi ve `/api/news/keywords` ile `/api/news?keyword=...` endpoint'lerinin geliştirilmesi.
+- **Aşama 23 (BEKLEMEDE ⏳): Dashboard Popüler Anahtar Kelime Bulutu (Keyword Tag Cloud) & Filtreleme Arayüzü:**
+  - `public/index.html`, `public/styles.css` ve `public/app.js` üzerinde popüler anahtar kelimelerin tıklanabilir etiket (pill) şeklinde gösterilmesi, bir anahtar kelimeye tıklandığında sadece o kelimenin geçtiği haberlerin canlı olarak listelenmesi.
+
+---
+
+
 
 ## 🛠️ Tamamlanan Proje Dosyaları
 - [package.json](file:///c:/MyApps/MarineRadar/package.json): Paketler (`express`, `dotenv`, `mongoose`, `rss-parser`, `axios`, `cheerio`, `node-cron`, `swagger-ui-express`, `swagger-jsdoc`) ve betikler.
