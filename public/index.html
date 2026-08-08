@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
   
   <!-- Favicon & Stylesheets -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2322C55E'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'/></svg>">
-  <link rel="stylesheet" href="styles.css?v=2.5">
+  <link rel="stylesheet" href="styles.css?v=3.0">
 </head>
 <body>
 
@@ -70,7 +70,7 @@
             <span class="category-tag carbon">Fleet Status</span>
           </div>
           <div class="stat-value" id="stat-total-count">0</div>
-          <div class="stat-label">Toplam Kazınan Haber</div>
+          <div class="stat-label">Total Scraped Articles</div>
         </div>
 
         <!-- 2. Live Monitoring (Teal) -->
@@ -82,7 +82,7 @@
             <span class="category-tag" style="background: #CCFBF1; color: #0D9488; border-color: rgba(13, 148, 136, 0.3);">Live Monitoring</span>
           </div>
           <div class="stat-value" id="stat-carbon-count">0</div>
-          <div class="stat-label">Karbon & Çevre Haberleri</div>
+          <div class="stat-label">Carbon & Green News</div>
         </div>
 
         <!-- 3. Efficiency Plans (Blue) -->
@@ -94,11 +94,11 @@
             <span class="category-tag clean">Efficiency Plans</span>
           </div>
           <div class="stat-value" id="stat-avg-impact">0.0</div>
-          <div class="stat-label">Ortalama Etki Puanı</div>
+          <div class="stat-label">Average Impact Score</div>
         </div>
 
         <!-- 4. Secure Compliance (Orange) - Clicking Opens Newsletter Archive -->
-        <div class="stat-card clickable-card" id="stat-card-newsletter" title="Bülten Arşivini Görüntülemek İçin Tıklayın">
+        <div class="stat-card clickable-card" id="stat-card-newsletter" title="Click to View Digest Archive">
           <div class="stat-icon-row">
             <div class="stat-icon orange">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -106,7 +106,7 @@
             <span class="category-tag fuel">Secure Compliance</span>
           </div>
           <div class="stat-value" id="stat-newsletter-count">0</div>
-          <div class="stat-label">Üretilen Özel Bültenler (Arşivi Aç ➔)</div>
+          <div class="stat-label">Generated Special Digests (Open Archive ➔)</div>
         </div>
       </div>
     </section>
@@ -117,29 +117,29 @@
         <!-- Live Search -->
         <div class="search-input-wrap">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" id="search-input" class="search-input" placeholder="Haber başlığı, anahtar kelime veya liman ara...">
+          <input type="text" id="search-input" class="search-input" placeholder="Search headline, keyword, or port...">
         </div>
 
         <!-- Action Trigger Buttons -->
         <div class="action-buttons">
           <button class="btn-action btn-rss" id="btn-scrape-rss">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg>
-            RSS Şimdi Kazı
+            Scrape RSS Now
           </button>
           <button class="btn-action btn-html" id="btn-scrape-html">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-            HTML Web Kazı
+            Scrape HTML Web
           </button>
           <button class="btn-action btn-newsletter" id="btn-generate-newsletter">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            Bülten Derle
+            Generate Digest
           </button>
         </div>
       </div>
 
       <!-- Category Filter Tabs -->
       <div class="category-tabs" id="category-tabs">
-        <button class="tab-btn active" data-category="all">Hepsi</button>
+        <button class="tab-btn active" data-category="all">All</button>
         <button class="tab-btn" data-category="Carbon Emissions">Carbon Emissions</button>
         <button class="tab-btn" data-category="Alternative Fuels">Alternative Fuels</button>
         <button class="tab-btn" data-category="Clean Energy">Clean Energy</button>
@@ -153,9 +153,9 @@
       <div class="section-header-row">
         <h3 class="section-title">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          Canlı Akış Haberleri
+          Live News Feed
         </h3>
-        <span class="news-count-badge" id="visible-count-badge">Haberler yükleniyor...</span>
+        <span class="news-count-badge" id="visible-count-badge">Loading articles...</span>
       </div>
 
       <div class="news-grid" id="news-grid-container">
@@ -167,7 +167,7 @@
   <!-- Newsletter Generation Modal -->
   <div class="modal-backdrop" id="newsletter-modal">
     <div class="modal-container">
-      <button class="btn-close-modal" id="btn-close-newsletter-modal" title="Kapat">&times;</button>
+      <button class="btn-close-modal" id="btn-close-newsletter-modal" title="Close">&times;</button>
       <div id="newsletter-modal-content">
         <!-- Dynamic Magazine Cover Content Rendered via app.js -->
       </div>
@@ -177,10 +177,10 @@
   <!-- Newsletter Archive Modal -->
   <div class="modal-backdrop" id="archive-modal">
     <div class="modal-container modal-lg">
-      <button class="btn-close-modal" id="btn-close-archive-modal" title="Kapat">&times;</button>
+      <button class="btn-close-modal" id="btn-close-archive-modal" title="Close">&times;</button>
       <div class="modal-header-title">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-green)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-        <h3>MyCarbons Özel Bülten Arşivi</h3>
+        <h3>MyCarbons Special Digest Archive</h3>
       </div>
       <div id="archive-modal-content">
         <!-- Dynamic Newsletter Archive Rendered via app.js -->
@@ -191,7 +191,7 @@
   <!-- News Detail Modal (Aşama 16) -->
   <div class="modal-backdrop" id="news-detail-modal">
     <div class="modal-container modal-lg">
-      <button class="btn-close-modal" id="btn-close-detail-modal" title="Kapat">&times;</button>
+      <button class="btn-close-modal" id="btn-close-detail-modal" title="Close">&times;</button>
       <div id="news-detail-modal-content">
         <!-- Dynamic News Detail Content Rendered via app.js -->
       </div>
@@ -206,7 +206,7 @@
         <span>MyCarbons &copy; 2026 CO2 Emission Monitoring Platform. All rights reserved.</span>
       </div>
       <div class="footer-links">
-        <a href="#" id="link-open-archive">Bülten Arşivi</a>
+        <a href="#" id="link-open-archive">Digest Archive</a>
         <a href="/api-docs" target="_blank">Swagger API</a>
         <a href="https://github.com/toygucakin/MarineRadar" target="_blank">GitHub Repository</a>
       </div>

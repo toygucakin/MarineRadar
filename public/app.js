@@ -1,9 +1,9 @@
 /**
  * MyCarbons (MarineRadar) - Client-Side JavaScript Logic
- * Canlı API Bağlantısı, Scrape Tetikleyicileri, Dynamic Filtering, Toast Notifications & Newsletter Modal
+ * Live API Connection, Scrape Triggers, Dynamic Filtering, Toast Notifications & Newsletter Modal
  */
 
-// Uygulama İstemci Durumu (State)
+// Application State
 const appState = {
   allNews: [],
   newsletters: [],
@@ -11,28 +11,28 @@ const appState = {
   searchQuery: ''
 };
 
-// DOM Eleman Başvuruları
+// DOM Element References
 const DOM = {
-  // İstatistik Kartları
+  // Stat Cards
   statTotalCount: document.getElementById('stat-total-count'),
   statCarbonCount: document.getElementById('stat-carbon-count'),
   statAvgImpact: document.getElementById('stat-avg-impact'),
   statNewsletterCount: document.getElementById('stat-newsletter-count'),
   statCardNewsletter: document.getElementById('stat-card-newsletter'),
 
-  // Kontrol Elemanları
+  // Controls
   searchInput: document.getElementById('search-input'),
   categoryTabs: document.getElementById('category-tabs'),
   btnScrapeRss: document.getElementById('btn-scrape-rss'),
   btnScrapeHtml: document.getElementById('btn-scrape-html'),
   btnGenerateNewsletter: document.getElementById('btn-generate-newsletter'),
 
-  // İçerik Alanları
+  // Content Areas
   newsGridContainer: document.getElementById('news-grid-container'),
   visibleCountBadge: document.getElementById('visible-count-badge'),
   toastContainer: null,
 
-  // Modallar
+  // Modals
   newsletterModal: document.getElementById('newsletter-modal'),
   newsletterModalContent: document.getElementById('newsletter-modal-content'),
   btnCloseNewsletterModal: document.getElementById('btn-close-newsletter-modal'),
@@ -48,7 +48,7 @@ const DOM = {
 };
 
 /**
- * Sayfa Yüklendiğinde Başlatıcı
+ * DOM Load Initializer
  */
 document.addEventListener('DOMContentLoaded', () => {
   initToastContainer();
@@ -65,7 +65,7 @@ async function initApp() {
 }
 
 /**
- * Toast Bildirim Konteynırını İlklendirme
+ * Initialize Toast Container
  */
 function initToastContainer() {
   let container = document.querySelector('.toast-container');
@@ -78,7 +78,7 @@ function initToastContainer() {
 }
 
 /**
- * REST API'den Canlı Haber Verilerini Çekme (GET /api/news)
+ * Fetch Live Articles from REST API (GET /api/news)
  */
 async function loadNewsData() {
   try {
@@ -90,16 +90,16 @@ async function loadNewsData() {
       updateStats();
       renderNewsGrid();
     } else {
-      showErrorState('Haberler yüklenirken sunucu hatası oluştu.');
+      showErrorState('Failed to load articles from server.');
     }
   } catch (error) {
-    console.error('API Haber Verisi Çekme Hatası:', error);
-    showErrorState('Sunucuya bağlanılamadı. Lütfen API servisinin çalıştığından emin olun.');
+    console.error('API News Fetch Error:', error);
+    showErrorState('Unable to connect to server. Please ensure the API service is running.');
   }
 }
 
 /**
- * REST API'den Bülten Verilerini Çekme (GET /api/newsletters)
+ * Fetch Digests from REST API (GET /api/newsletters)
  */
 async function loadNewslettersData() {
   try {
@@ -113,22 +113,22 @@ async function loadNewslettersData() {
       }
     }
   } catch (error) {
-    console.warn('Bülten verisi henüz çekilemedi:', error);
+    console.warn('Digest data not yet retrieved:', error);
   }
 }
 
 /**
- * Hero İstatistik Paneli Metriklerini Güncelleme
+ * Update Hero KPI Panel Metrics
  */
 function updateStats() {
   const news = appState.allNews;
   
-  // 1. Toplam Haber Sayısı
+  // 1. Total News Count
   if (DOM.statTotalCount) {
     DOM.statTotalCount.textContent = news.length;
   }
 
-  // 2. Karbon & Çevre Haberleri Sayısı
+  // 2. Carbon & Green News Count
   const carbonCount = news.filter(item => 
     item.category === 'Carbon Emissions' || item.category === 'Clean Energy'
   ).length;
@@ -136,7 +136,7 @@ function updateStats() {
     DOM.statCarbonCount.textContent = carbonCount;
   }
 
-  // 3. Ortalama Etki Puanı (impactScore)
+  // 3. Average Impact Score
   if (news.length > 0) {
     const totalImpact = news.reduce((acc, curr) => acc + (curr.impactScore || 6.0), 0);
     const avgImpact = (totalImpact / news.length).toFixed(1);
@@ -149,12 +149,12 @@ function updateStats() {
 }
 
 /**
- * Haber Kartları Izgarasını (News Grid) Dinamik Render Etme
+ * Render Dynamic News Grid Component
  */
 function renderNewsGrid() {
   if (!DOM.newsGridContainer) return;
 
-  // Filtreleme mantığı (Kategori & Arama)
+  // Filter Logic (Category & Search)
   let filteredNews = appState.allNews.filter(item => {
     const matchesCategory = appState.activeCategory === 'all' || item.category === appState.activeCategory;
     const searchLower = appState.searchQuery.toLowerCase();
@@ -166,35 +166,35 @@ function renderNewsGrid() {
     return matchesCategory && matchesSearch;
   });
 
-  // Görünür Haber Sayısı Rozeti
+  // Visible Count Badge
   if (DOM.visibleCountBadge) {
-    DOM.visibleCountBadge.textContent = `${filteredNews.length} haber gösteriliyor`;
+    DOM.visibleCountBadge.textContent = `${filteredNews.length} articles displayed`;
   }
 
-  // Eğer filtre sonucu haber bulunamadıysa
+  // Empty Filter State
   if (filteredNews.length === 0) {
     DOM.newsGridContainer.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-card);">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="1.5" style="margin-bottom: 1rem;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--text-heading); margin-bottom: 0.5rem;">Aranan Kriterlere Uygun Haber Bulunamadı</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Farklı bir arama kelimesi veya kategori seçmeyi deneyin.</p>
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--text-heading); margin-bottom: 0.5rem;">No Articles Found Matching Criteria</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Try searching with a different keyword or category.</p>
       </div>
     `;
     return;
   }
 
-  // Kartları Dinamik HTML Olarak Oluşturma
+  // Render HTML Cards
   DOM.newsGridContainer.innerHTML = filteredNews.map(news => createNewsCardHTML(news)).join('');
 }
 
 /**
- * Yayıncı Editör ve Bağlı Olduğu Ana RSS Akış Bilgisini Birleştirici Yardımcı
+ * Publisher Editor and Main Feed Resolver Helper
  */
 function getSourceFeedInfo(news) {
   const author = news.author || 'MarineRadar Scraper';
   const url = (news.sourceUrl || news.link || '').toLowerCase();
 
-  let mainFeed = 'Gemicilik Akışı';
+  let mainFeed = 'Maritime Feed';
   if (url.includes('gcaptain.com')) mainFeed = 'gCaptain';
   else if (url.includes('splash247.com')) mainFeed = 'Splash247';
   else if (url.includes('marineinsight.com')) mainFeed = 'Marine Insight';
@@ -210,14 +210,13 @@ function getSourceFeedInfo(news) {
 }
 
 /**
- * Tekil Haber Kartı HTML Şablon Oluşturucu
+ * Single News Card HTML Template Generator
  */
 function createNewsCardHTML(news) {
   const newsId = news.id || news._id;
   const score = (news.impactScore || 6.0).toFixed(1);
   const isHighImpact = score >= 8.0;
 
-  // Kategoriye göre CSS sınıfı seçimi
   let categoryClass = '';
   switch (news.category) {
     case 'Carbon Emissions': categoryClass = 'carbon'; break;
@@ -226,7 +225,6 @@ function createNewsCardHTML(news) {
     default: categoryClass = ''; break;
   }
 
-  // Tarih ve Yayıncı / Akış Kaynağı Formatlama
   const formattedDate = formatDate(news.publishedAt || news.createdAt);
   const sourceFeedText = getSourceFeedInfo(news);
   const targetUrl = news.sourceUrl || news.link || '#';
@@ -247,7 +245,7 @@ function createNewsCardHTML(news) {
         </h4>
 
         <p class="news-summary">
-          ${escapeHTML(news.summary || 'Özet detay bilgisi mevcut değil.')}
+          ${escapeHTML(news.summary || 'No summary description available.')}
         </p>
       </div>
 
@@ -258,8 +256,8 @@ function createNewsCardHTML(news) {
           <span>${formattedDate}</span>
         </div>
 
-        <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-read-more" title="Haber Detayını İncele">
-          Detay
+        <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-read-more" title="View Article Details">
+          Details
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </a>
       </div>
@@ -268,10 +266,10 @@ function createNewsCardHTML(news) {
 }
 
 /**
- * Event Listener Bağlantıları & Tetikleyiciler
+ * Event Listener Binding & Handlers
  */
 function setupEventListeners() {
-  // 1. Arama Girdisi Dinleyicisi (Live Search)
+  // 1. Live Search Input Listener
   if (DOM.searchInput) {
     DOM.searchInput.addEventListener('input', (e) => {
       appState.searchQuery = e.target.value;
@@ -279,7 +277,7 @@ function setupEventListeners() {
     });
   }
 
-  // 2. Kategori Sekmeleri Tıklama Dinleyicisi
+  // 2. Category Tabs Listener
   if (DOM.categoryTabs) {
     DOM.categoryTabs.addEventListener('click', (e) => {
       const tabBtn = e.target.closest('.tab-btn');
@@ -293,34 +291,33 @@ function setupEventListeners() {
     });
   }
 
-  // 3. RSS Şimdi Kazı Butonu Dinleyicisi (POST /api/news/scrape/rss)
+  // 3. RSS Scrape Button Listener
   if (DOM.btnScrapeRss) {
     DOM.btnScrapeRss.addEventListener('click', async () => {
       await handleScrapeTrigger(DOM.btnScrapeRss, '/api/news/scrape/rss', 'RSS');
     });
   }
 
-  // 4. HTML Web Kazı Butonu Dinleyicisi (POST /api/news/scrape/html)
+  // 4. HTML Scrape Button Listener
   if (DOM.btnScrapeHtml) {
     DOM.btnScrapeHtml.addEventListener('click', async () => {
       await handleScrapeTrigger(DOM.btnScrapeHtml, '/api/news/scrape/html', 'HTML Web');
     });
   }
 
-  // 5. Bülten Derle Butonu Dinleyicisi (POST /api/newsletters/generate)
+  // 5. Generate Newsletter Button Listener
   if (DOM.btnGenerateNewsletter) {
     DOM.btnGenerateNewsletter.addEventListener('click', async () => {
       await handleGenerateNewsletter();
     });
   }
 
-  // 6. Haber Kartına Tıklama ve Detay Modalı Açma Dinleyicisi (Aşama 17)
+  // 6. News Card Click Listener for Detail Modal
   if (DOM.newsGridContainer) {
     DOM.newsGridContainer.addEventListener('click', (e) => {
       const newsCard = e.target.closest('.news-card');
       if (!newsCard) return;
 
-      // Eğer "Detay" butonuna basıldıysa varsayılan link yönlendirmesini engelle, modal aç
       const readMoreBtn = e.target.closest('a.btn-read-more');
       if (readMoreBtn) {
         e.preventDefault();
@@ -333,7 +330,7 @@ function setupEventListeners() {
     });
   }
 
-  // 7. Arşiv Açma Dinleyicileri
+  // 7. Open Archive Listeners
   if (DOM.statCardNewsletter) {
     DOM.statCardNewsletter.addEventListener('click', () => openArchiveModal());
   }
@@ -344,7 +341,7 @@ function setupEventListeners() {
     });
   }
 
-  // 8. Modal Kapatma Dinleyicileri
+  // 8. Close Modal Listeners
   if (DOM.btnCloseNewsletterModal) {
     DOM.btnCloseNewsletterModal.addEventListener('click', () => closeModal(DOM.newsletterModal));
   }
@@ -355,7 +352,7 @@ function setupEventListeners() {
     DOM.btnCloseDetailModal.addEventListener('click', () => closeModal(DOM.newsDetailModal));
   }
 
-  // Modal Dışına Tıklayınca ve ESC Tuşu ile Kapatma
+  // Close on Backdrop Click & Escape Key
   window.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-backdrop')) {
       closeModal(e.target);
@@ -372,12 +369,11 @@ function setupEventListeners() {
 }
 
 /**
- * Haber Detay Modalı Açma ve Dinamik İçerik Doldurma (Aşama 17)
+ * Open News Detail Modal with Dynamic Content
  */
 async function openNewsDetailModal(newsId) {
   let news = appState.allNews.find(item => (item.id || item._id) === newsId);
 
-  // Eğer local state'te bulunamadıysa API'den tekil haberi çek (GET /api/news/:id)
   if (!news) {
     try {
       const response = await fetch(`/api/news/${newsId}`);
@@ -386,12 +382,12 @@ async function openNewsDetailModal(newsId) {
         news = result.data;
       }
     } catch (err) {
-      console.error('Tekil haber detay çekme hatası:', err);
+      console.error('Fetch news detail error:', err);
     }
   }
 
   if (!news) {
-    showToast('Haber Detayı Hatası', 'Seçilen haberin detayları yüklenemedi.', true);
+    showToast('Article Detail Error', 'Unable to load details for the selected article.', true);
     return;
   }
 
@@ -400,7 +396,7 @@ async function openNewsDetailModal(newsId) {
 }
 
 /**
- * Haber Detay Modal İçeriği Şablon Oluşturucu
+ * News Detail Modal Content Generator
  */
 function renderNewsDetailModalContent(news) {
   if (!DOM.newsDetailModalContent) return;
@@ -423,7 +419,7 @@ function renderNewsDetailModalContent(news) {
     <div class="news-detail-wrap">
       <div class="news-detail-header">
         <div class="news-detail-meta-bar">
-          <span class="news-detail-source">📡 Kaynak & Ana Akış: ${escapeHTML(sourceFeedText)}</span>
+          <span class="news-detail-source">📡 Source & Parent Feed: ${escapeHTML(sourceFeedText)}</span>
           <span class="news-detail-date">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             ${formattedDate}
@@ -436,21 +432,21 @@ function renderNewsDetailModalContent(news) {
           <span class="category-tag ${categoryClass}">${escapeHTML(news.category || 'General')}</span>
           <div class="impact-badge" style="background: #DCFCE7; border-color: rgba(22, 163, 74, 0.4); color: #15803D;">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            <span>Etki Puanı: ${score}</span>
+            <span>Impact Score: ${score}</span>
           </div>
         </div>
       </div>
 
       <div class="news-detail-body">
-        <p style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">📄 Haber Özeti & İnceleme Metni:</p>
-        <p>${escapeHTML(news.summary || news.content || 'Bu haber için özelleştirilmiş özet metni bulunmamaktadır.')}</p>
+        <p style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">📄 Article Summary & Executive Brief:</p>
+        <p>${escapeHTML(news.summary || news.content || 'No summary description available for this article.')}</p>
       </div>
 
       <div class="news-detail-footer">
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Sistem Kayıt Kimliği: <code>${newsId}</code></span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">System Record ID: <code>${newsId}</code></span>
         ${targetUrl && targetUrl !== '#' ? `
           <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-visit-source">
-            Orijinal Makaleyi Aç (RSS / Kaynak Site)
+            Read Original Article (Open Source)
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
           </a>
         ` : ''}
@@ -460,16 +456,15 @@ function renderNewsDetailModalContent(news) {
 }
 
 /**
- * Kazıma API Tetikleyici Mantığı ve Buton Yüklenme Yönetimi
+ * Scrape API Trigger Handler & Loading State
  */
 async function handleScrapeTrigger(button, endpointUrl, serviceName) {
   const originalHTML = button.innerHTML;
   
-  // Yüklenme durumu
   button.disabled = true;
   button.innerHTML = `
     <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-    Kazınıyor...
+    Scraping...
   `;
 
   try {
@@ -479,23 +474,22 @@ async function handleScrapeTrigger(button, endpointUrl, serviceName) {
     if (result.success) {
       const added = (result.data && typeof result.data.addedCount === 'number') ? result.data.addedCount : (result.addedCount || 0);
       const toastMsg = added > 0 
-        ? `${added} yeni haber veritabanına eklendi.` 
-        : 'Tüm haberler güncel, yeni haber bulunamadı.';
+        ? `${added} new articles added to database.` 
+        : 'All articles are up to date, no new items found.';
 
       showToast(
-        `${serviceName} Kazıma Tamamlandı`,
+        `${serviceName} Scraping Completed`,
         toastMsg,
         false
       );
 
-      // Verileri yeniden çek ve arayüzü güncelle
       await loadNewsData();
     } else {
-      showToast('Kazıma Hatası', result.message || 'Veri çekme başarısız oldu.', true);
+      showToast('Scraping Error', result.message || 'Data scraping failed.', true);
     }
   } catch (error) {
-    console.error(`${serviceName} Kazıma Hatası:`, error);
-    showToast('Bağlantı Hatası', `${serviceName} servisine erişilemedi.`, true);
+    console.error(`${serviceName} Scraping Error:`, error);
+    showToast('Connection Error', `Unable to reach ${serviceName} service.`, true);
   } finally {
     button.disabled = false;
     button.innerHTML = originalHTML;
@@ -503,7 +497,7 @@ async function handleScrapeTrigger(button, endpointUrl, serviceName) {
 }
 
 /**
- * Akıllı Bülten Oluşturma Mantığı (POST /api/newsletters/generate)
+ * Generate Smart Newsletter Handler (POST /api/newsletters/generate)
  */
 async function handleGenerateNewsletter() {
   const btn = DOM.btnGenerateNewsletter;
@@ -512,7 +506,7 @@ async function handleGenerateNewsletter() {
   btn.disabled = true;
   btn.innerHTML = `
     <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
-    Derleniyor...
+    Compiling...
   `;
 
   try {
@@ -522,24 +516,21 @@ async function handleGenerateNewsletter() {
     if (result.success && result.data) {
       const newsletter = result.data;
       
-      // Bülten listenizi ve sayacı güncelle
       await loadNewslettersData();
-
-      // Bülten dergi kapağı modalını derle ve aç
       renderNewsletterModalContent(newsletter);
       openModal(DOM.newsletterModal);
 
       showToast(
-        'Bülten Başarıyla Derlendi',
-        `Sayı #${newsletter.issueNumber || 1} özel bülteni başarıyla oluşturuldu!`,
+        'Digest Successfully Compiled',
+        `Issue #${newsletter.issueNumber || 1} special digest has been compiled!`,
         false
       );
     } else {
-      showToast('Bülten Hatası', result.message || 'Bülten derlenemedi.', true);
+      showToast('Digest Error', result.message || 'Unable to compile digest.', true);
     }
   } catch (error) {
-    console.error('Bülten Üretme Hatası:', error);
-    showToast('Bağlantı Hatası', 'Bülten sunucu servisine erişilemedi.', true);
+    console.error('Generate Digest Error:', error);
+    showToast('Connection Error', 'Unable to reach digest server service.', true);
   } finally {
     btn.disabled = false;
     btn.innerHTML = originalHTML;
@@ -547,7 +538,7 @@ async function handleGenerateNewsletter() {
 }
 
 /**
- * Bülten Dergi Kapağı Modal İçerik Oluşturucu
+ * Newsletter Cover Modal Content Generator
  */
 function renderNewsletterModalContent(newsletter) {
   if (!DOM.newsletterModalContent) return;
@@ -559,35 +550,35 @@ function renderNewsletterModalContent(newsletter) {
   DOM.newsletterModalContent.innerHTML = `
     <div class="magazine-cover-card">
       <div class="magazine-badge-row">
-        <span class="magazine-issue-pill">🌱 MYCARBONS DIGEST • SAYI #${issueNum}</span>
-        <span class="magazine-date">Yayın Tarihi: ${dateStr}</span>
+        <span class="magazine-issue-pill">🌱 MYCARBONS DIGEST • ISSUE #${issueNum}</span>
+        <span class="magazine-date">Published: ${dateStr}</span>
       </div>
 
-      <h3 class="magazine-title">${escapeHTML(newsletter.title || 'Denizcilik Karbonsuzlaştırma Bülteni')}</h3>
-      <p class="magazine-summary">${escapeHTML(newsletter.summary || 'IMO-DCS & EU-MRV uyumlu yüksek etkili denizcilik haberlerinden derlenmiştir.')}</p>
+      <h3 class="magazine-title">${escapeHTML(newsletter.title || 'Maritime Decarbonization Special Digest')}</h3>
+      <p class="magazine-summary">${escapeHTML(newsletter.summary || 'Compiled from top-impact maritime articles compliant with IMO-DCS & EU-MRV.')}</p>
     </div>
 
     <h4 class="newsletter-section-heading">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-green)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-      Bültende Öne Çıkan Seçilmiş Haberler (${newsList.length})
+      Featured Highlighted Articles (${newsList.length})
     </h4>
 
     <div class="newsletter-news-list">
-      ${newsList.length === 0 ? '<p style="color: var(--text-muted);">Bu bültende gösterilecek haber bulunamadı.</p>' : newsList.map(item => {
+      ${newsList.length === 0 ? '<p style="color: var(--text-muted);">No articles available in this digest.</p>' : newsList.map(item => {
         const itemUrl = item.sourceUrl || item.link;
         return `
         <div class="newsletter-item-row">
           <div class="newsletter-item-content">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
               <span class="category-tag carbon" style="font-size: 0.68rem;">${escapeHTML(item.category || 'Decarbonization')}</span>
-              <span style="font-size: 0.78rem; font-weight: 700; color: var(--brand-green);">Etki: ${(item.impactScore || 6.0).toFixed(1)}</span>
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--brand-green);">Impact: ${(item.impactScore || 6.0).toFixed(1)}</span>
             </div>
             <h5>${escapeHTML(item.title)}</h5>
-            <p>${escapeHTML(item.summary || 'Detay açıklaması bulunmamaktadır.')}</p>
+            <p>${escapeHTML(item.summary || 'No detail description available.')}</p>
           </div>
           ${itemUrl ? `
             <a href="${escapeHTML(itemUrl)}" target="_blank" rel="noopener noreferrer" class="btn-read-more" style="white-space: nowrap;">
-              Oku ➔
+              Read ➔
             </a>
           ` : ''}
         </div>
@@ -598,7 +589,7 @@ function renderNewsletterModalContent(newsletter) {
 }
 
 /**
- * Bülten Arşivi Modalı Açma ve Listeleme (GET /api/newsletters)
+ * Open Digest Archive Modal (GET /api/newsletters)
  */
 async function openArchiveModal() {
   await loadNewslettersData();
@@ -611,8 +602,8 @@ async function openArchiveModal() {
     DOM.archiveModalContent.innerHTML = `
       <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
-        <h4>Henüz Derlenmiş Bülten Bulunmuyor</h4>
-        <p style="font-size: 0.9rem;">"Bülten Derle" butonuna basarak ilk özel bülteninizi üretebilirsiniz.</p>
+        <h4>No Compiled Digests Found</h4>
+        <p style="font-size: 0.9rem;">Click "Generate Digest" to create your first special digest.</p>
       </div>
     `;
   } else {
@@ -624,22 +615,22 @@ async function openArchiveModal() {
             <div class="archive-card">
               <div class="archive-card-header">
                 <div>
-                  <span class="magazine-issue-pill" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">Sayı #${item.issueNumber || (archives.length - index)}</span>
+                  <span class="magazine-issue-pill" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">Issue #${item.issueNumber || (archives.length - index)}</span>
                   <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem;">${formatDate(item.createdAt || item.generatedAt)}</span>
                 </div>
-                <span style="font-size: 0.82rem; font-weight: 700; color: var(--brand-green);">${newsItems.length} Haber Seçildi</span>
+                <span style="font-size: 0.82rem; font-weight: 700; color: var(--brand-green);">${newsItems.length} Articles Selected</span>
               </div>
               <h4 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; color: var(--text-heading); margin-bottom: 0.4rem;">${escapeHTML(item.title)}</h4>
               <p style="font-size: 0.88rem; color: var(--text-body); line-height: 1.5; margin-bottom: 0.85rem;">${escapeHTML(item.summary || '')}</p>
               
               <details style="margin-top: 0.5rem;">
-                <summary style="font-size: 0.82rem; font-weight: 700; color: var(--brand-green); cursor: pointer;">Seçilen Haberleri Göster (${newsItems.length})</summary>
+                <summary style="font-size: 0.82rem; font-weight: 700; color: var(--brand-green); cursor: pointer;">Show Selected Articles (${newsItems.length})</summary>
                 <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; padding-left: 0.5rem; border-left: 2px solid var(--border-glow);">
                   ${newsItems.map(news => `
                     <div style="font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
-                      <strong style="color: var(--text-heading);">${escapeHTML(typeof news === 'object' ? news.title : 'Haber Detayı')}</strong>
+                      <strong style="color: var(--text-heading);">${escapeHTML(typeof news === 'object' ? news.title : 'Article Details')}</strong>
                       ${(typeof news === 'object' && (news.sourceUrl || news.link)) ? `
-                        <a href="${escapeHTML(news.sourceUrl || news.link)}" target="_blank" rel="noopener noreferrer" style="color: var(--brand-green); font-size: 0.8rem; font-weight: 700; text-decoration: none;">Oku ➔</a>
+                        <a href="${escapeHTML(news.sourceUrl || news.link)}" target="_blank" rel="noopener noreferrer" style="color: var(--brand-green); font-size: 0.8rem; font-weight: 700; text-decoration: none;">Read ➔</a>
                       ` : ''}
                     </div>
                   `).join('')}
@@ -656,7 +647,7 @@ async function openArchiveModal() {
 }
 
 /**
- * Modal Açma / Kapatma Yardımcı Fonksiyonları
+ * Modal Open / Close Helper Functions
  */
 function openModal(modalElement) {
   if (!modalElement) return;
@@ -671,7 +662,7 @@ function closeModal(modalElement) {
 }
 
 /**
- * Yüzen Toast Bildirim Sistemi Göstericisi
+ * Floating Toast Notification System
  */
 function showToast(title, message, isError = false) {
   if (!DOM.toastContainer) initToastContainer();
@@ -694,7 +685,6 @@ function showToast(title, message, isError = false) {
 
   DOM.toastContainer.appendChild(toast);
 
-  // 4.5 Saniye Sonra Otomatik Kapanma
   setTimeout(() => {
     toast.classList.add('hide');
     setTimeout(() => {
@@ -704,15 +694,15 @@ function showToast(title, message, isError = false) {
 }
 
 /**
- * Yardımcı Fonksiyonlar (Utilities)
+ * Utility Helpers
  */
 function formatDate(dateStr) {
-  if (!dateStr) return 'Bugün';
+  if (!dateStr) return 'Today';
   try {
     const d = new Date(dateStr);
-    return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
+    return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
   } catch (e) {
-    return 'Bugün';
+    return 'Today';
   }
 }
 
@@ -730,7 +720,7 @@ function showErrorState(message) {
   if (DOM.newsGridContainer) {
     DOM.newsGridContainer.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; background: #FEE2E2; border-radius: var(--radius-lg); border: 1px solid #FCA5A5; color: #991B1B;">
-        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; margin-bottom: 0.5rem;">⚠️ Bağlantı Hatası</h3>
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; margin-bottom: 0.5rem;">⚠️ Connection Error</h3>
         <p style="font-size: 0.9rem;">${message}</p>
       </div>
     `;

@@ -47,12 +47,12 @@ export const generateNewsletter = async (req, res, next) => {
     selectedNews.forEach(item => {
       categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
     });
-    const topCategory = Object.keys(categoryCounts).reduce((a, b) => categoryCounts[a] > categoryCounts[b] ? a : b, 'Genel');
+    const topCategory = Object.keys(categoryCounts).reduce((a, b) => categoryCounts[a] > categoryCounts[b] ? a : b, 'General');
 
-    // Bülten Başlık ve Özeti
+    // Bülten Başlık ve Özeti (English Translation)
     const dateStr = new Date().toISOString().split('T')[0];
-    const newsletterTitle = `MyCarbons Özel Bülteni (${dateStr})`;
-    const newsletterSummary = `Bu bülten, etki puanı en yüksek ${selectedNews.length} adet gemicilik ve karbonsuzlaşma haberinden derlenmiştir. (Ortalama Etki Puanı: ${averageImpactScore}/10)`;
+    const newsletterTitle = `MyCarbons Special Digest (${dateStr})`;
+    const newsletterSummary = `This digest features the top ${selectedNews.length} high-impact maritime and decarbonization articles. (Average Impact Score: ${averageImpactScore}/10)`;
 
     // Veritabanına kayıt
     const newNewsletter = await Newsletter.create({
@@ -68,7 +68,7 @@ export const generateNewsletter = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'MyCarbons Özel Bülteni başarıyla oluşturuldu ve arşivlendi.',
+      message: 'MyCarbons Special Digest successfully created and archived.',
       data: populatedNewsletter
     });
   } catch (error) {

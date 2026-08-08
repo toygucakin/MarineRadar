@@ -56,12 +56,13 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 17 (TAMAMLANDI ✅):** Frontend Haber Kartı Tıklama ve Detay Gösterim Mantığı (`public/app.js`), kullanıcılar ana sayfadaki haber kartlarına veya "Detay" butonuna tıkladığında tıklanan haberin tüm detay verilerini (`data-id`) seçerek pop-up modal pencerede canlı gösterme ve kapatma işlevleri.
 - **Aşama 20 (TAMAMLANDI ✅):** Bülten Derleyici Backend Şema ve İlişkisel Sorgu Onarımı (`src/models/Newsletter.js`, `src/controllers/newsletterController.js`), `featuredNews` ilişkisel referans dizisi ve Mongoose `.populate()` transformatör uyumunun tam buluşması.
 - **Aşama 21 (TAMAMLANDI ✅):** Bülten Derleme Frontend & Dergi Kapağı Modal Render Düzeltmesi (`public/app.js`), derlenen bülten kapağında `featuredNews` dizisini eksiksiz çekerek öne çıkan 5 haberi kartlar, etki puanları ve kaynak bağlantıları ile canlı gösterme.
+- **Aşama 24 (TAMAMLANDI ✅):** Global İngilizce Dil Desteği & Uluslararası Arayüz Uyumlaştırması (`public/index.html`, `public/app.js`, `src/controllers/newsletterController.js`), tüm haber içerikleri İngilizce olduğu için web dashboard, arama çubuğu, bülten kapağı, stat kartları, modal pencereler, toast bildirimleri ve tarih formatlarının tam İngilizce diline çevrilmesi.
 
 ---
 
-### 🎉 19 Aşama Tamamlandı! Yeni İyileştirme Yol Haritası (Aşama 18-23)
+### 🎉 20 Aşama Tamamlandı! Yeni İyileştirme Yol Haritası (Aşama 18-23)
 
-MyCarbons (MarineRadar) platformunun backend bülten derleme motoru, ilişkisel MongoDB bağlamları ve dergi kapağı modal render fonksiyonlarına kadar 19 aşaması tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
+MyCarbons (MarineRadar) platformunun backend bülten derleme motoru, ilişkisel MongoDB bağlamları, dergi kapağı modal render fonksiyonları ve tam İngilizce dil entegrasyonu tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
 
 ---
 
