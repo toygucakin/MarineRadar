@@ -7,8 +7,12 @@
 const appState = {
   allNews: [],
   newsletters: [],
+  registeredVessels: [],
   activeCategory: 'all',
-  searchQuery: ''
+  searchQuery: '',
+  authToken: null,
+  currentUser: null,
+  activeVesselFilter: 'all'
 };
 
 // DOM Element References
@@ -27,6 +31,8 @@ const DOM = {
   btnScrapeHtml: document.getElementById('btn-scrape-html'),
   btnScrapeDeep: document.getElementById('btn-scrape-deep'),
   btnGenerateNewsletter: document.getElementById('btn-generate-newsletter'),
+  userSelectDropdown: document.getElementById('user-select-dropdown'),
+  vesselSelectDropdown: document.getElementById('vessel-select-dropdown'),
 
   // Content Areas
   newsGridContainer: document.getElementById('news-grid-container'),
@@ -59,7 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initApp() {
   await Promise.all([
     loadNewsData(),
-    loadNewslettersData()
+    loadNewslettersData(),
+    loadRegisteredVessels()
   ]);
 
   setupEventListeners();
@@ -283,6 +290,142 @@ function createNewsCardHTML(news) {
 }
 
 /**
+ * Fetch Registered Fleet Vessels from REST API (GET /api/vessels)
+ */
+async function loadRegisteredVessels() {
+  try {
+    const res = await fetch('/api/vessels');
+    const result = await res.json();
+    if (result.success && Array.isArray(result.data)) {
+      appState.registeredVessels = result.data;
+      populateVesselDropdown();
+    }
+  } catch (e) {
+    console.warn('Vessels fetch error:', e.message);
+  }
+}
+
+function populateVesselDropdown() {
+  if (!DOM.vesselSelectDropdown) return;
+  DOM.vesselSelectDropdown.innerHTML = '<option value="all">⚓ All Fleet Vessels</option>';
+
+  appState.registeredVessels.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.id || v._id;
+    opt.textContent = `🚢 ${v.vesselName} (${v.imoNumber ? 'IMO ' + v.imoNumber : v.vesselType})`;
+    DOM.vesselSelectDropdown.appendChild(opt);
+  });
+}
+
+async function loginUserAndLoadFleetNews(userKey) {
+  if (userKey === 'public') {
+    appState.authToken = null;
+    appState.currentUser = null;
+    hideFleetBanner();
+    await loadNewsData();
+    showToast('Switched to Public Feed (All News)', 'info');
+    return;
+  }
+
+  const userEmail = userKey === 'userA' ? 'ahmet.armator@mycarbons.com' : 'burak.operator@mycarbons.com';
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: userEmail, password: 'password123' })
+    });
+    const result = await res.json();
+
+    if (result.success && result.token) {
+      appState.authToken = result.token;
+      appState.currentUser = result.user;
+
+      // Load personalized news feed for logged in user
+      await loadUserFleetNews();
+      showFleetBanner(result.user);
+      showToast(`Logged in as ${result.user.name} (${result.user.assignedVesselsCount} vessels)`, 'success');
+    }
+  } catch (err) {
+    console.error('Fleet Login Error:', err);
+    showToast('Failed to authenticate fleet user', 'error');
+  }
+}
+
+async function loadUserFleetNews() {
+  if (!appState.authToken) return;
+
+  try {
+    const res = await fetch('/api/news/my-vessels', {
+      headers: { 'Authorization': `Bearer ${appState.authToken}` }
+    });
+    const result = await res.json();
+
+    if (result.success && Array.isArray(result.data)) {
+      appState.allNews = result.data;
+      updateStats();
+      renderNewsGrid();
+    }
+  } catch (err) {
+    console.error('User Fleet News Error:', err);
+  }
+}
+
+async function loadVesselSpecificNews(vesselId) {
+  if (!vesselId || vesselId === 'all') {
+    if (appState.currentUser) {
+      await loadUserFleetNews();
+    } else {
+      await loadNewsData();
+    }
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/news/vessel/${vesselId}`);
+    const result = await res.json();
+
+    if (result.success && Array.isArray(result.data)) {
+      appState.allNews = result.data;
+      updateStats();
+      renderNewsGrid();
+      const vesselObj = appState.registeredVessels.find(v => (v.id || v._id) === vesselId);
+      const vName = vesselObj ? vesselObj.vesselName : 'Selected Vessel';
+      showToast(`Filtered news for ${vName} (${result.data.length} articles)`, 'info');
+    }
+  } catch (e) {
+    console.error('Vessel news filter error:', e);
+  }
+}
+
+function showFleetBanner(user) {
+  let banner = document.getElementById('user-fleet-active-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'user-fleet-active-banner';
+    banner.style.cssText = 'margin-bottom: 1.25rem; background: linear-gradient(135deg, rgba(13, 148, 136, 0.12) 0%, rgba(5, 150, 105, 0.08) 100%); padding: 0.9rem 1.25rem; border-radius: var(--radius-md); border: 1px solid rgba(13, 148, 136, 0.3); color: var(--text-heading); font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;';
+    DOM.newsGridContainer.parentNode.insertBefore(banner, DOM.newsGridContainer);
+  }
+
+  const vNames = (user.assignedVessels || []).map(v => v.vesselName).join(', ');
+  banner.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 0.6rem;">
+      <span style="font-size: 1.2rem;">🚢</span>
+      <div>
+        <strong style="color: #0F766E;">Personalized Fleet View Active: ${user.name}</strong>
+        <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted); font-weight: 500;">Assigned Vessels (${user.assignedVesselsCount}): ${vNames || 'None'}</p>
+      </div>
+    </div>
+    <span style="font-size: 0.75rem; font-weight: 700; background: #CCFBF1; color: #0D9488; padding: 0.2rem 0.6rem; border-radius: 999px;">JWT Authenticated</span>
+  `;
+}
+
+function hideFleetBanner() {
+  const banner = document.getElementById('user-fleet-active-banner');
+  if (banner) banner.remove();
+}
+
+/**
  * Event Listener Binding & Handlers
  */
 function setupEventListeners() {
@@ -291,6 +434,22 @@ function setupEventListeners() {
     DOM.searchInput.addEventListener('input', (e) => {
       appState.searchQuery = e.target.value;
       renderNewsGrid();
+    });
+  }
+
+  // User Dropdown Switcher Listener
+  if (DOM.userSelectDropdown) {
+    DOM.userSelectDropdown.addEventListener('change', (e) => {
+      const userKey = e.target.value;
+      loginUserAndLoadFleetNews(userKey);
+    });
+  }
+
+  // Vessel Dropdown Filter Listener
+  if (DOM.vesselSelectDropdown) {
+    DOM.vesselSelectDropdown.addEventListener('change', (e) => {
+      const vesselId = e.target.value;
+      loadVesselSpecificNews(vesselId);
     });
   }
 
@@ -303,8 +462,23 @@ function setupEventListeners() {
       DOM.categoryTabs.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       tabBtn.classList.add('active');
 
-      appState.activeCategory = tabBtn.dataset.category || 'all';
-      renderNewsGrid();
+      const cat = tabBtn.dataset.category || 'all';
+
+      if (cat === 'my-fleet') {
+        if (!appState.currentUser) {
+          DOM.userSelectDropdown.value = 'userA';
+          loginUserAndLoadFleetNews('userA');
+        } else {
+          loadUserFleetNews();
+        }
+      } else {
+        appState.activeCategory = cat;
+        if (!appState.currentUser) {
+          loadNewsData();
+        } else {
+          renderNewsGrid();
+        }
+      }
     });
   }
 
