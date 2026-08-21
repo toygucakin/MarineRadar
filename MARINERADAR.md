@@ -62,6 +62,7 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 26 (TAMAMLANDI ✅):** Fleet Status Kurumsal Gemi Logosu Güncellemesi (`public/index.html`), ana sayfadaki "Fleet Status" kartında yer alan eski ikon, resmi myCarbons web sitesinde kullanılan kule/vinç algısını engelleyen geniş U-gövdeli, pencereli yaşam mahalline ve kavisli deniz dalgalarına sahip önden görünüşlü yeşil dökme yük gemisi (Bulk Carrier front-view ship SVG) vektörel amblemi ile güncellendi.
 - **Aşama 27 (TAMAMLANDI ✅):** Derin Metin Web Scraping Servisi (Deep Article Scraper Service) geliştirildi (`src/services/deepScraperService.js`). RSS ve HTML kaynaklarından çekilen haberlerin orijinal URL adreslerine (`sourceUrl`) bağlanarak gCaptain, Splash247, Marine Insight, Safety4Sea vb. denizcilik portallarının tüm makale metinleri (`fullContent`), paragrafları ve gürültüsüz temizlenmiş içerikleri kazındı. `News` modeline `fullContent`, `isFullyScraped` ve `scrapedAt` alanları eklendi. `POST /api/news/:id/scrape-deep` ve `POST /api/news/scrape/deep` REST API endpoint'leri, Swagger dokümantasyonu, Web Dashboard arayüzündeki "Deep Scrape Content" butonu, haber detay modalı derin metin göstericisi ve Jest entegrasyon testleri başarıyla yazıldı.
 - **Aşama 28 (TAMAMLANDI ✅):** Gemi (`Vessel`) ve Kullanıcı (`User / Fleet`) Veri Modelleri & Filo Atama Mimarisi geliştirildi (`src/models/Vessel.js`, `src/models/User.js`, `src/data/seedFleet.js`). IMO numarası doğrulamalı Gemi şeması ve Mongoose `.populate('assignedVessels')` destekli Kullanıcı Filo şeması oluşturuldu. A Kullanıcısına (5 Gemi) ve B Kullanıcısına (3 Gemi) filolar atandı. `GET/POST /api/vessels`, `GET/POST /api/users` ve `POST /api/users/seed` REST API endpoint'leri, Swagger OpenAPI dokümanı ve Jest testleri yazıldı.
+- **Aşama 29 (TAMAMLANDI ✅):** Akıllı Metin Analizör & Çoklu Gemi Varlık Eşleme Motoru (Multi-Vessel Entity Matcher) geliştirildi (`src/services/vesselMatcherService.js`). `News` modeline `matchedVessels` şeması eklendi. Haberlerin tam metinlerinde geçen gemiler IMO Numarası (Regex `\b\d{7}\b`) ve Gemi Adı kelime sınırları (`\bName\b`) taranarak tespit edildi; güven skoru (%90-%100) ve metin içi alıntı paragrafı (`mentionSnippet`) üretildi. `POST /api/news/match-vessels`, `POST /api/news/:id/match-vessels` ve `GET /api/news/vessel/:vesselId` REST API endpoint'leri, Swagger dokümanı, Web Dashboard haber kartları ve haber detay modalı gemi rozetleri ile Jest testleri yazıldı.
 
 ---
 
@@ -111,7 +112,7 @@ Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet
   - `src/models/Vessel.js` (IMO Number, Gemi Adı, MMSI, Bayrak, Gemi Tipi, Şirket ID) ve `src/models/User.js` (Ad/Soyad, E-posta, Şifre, Rol, `assignedVessels: [Vessel._id]`) modellerinin oluşturulması.
   - Kullanıcı-Gemi ilişkisel atamalarının yapılması (A Kullanıcısı: 5 Gemi, B Kullanıcısı: 3 Gemi) ve `src/data/seedFleet.js` ile otomatik yükleme.
 
-- **Aşama 29 (BEKLEMEDE ⏳): Akıllı Metin Analizör & Çoklu Gemi Varlık Eşleme Motoru (Multi-Vessel Entity Matcher)**
+- **Aşama 29 (TAMAMLANDI ✅): Akıllı Metin Analizör & Çoklu Gemi Varlık Eşleme Motoru (Multi-Vessel Entity Matcher)**
   - `src/services/vesselMatcherService.js` yazılması. Derin makale metni (`fullContent`) üzerinde IMO No regex kalıpları (`IMO \d{7}`), gemi adı dizinleri ve fuzzy matching uygulanması.
   - Haber metninde 1'den fazla geçen tüm gemilerin tespit edilerek `News` modelindeki `matchedVessels: [{ vesselId, imoNumber, vesselName, confidenceScore, mentionSnippet }]` yapısına kaydedilmesi.
 
@@ -146,6 +147,7 @@ Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet
 - [src/services/rssService.js](file:///c:/MyApps/MarineRadar/src/services/rssService.js): Otomatik RSS akışı kazıma ve analiz servisi.
 - [src/services/htmlService.js](file:///c:/MyApps/MarineRadar/src/services/htmlService.js): Axios & Cheerio tabanlı HTML web kazıma servisi.
 - [src/services/deepScraperService.js](file:///c:/MyApps/MarineRadar/src/services/deepScraperService.js): Orijinal haber bağlantılarından tam makale metinlerini kazıyan derin web scraping servisi.
+- [src/services/vesselMatcherService.js](file:///c:/MyApps/MarineRadar/src/services/vesselMatcherService.js): Haber metinlerinden geçen filoya ait gemileri tespit eden akıllı varlık eşleme motoru.
 - [src/services/cronService.js](file:///c:/MyApps/MarineRadar/src/services/cronService.js): Node-cron periyodik arka plan görevleri servisi.
 - [Dockerfile](file:///c:/MyApps/MarineRadar/Dockerfile): Express REST API Docker imaj tanımı.
 - [.dockerignore](file:///c:/MyApps/MarineRadar/.dockerignore): Docker build hariç tutma kuralları.

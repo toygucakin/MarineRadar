@@ -186,6 +186,32 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
     });
   });
 
+  // POST /api/news/match-vessels (Aşama 29 - Akıllı Çoklu Gemi Varlık Eşleme Testi)
+  describe('POST /api/news/match-vessels (Aşama 29 - Gemi Varlık Eşleme)', () => {
+    it('veritabanındaki haberlerde geçen gemileri 200 OK ile eşlemelidir', async () => {
+      const response = await request(app).post('/api/news/match-vessels');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('updatedNewsCount');
+      expect(response.body.data).toHaveProperty('totalMatchesCount');
+    });
+  });
+
+  // GET /api/news/vessel/:vesselId (Aşama 29 - Gemi Odaklı Haber Filtreleme Testi)
+  describe('GET /api/news/vessel/:vesselId (Gemiye Özel Haberler)', () => {
+    it('geçerli bir gemi ID verildiğinde 200 OK ve haber listesini dönmelidir', async () => {
+      const vesselsRes = await request(app).get('/api/vessels');
+      const vesselId = vesselsRes.body.data[0].id;
+
+      const response = await request(app).get(`/api/news/vessel/${vesselId}`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
+    });
+  });
+
   // GET /api-docs (Swagger UI Dokümantasyon Testi)
   describe('GET /api-docs (Swagger UI Dokümantasyonu)', () => {
     it('Swagger UI arayüzü isteğine 200 veya 301/302 yönlendirmesi dönmelidir', async () => {

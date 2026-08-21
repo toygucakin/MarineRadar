@@ -230,11 +230,19 @@ function createNewsCardHTML(news) {
   const sourceFeedText = getSourceFeedInfo(news);
   const targetUrl = news.sourceUrl || news.link || '#';
 
+  const vesselCount = (news.matchedVessels && Array.isArray(news.matchedVessels)) ? news.matchedVessels.length : 0;
+  const vesselBadgeHTML = vesselCount > 0 ? `
+    <span class="category-tag clean" style="font-size: 0.68rem; padding: 0.15rem 0.45rem; background: #CCFBF1; color: #0D9488; border-color: rgba(13, 148, 136, 0.3);">
+      ⚓ ${vesselCount} Vessel${vesselCount > 1 ? 's' : ''}
+    </span>
+  ` : '';
+
   return `
     <article class="news-card" data-id="${newsId}">
       <div>
-        <div class="card-top-bar">
+        <div class="card-top-bar" style="flex-wrap: wrap; gap: 0.35rem;">
           <span class="category-tag ${categoryClass}">${escapeHTML(news.category || 'General')}</span>
+          ${vesselBadgeHTML}
           <div class="impact-badge" style="${isHighImpact ? 'background: #DCFCE7; border-color: rgba(22, 163, 74, 0.4); color: #15803D; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);' : ''}">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             <span>${score}</span>
@@ -479,6 +487,25 @@ function renderNewsDetailModalContent(news) {
             </button>
           </div>
         `}
+
+        ${(news.matchedVessels && news.matchedVessels.length > 0) ? `
+          <div style="margin-top: 1.25rem; background: rgba(13, 148, 136, 0.05); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid rgba(13, 148, 136, 0.2);">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: #0F766E; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+              ⚓ Mentioned Fleet Vessels in Article (${news.matchedVessels.length}):
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              ${news.matchedVessels.map(mv => `
+                <div style="background: var(--bg-card); padding: 0.75rem 0.9rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <strong style="color: var(--text-heading); font-size: 0.88rem;">🚢 ${escapeHTML(mv.vesselName)} ${mv.imoNumber ? `(IMO ${escapeHTML(mv.imoNumber)})` : ''}</strong>
+                    <span style="font-size: 0.7rem; font-weight: 700; background: #CCFBF1; color: #0D9488; padding: 0.1rem 0.45rem; border-radius: 999px;">Match Confidence: ${(mv.confidenceScore * 100).toFixed(0)}%</span>
+                  </div>
+                  ${mv.mentionSnippet ? `<p style="font-size: 0.82rem; color: var(--text-muted); font-style: italic; margin: 0;">"${escapeHTML(mv.mentionSnippet)}"</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
       </div>
 
       <div class="news-detail-footer" style="margin-top: 1.25rem; display: flex; justify-content: flex-end; align-items: center;">

@@ -146,6 +146,36 @@ const options = {
           }
         }
       },
+      '/api/news/match-vessels': {
+        post: {
+          summary: 'Veritabanındaki haberlerde gemi ismi veya IMO numarasına göre toplu varlık eşlemesi çalıştırır',
+          responses: {
+            200: { description: 'Toplu gemi varlık eşleme raporu' }
+          }
+        }
+      },
+      '/api/news/{id}/match-vessels': {
+        post: {
+          summary: 'Belirli bir haber metninde geçen filoya ait gemileri tespit eder ve habere kaydeder',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Gemi eşleme tamamlandı' }
+          }
+        }
+      },
+      '/api/news/vessel/{vesselId}': {
+        get: {
+          summary: 'Belirli bir gemiyle (IMO/Adı) eşleşmiş olan tüm haberleri getirir',
+          parameters: [
+            { name: 'vesselId', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Gemi odaklı haber listesi' }
+          }
+        }
+      },
       '/api/vessels': {
         get: {
           summary: 'Tüm gemi filosunu listeler',

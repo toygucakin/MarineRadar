@@ -62,7 +62,19 @@ const newsSchema = new mongoose.Schema({
   scrapedAt: {
     type: Date,
     default: null
-  }
+  },
+  matchedVessels: [
+    {
+      vessel: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vessel'
+      },
+      vesselName: { type: String, trim: true },
+      imoNumber: { type: String, trim: true },
+      confidenceScore: { type: Number, min: 0, max: 1, default: 0.9 },
+      mentionSnippet: { type: String, trim: true }
+    }
+  ]
 }, {
   timestamps: true // createdAt ve updatedAt alanlarını otomatik ekler
 });

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { scrapeRssFeeds } from '../services/rssService.js';
 import { scrapeHtmlTargets } from '../services/htmlService.js';
 import { scrapeNewsById, scrapeAllUnscrapedNews } from '../services/deepScraperService.js';
+import { matchVesselsForNewsItem, matchVesselsForAllNews } from '../services/vesselMatcherService.js';
 
 /**
  * Controller (MongoDB / Mongoose İş Mantığı Katmanı)
@@ -147,6 +148,82 @@ export const scrapeDeepAllNews = async (req, res, next) => {
       success: true,
       message: `Toplu Derin Kazıma İşlemi Tamamlandı: ${result.scrapedCount} haber detaylandırıldı, ${result.failedCount} hata alındı.`,
       data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/news/:id/match-vessels -> Belirli bir haber için gemi varlık eşlemesi çalıştırır
+export const matchVesselsSingleNews = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        success: false,
+        message: `ID değeri '${id}' olan haber bulunamadı.`
+      });
+    }
+
+    const newsItem = await News.findById(id);
+
+    if (!newsItem) {
+      return res.status(404).json({
+        success: false,
+        message: `ID değeri '${id}' olan haber bulunamadı.`
+      });
+    }
+
+    const matched = await matchVesselsForNewsItem(newsItem);
+
+    res.status(200).json({
+      success: true,
+      message: `Gemi Varlık Eşlemesi Tamamlandı: ${matched.length} gemi tespit edildi.`,
+      matchedCount: matched.length,
+      data: newsItem
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/news/match-vessels -> Veritabanındaki haberler için toplu gemi varlık eşlemesi çalıştırır
+export const matchVesselsAllNews = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit || req.body?.limit || '100', 10);
+    const result = await matchVesselsForAllNews(limit);
+
+    res.status(200).json({
+      success: true,
+      message: `Toplu Gemi Eşlemesi Tamamlandı: ${result.updatedNewsCount} haberde toplam ${result.totalMatchesCount} gemi tespiti yapıldı.`,
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/news/vessel/:vesselId -> Belirli bir gemiyle eşleşen haberleri getirir
+export const getNewsByVesselId = async (req, res, next) => {
+  try {
+    const { vesselId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(vesselId)) {
+      return res.status(404).json({
+        success: false,
+        message: `Gemi ID değeri '${vesselId}' geçerli bir ObjectId değil.`
+      });
+    }
+
+    const matchedNewsList = await News.find({
+      'matchedVessels.vessel': vesselId
+    }).sort({ publishedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: matchedNewsList.length,
+      data: matchedNewsList
     });
   } catch (error) {
     next(error);

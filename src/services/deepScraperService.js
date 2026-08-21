@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { News } from '../models/News.js';
+import { matchVesselsForNewsItem } from './vesselMatcherService.js';
 
 const AXIOS_CONFIG = {
   headers: {
@@ -155,12 +156,20 @@ export const scrapeNewsById = async (newsId) => {
   newsItem.scrapedAt = new Date();
   await newsItem.save();
 
+  // Otomatik Gemi Varlık Eşleme Motorunu çalıştır
+  try {
+    await matchVesselsForNewsItem(newsItem);
+  } catch (e) {
+    console.warn(`Gemi eşleme uyarısı (${newsId}):`, e.message);
+  }
+
   return {
     success: true,
     news: newsItem,
     meta: {
       paragraphCount: result.paragraphCount,
-      characterCount: result.characterCount
+      characterCount: result.characterCount,
+      matchedVesselsCount: newsItem.matchedVessels ? newsItem.matchedVessels.length : 0
     }
   };
 };
@@ -192,6 +201,11 @@ export const scrapeAllUnscrapedNews = async (limit = 30) => {
       newsItem.scrapedAt = new Date();
       await newsItem.save();
 
+      // Otomatik Gemi Varlık Eşleme
+      try {
+        await matchVesselsForNewsItem(newsItem);
+      } catch (e) {}
+
       successCount++;
       results.push(newsItem);
     } catch (err) {
@@ -201,6 +215,10 @@ export const scrapeAllUnscrapedNews = async (limit = 30) => {
       newsItem.isFullyScraped = true;
       newsItem.scrapedAt = new Date();
       await newsItem.save();
+
+      try {
+        await matchVesselsForNewsItem(newsItem);
+      } catch (e) {}
 
       errors.push({ newsId: newsItem.id, title: newsItem.title, url: newsItem.sourceUrl, error: err.message });
     }

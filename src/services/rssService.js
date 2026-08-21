@@ -1,6 +1,7 @@
 import Parser from 'rss-parser';
 import { News } from '../models/News.js';
 import { scrapeArticleContent } from './deepScraperService.js';
+import { matchVesselsForNewsItem } from './vesselMatcherService.js';
 
 const parser = new Parser({
   headers: {
@@ -114,6 +115,11 @@ export const scrapeRssFeeds = async (customFeeds = null) => {
           isFullyScraped: true,
           scrapedAt: new Date()
         });
+
+        // Gemi Varlık Eşleme Motorunu çalıştır
+        try {
+          await matchVesselsForNewsItem(newNews);
+        } catch (e) {}
 
         addedNews.push(newNews);
         addedCount++;
