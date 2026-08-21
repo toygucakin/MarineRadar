@@ -27,6 +27,9 @@ const extractSnippet = (text, keyword, windowSize = 70) => {
 /**
  * Metin içeriğinde (Haber başlığı, özeti veya tam metni) tanımlı gemileri tespit eden eşleme motoru
  */
+/**
+ * Metin içeriğinde (Haber başlığı, özeti veya tam metni) tanımlı gemileri tespit eden eşleme motoru
+ */
 export const matchVesselsInText = (text, registeredVessels) => {
   if (!text || !Array.isArray(registeredVessels) || registeredVessels.length === 0) {
     return [];
@@ -53,16 +56,28 @@ export const matchVesselsInText = (text, registeredVessels) => {
       }
     }
 
-    // 2. Gemi Adına Göre Kelime Sınırı (Word Boundary) Kontrolü (Güven Skoru: 0.9)
-    if (!isMatched && vName.length >= 3) {
-      // Özel karakterleri escape et
-      const escapedName = vName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const nameRegex = new RegExp(`\\b${escapedName}\\b`, 'i');
+    // 2. Gemi Adı ve Varyasyonlarına Göre Kontrol (Güven Skoru: 0.9 / 0.85)
+    if (!isMatched) {
+      // Örn: 'M/T Poseidon' -> ['M/T Poseidon', 'MT Poseidon', 'Poseidon']
+      const cleanCoreName = vName.replace(/^(M\/T|M\/V|M\/S|MT|MV|SS|S\/S)\s+/i, '').trim();
+      const variations = [vName];
+      if (cleanCoreName && cleanCoreName !== vName && cleanCoreName.length >= 3) {
+        variations.push(cleanCoreName);
+      }
 
-      if (nameRegex.test(text)) {
-        isMatched = true;
-        confidenceScore = 0.9;
-        matchKeyword = vName;
+      for (const variant of variations) {
+        if (variant.length < 3) continue;
+
+        // Kelime sınırı regex'i: Özel karakterli isimleri de kapsayacak biçimde
+        const escapedVariant = variant.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const nameRegex = new RegExp(`(?:^|[^a-zA-Z0-9])${escapedVariant}(?:[^a-zA-Z0-9]|$)`, 'i');
+
+        if (nameRegex.test(text)) {
+          isMatched = true;
+          confidenceScore = variant === vName ? 0.9 : 0.85;
+          matchKeyword = variant;
+          break;
+        }
       }
     }
 
@@ -105,9 +120,14 @@ export const matchVesselsForNewsItem = async (newsItem, registeredVessels = null
 /**
  * Veritabanındaki tüm haberleri tarayarak gemi eşleşmelerini toplu günceller.
  */
-export const matchVesselsForAllNews = async (limit = 100) => {
+export const matchVesselsForAllNews = async (limit = 500) => {
   const vessels = await Vessel.find();
-  const newsList = await News.find().limit(limit);
+  // En son güncellenen/kazınan haberleri öne alarak tarıyoruz
+  const newsQuery = News.find().sort({ updatedAt: -1, _id: -1 });
+  if (limit > 0) {
+    newsQuery.limit(limit);
+  }
+  const newsList = await newsQuery;
 
   let updatedNewsCount = 0;
   let totalMatchesCount = 0;
