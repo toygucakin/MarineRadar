@@ -104,10 +104,6 @@ function updateHeaderUserBar() {
         <span>${escapeHTML(currentUser.name)}</span>
         <span class="user-vessel-badge">${vesselCount} Vessels</span>
       </button>
-      <button class="btn-header-logout" onclick="logoutUser()" title="Logout from Account">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-        Logout
-      </button>
       ${swaggerBtnHTML}
     `;
   } else {
@@ -477,16 +473,34 @@ function populateVesselDropdown() {
     vesselsToDisplay = currentUser.assignedVessels;
   }
 
-  select.innerHTML = currentUser 
-    ? `<option value="all">⚓ My Assigned Vessels (${vesselsToDisplay.length})</option>` 
-    : '<option value="all">⚓ All Fleet Vessels</option>';
+  if (currentUser) {
+    select.innerHTML = `
+      <option value="my-fleet" selected>⚓ My Assigned Vessels (${vesselsToDisplay.length})</option>
+      <option value="all-news">🌐 All Public News (Genel Haberler)</option>
+    `;
 
-  vesselsToDisplay.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value = v.id || v._id;
-    opt.textContent = `🚢 ${v.vesselName} (${v.imoNumber ? 'IMO ' + v.imoNumber : (v.vesselType || 'Vessel')})`;
-    select.appendChild(opt);
-  });
+    if (vesselsToDisplay.length > 0) {
+      const optGroup = document.createElement('optgroup');
+      optGroup.label = 'Specific Fleet Vessels:';
+      vesselsToDisplay.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.id || v._id;
+        opt.textContent = `🚢 ${v.vesselName} (${v.imoNumber ? 'IMO ' + v.imoNumber : (v.vesselType || 'Vessel')})`;
+        optGroup.appendChild(opt);
+      });
+      select.appendChild(optGroup);
+    }
+  } else {
+    select.innerHTML = `
+      <option value="all-news" selected>⚓ All Fleet Vessels (Public Feed)</option>
+    `;
+    vesselsToDisplay.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.id || v._id;
+      opt.textContent = `🚢 ${v.vesselName} (${v.imoNumber ? 'IMO ' + v.imoNumber : (v.vesselType || 'Vessel')})`;
+      select.appendChild(opt);
+    });
+  }
 }
 
 async function loginUserAndLoadFleetNews(userKey) {
@@ -554,12 +568,20 @@ async function loadUserFleetNews() {
 }
 
 async function loadVesselSpecificNews(vesselId) {
-  if (!vesselId || vesselId === 'all') {
+  if (!vesselId || vesselId === 'my-fleet') {
     if (appState.currentUser) {
       await loadUserFleetNews();
     } else {
       await loadNewsData();
     }
+    return;
+  }
+
+  if (vesselId === 'all-news' || vesselId === 'all') {
+    appState.activeCategory = 'all';
+    hideFleetBanner();
+    await loadNewsData();
+    showToast('Switched to All Public News (Genel Haberler)', 'info');
     return;
   }
 
@@ -569,6 +591,7 @@ async function loadVesselSpecificNews(vesselId) {
 
     if (result.success && Array.isArray(result.data)) {
       appState.allNews = result.data;
+      appState.currentPage = 1;
       updateStats();
       renderNewsGrid();
       const vesselObj = appState.registeredVessels.find(v => (v.id || v._id) === vesselId);
