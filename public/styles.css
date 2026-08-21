@@ -83,6 +83,10 @@ body {
   overflow-x: hidden;
 }
 
+body.modal-open {
+  overflow: hidden !important;
+}
+
 .container {
   width: 100%;
   max-width: var(--container-max);

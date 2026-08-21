@@ -814,42 +814,31 @@ function setupEventListeners() {
 
   // 8. Close Modal Listeners
   if (DOM.btnCloseNewsletterModal) {
-    DOM.btnCloseNewsletterModal.addEventListener('click', () => {
-      DOM.newsletterModal.classList.remove('active');
-    });
+    DOM.btnCloseNewsletterModal.addEventListener('click', () => closeModal(DOM.newsletterModal));
   }
 
   if (DOM.btnCloseArchiveModal) {
-    DOM.btnCloseArchiveModal.addEventListener('click', () => {
-      DOM.archiveModal.classList.remove('active');
-    });
+    DOM.btnCloseArchiveModal.addEventListener('click', () => closeModal(DOM.archiveModal));
   }
 
   if (DOM.btnCloseDetailModal) {
-    DOM.btnCloseDetailModal.addEventListener('click', () => {
-      DOM.newsDetailModal.classList.remove('active');
-    });
+    DOM.btnCloseDetailModal.addEventListener('click', () => closeModal(DOM.newsDetailModal));
   }
 
   if (DOM.btnCloseLoginModal) {
-    DOM.btnCloseLoginModal.addEventListener('click', () => {
-      if (DOM.loginFleetModal) DOM.loginFleetModal.classList.remove('active');
-    });
+    DOM.btnCloseLoginModal.addEventListener('click', () => closeModal(DOM.loginFleetModal));
   }
 
   // Backdrop click to close modals
   window.addEventListener('click', (e) => {
-    if (e.target === DOM.newsletterModal) DOM.newsletterModal.classList.remove('active');
-    if (e.target === DOM.archiveModal) DOM.archiveModal.classList.remove('active');
-    if (e.target === DOM.newsDetailModal) DOM.newsDetailModal.classList.remove('active');
-    if (e.target === DOM.loginFleetModal) DOM.loginFleetModal.classList.remove('active');
+    if (e.target && e.target.classList && e.target.classList.contains('modal-backdrop')) {
+      closeModal(e.target);
+    }
   });
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      closeModal(DOM.newsletterModal);
-      closeModal(DOM.archiveModal);
-      closeModal(DOM.newsDetailModal);
+      closeAllModals();
     }
   });
 }
@@ -1157,7 +1146,7 @@ function openLoginFleetModal() {
   renderLoginFleetModalContent();
   const modal = document.getElementById('login-fleet-modal');
   if (modal) {
-    modal.classList.add('active');
+    openModal(modal);
   }
 }
 window.openLoginFleetModal = openLoginFleetModal;
@@ -1268,7 +1257,7 @@ function renderLoginFleetModalContent() {
             populateVesselDropdown();
             // Automatically close modal pop-up on successful login
             const modal = document.getElementById('login-fleet-modal');
-            if (modal) modal.classList.remove('active');
+            if (modal) closeModal(modal);
           } else {
             errorDiv.textContent = result.message || 'Login failed. Please check your credentials.';
             errorDiv.style.display = 'block';
@@ -1307,7 +1296,7 @@ function renderLoginFleetModalContent() {
         appState.activeCategory = 'all';
         await loadNewsData();
         const modal = document.getElementById('login-fleet-modal');
-        if (modal) modal.classList.remove('active');
+        if (modal) closeModal(modal);
       });
     }
 
@@ -1384,7 +1373,7 @@ function renderLoginFleetModalContent() {
       btnLogout.addEventListener('click', () => {
         logoutUser();
         const modal = document.getElementById('login-fleet-modal');
-        if (modal) modal.classList.remove('active');
+        if (modal) closeModal(modal);
       });
     }
 
@@ -1559,14 +1548,30 @@ async function openArchiveModal() {
 function openModal(modalElement) {
   if (!modalElement) return;
   modalElement.classList.add('active');
+  document.body.classList.add('modal-open');
   document.body.style.overflow = 'hidden';
 }
 
 function closeModal(modalElement) {
   if (!modalElement) return;
   modalElement.classList.remove('active');
-  document.body.style.overflow = 'auto';
+  const activeModals = document.querySelectorAll('.modal-backdrop.active');
+  if (activeModals.length === 0) {
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+  }
 }
+
+function closeAllModals() {
+  document.querySelectorAll('.modal-backdrop').forEach(modal => {
+    modal.classList.remove('active');
+  });
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
+}
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.closeAllModals = closeAllModals;
 
 /**
  * Floating Toast Notification System
