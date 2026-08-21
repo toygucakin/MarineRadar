@@ -53,6 +53,33 @@ const options = {
             },
             generatedAt: { type: 'string', format: 'date-time' }
           }
+        },
+        Vessel: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: '66c2d1a5f123456789abcdef' },
+            vesselName: { type: 'string', example: 'Thamesborg' },
+            imoNumber: { type: 'string', example: '9546461' },
+            mmsi: { type: 'string', example: '244750431' },
+            callSign: { type: 'string', example: 'PBFZ' },
+            flag: { type: 'string', example: 'Netherlands' },
+            vesselType: { type: 'string', example: 'General Cargo' },
+            grossTonnage: { type: 'number', example: 11864 },
+            ownerCompany: { type: 'string', example: 'Wagenborg Shipping' }
+          }
+        },
+        User: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: '66c2e3b8a987654321fedcba' },
+            name: { type: 'string', example: 'Ahmet Armatör (A Kullanıcısı)' },
+            email: { type: 'string', example: 'ahmet.armator@mycarbons.com' },
+            role: { type: 'string', example: 'armator' },
+            assignedVessels: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/Vessel' }
+            }
+          }
         }
       }
     },
@@ -116,6 +143,66 @@ const options = {
           summary: 'İçeriği eksik olan tüm haberlerin makale metinlerini toplu olarak kazır',
           responses: {
             200: { description: 'Toplu derin kazıma raporu' }
+          }
+        }
+      },
+      '/api/vessels': {
+        get: {
+          summary: 'Tüm gemi filosunu listeler',
+          responses: {
+            200: { description: 'Gemi filosu listesi' }
+          }
+        },
+        post: {
+          summary: 'Yeni gemi ekler',
+          responses: {
+            201: { description: 'Gemi başarıyla eklendi' }
+          }
+        }
+      },
+      '/api/vessels/{id}': {
+        get: {
+          summary: 'ID bazlı gemi detayını getirir',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Gemi detayları' },
+            404: { description: 'Gemi bulunamadı' }
+          }
+        }
+      },
+      '/api/users': {
+        get: {
+          summary: 'Tüm kullanıcıları atanmış gemi filoları ile listeler',
+          responses: {
+            200: { description: 'Kullanıcılar ve gemi atamaları' }
+          }
+        },
+        post: {
+          summary: 'Yeni kullanıcı hesabı ve gemi yetki ataması ekler',
+          responses: {
+            201: { description: 'Kullanıcı oluşturuldu' }
+          }
+        }
+      },
+      '/api/users/seed': {
+        post: {
+          summary: 'A Kullanıcısı (5 Gemi) ve B Kullanıcısı (3 Gemi) örnek verilerini veritabanına yükler',
+          responses: {
+            200: { description: 'Örnek filolar başarıyla yüklendi' }
+          }
+        }
+      },
+      '/api/users/{id}': {
+        get: {
+          summary: 'ID bazlı kullanıcı hesabını ve atanmış gemilerini getirir',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Kullanıcı detayı ve gemileri' },
+            404: { description: 'Kullanıcı bulunamadı' }
           }
         }
       },

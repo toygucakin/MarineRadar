@@ -146,6 +146,46 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
     });
   });
 
+  // POST /api/users/seed (Aşama 28 - Örnek Gemi ve Kullanıcı Filoları Seeder Testi)
+  describe('POST /api/users/seed (Aşama 28 - Filo Seeder)', () => {
+    it('A kullanıcısı (5 gemi) ve B kullanıcısı (3 gemi) veritabanına 200 OK ile yüklenmelidir', async () => {
+      const response = await request(app).post('/api/users/seed');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('users');
+      expect(response.body.data.users.length).toBe(2);
+      expect(response.body.data.users[0].vesselCount).toBe(5);
+      expect(response.body.data.users[1].vesselCount).toBe(3);
+    });
+  });
+
+  // GET /api/vessels (Gemi Listeleme Testi)
+  describe('GET /api/vessels (Filo Listesi)', () => {
+    it('tüm gemi filosu 200 OK ve dizi olarak dönmelidir', async () => {
+      const response = await request(app).get('/api/vessels');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data.length).toBeGreaterThan(0);
+      expect(response.body.data[0]).toHaveProperty('imoNumber');
+    });
+  });
+
+  // GET /api/users (Kullanıcılar ve Gemi Atamaları Testi)
+  describe('GET /api/users (Kullanıcılar ve Atanmış Gemiler)', () => {
+    it('kullanıcılar ilişkisel gemi verileri (populate) ile birlikte 200 OK olarak dönmelidir', async () => {
+      const response = await request(app).get('/api/users');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data.length).toBeGreaterThan(0);
+      expect(Array.isArray(response.body.data[0].assignedVessels)).toBe(true);
+    });
+  });
+
   // GET /api-docs (Swagger UI Dokümantasyon Testi)
   describe('GET /api-docs (Swagger UI Dokümantasyonu)', () => {
     it('Swagger UI arayüzü isteğine 200 veya 301/302 yönlendirmesi dönmelidir', async () => {

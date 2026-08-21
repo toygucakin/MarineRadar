@@ -61,6 +61,7 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 25 (TAMAMLANDI ✅):** Kazıma (Scraping) Sonrası Toast Bildirim & Akış Senkronizasyonu Düzeltmesi (`public/app.js`), haber sayısı veritabanında artmasına (ör. 138'den 139'a çıkması) rağmen arka plan cron veya doğrudan kazıma kaynaklı eşleşmelerde "0 new items found" toast bildirimi gösterilmesi sorunu, veritabanı senkronizasyon farkı (`netNewCount`) hesaplaması eklenerek tamamen çözüldü.
 - **Aşama 26 (TAMAMLANDI ✅):** Fleet Status Kurumsal Gemi Logosu Güncellemesi (`public/index.html`), ana sayfadaki "Fleet Status" kartında yer alan eski ikon, resmi myCarbons web sitesinde kullanılan kule/vinç algısını engelleyen geniş U-gövdeli, pencereli yaşam mahalline ve kavisli deniz dalgalarına sahip önden görünüşlü yeşil dökme yük gemisi (Bulk Carrier front-view ship SVG) vektörel amblemi ile güncellendi.
 - **Aşama 27 (TAMAMLANDI ✅):** Derin Metin Web Scraping Servisi (Deep Article Scraper Service) geliştirildi (`src/services/deepScraperService.js`). RSS ve HTML kaynaklarından çekilen haberlerin orijinal URL adreslerine (`sourceUrl`) bağlanarak gCaptain, Splash247, Marine Insight, Safety4Sea vb. denizcilik portallarının tüm makale metinleri (`fullContent`), paragrafları ve gürültüsüz temizlenmiş içerikleri kazındı. `News` modeline `fullContent`, `isFullyScraped` ve `scrapedAt` alanları eklendi. `POST /api/news/:id/scrape-deep` ve `POST /api/news/scrape/deep` REST API endpoint'leri, Swagger dokümantasyonu, Web Dashboard arayüzündeki "Deep Scrape Content" butonu, haber detay modalı derin metin göstericisi ve Jest entegrasyon testleri başarıyla yazıldı.
+- **Aşama 28 (TAMAMLANDI ✅):** Gemi (`Vessel`) ve Kullanıcı (`User / Fleet`) Veri Modelleri & Filo Atama Mimarisi geliştirildi (`src/models/Vessel.js`, `src/models/User.js`, `src/data/seedFleet.js`). IMO numarası doğrulamalı Gemi şeması ve Mongoose `.populate('assignedVessels')` destekli Kullanıcı Filo şeması oluşturuldu. A Kullanıcısına (5 Gemi) ve B Kullanıcısına (3 Gemi) filolar atandı. `GET/POST /api/vessels`, `GET/POST /api/users` ve `POST /api/users/seed` REST API endpoint'leri, Swagger OpenAPI dokümanı ve Jest testleri yazıldı.
 
 ---
 
@@ -106,9 +107,9 @@ Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet
   - `src/services/deepScraperService.js` geliştirilmesi. Kazınan haberlerin `sourceUrl` bağlantısına gidilerek `Axios` ve `Cheerio` ile tam paragraf metinlerinin toplanması.
   - `News` modeline `fullContent`, `isFullyScraped` ve `scrapedAt` alanlarının eklenmesi.
 
-- **Aşama 28 (BEKLEMEDE ⏳): Gemi (Vessel) ve Kullanıcı (User / Fleet) Veri Modelleri & Veritabanı Şemaları**
+- **Aşama 28 (TAMAMLANDI ✅): Gemi (Vessel) ve Kullanıcı (User / Fleet) Veri Modelleri & Veritabanı Şemaları**
   - `src/models/Vessel.js` (IMO Number, Gemi Adı, MMSI, Bayrak, Gemi Tipi, Şirket ID) ve `src/models/User.js` (Ad/Soyad, E-posta, Şifre, Rol, `assignedVessels: [Vessel._id]`) modellerinin oluşturulması.
-  - Kullanıcı-Gemi ilişkisel atamalarının yapılması (A Kullanıcısı: 5 Gemi, B Kullanıcısı: 3 Gemi).
+  - Kullanıcı-Gemi ilişkisel atamalarının yapılması (A Kullanıcısı: 5 Gemi, B Kullanıcısı: 3 Gemi) ve `src/data/seedFleet.js` ile otomatik yükleme.
 
 - **Aşama 29 (BEKLEMEDE ⏳): Akıllı Metin Analizör & Çoklu Gemi Varlık Eşleme Motoru (Multi-Vessel Entity Matcher)**
   - `src/services/vesselMatcherService.js` yazılması. Derin makale metni (`fullContent`) üzerinde IMO No regex kalıpları (`IMO \d{7}`), gemi adı dizinleri ve fuzzy matching uygulanması.
@@ -139,6 +140,9 @@ Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet
 - [src/config/swagger.js](file:///c:/MyApps/MarineRadar/src/config/swagger.js): Swagger OpenAPI 3.0 dokümantasyon konfigürasyonu.
 - [src/models/News.js](file:///c:/MyApps/MarineRadar/src/models/News.js): Mongoose `News` şema ve model tanımı.
 - [src/models/Newsletter.js](file:///c:/MyApps/MarineRadar/src/models/Newsletter.js): Mongoose `Newsletter` şema ve ilişkisel model tanımı.
+- [src/models/Vessel.js](file:///c:/MyApps/MarineRadar/src/models/Vessel.js): Mongoose `Vessel` (Gemi Filosu) şema ve model tanımı.
+- [src/models/User.js](file:///c:/MyApps/MarineRadar/src/models/User.js): Mongoose `User` (Kullanıcı & Filo Atamaları) şema ve model tanımı.
+- [src/data/seedFleet.js](file:///c:/MyApps/MarineRadar/src/data/seedFleet.js): A Kullanıcısı (5 Gemi) ve B Kullanıcısı (3 Gemi) filolarını otomatik yükleyen seeder servisi.
 - [src/services/rssService.js](file:///c:/MyApps/MarineRadar/src/services/rssService.js): Otomatik RSS akışı kazıma ve analiz servisi.
 - [src/services/htmlService.js](file:///c:/MyApps/MarineRadar/src/services/htmlService.js): Axios & Cheerio tabanlı HTML web kazıma servisi.
 - [src/services/deepScraperService.js](file:///c:/MyApps/MarineRadar/src/services/deepScraperService.js): Orijinal haber bağlantılarından tam makale metinlerini kazıyan derin web scraping servisi.
@@ -149,12 +153,16 @@ Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet
 - [src/data/mockNews.js](file:///c:/MyApps/MarineRadar/src/data/mockNews.js): Mock veri seti.
 - [src/controllers/newsController.js](file:///c:/MyApps/MarineRadar/src/controllers/newsController.js): MongoDB haber asenkron iş mantığı katmanı.
 - [src/controllers/newsletterController.js](file:///c:/MyApps/MarineRadar/src/controllers/newsletterController.js): Akıllı bülten derleyici katmanı.
+- [src/controllers/vesselController.js](file:///c:/MyApps/MarineRadar/src/controllers/vesselController.js): Gemi filosu CRUD iş mantığı katmanı.
+- [src/controllers/userController.js](file:///c:/MyApps/MarineRadar/src/controllers/userController.js): Kullanıcı hesabı ve gemi yetkilendirme katmanı.
 - [src/routes/newsRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/newsRoutes.js): REST haber rotaları.
 - [src/routes/newsletterRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/newsletterRoutes.js): REST bülten rotaları.
+- [src/routes/vesselRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/vesselRoutes.js): REST gemi rotaları.
+- [src/routes/userRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/userRoutes.js): REST kullanıcı filosu rotaları.
 - [src/middlewares/validateNews.js](file:///c:/MyApps/MarineRadar/src/middlewares/validateNews.js): Doğrulama katmanı.
 - [src/middlewares/errorHandler.js](file:///c:/MyApps/MarineRadar/src/middlewares/errorHandler.js): Hata katmanı.
 - [public/index.html](file:///c:/MyApps/MarineRadar/public/index.html): MyCarbons kurumsal kimliğine uygun web dashboard semantik HTML5 iskeleti ve IMO-DCS & EU-MRV pill rozetleri.
 - [public/styles.css](file:///c:/MyApps/MarineRadar/public/styles.css): Resmi MyCarbons yaprak yeşili, turkuaz, mavi ve turuncu kurumsal renk paleti ve glassmorphism CSS tasarım sistemi.
 - [public/app.js](file:///c:/MyApps/MarineRadar/public/app.js): Asenkron `fetch API` haber çekme, dinamik DOM kart oluşturucu, etki puanı rozetleri ve canlı Hero istatistik hesaplayıcısı.
 - [scripts/init-env.js](file:///c:/MyApps/MarineRadar/scripts/init-env.js): `npm install` sonrasında eksik `.env` dosyasını varsayılan ayarlarla otomatik üreten betik.
-- [index.test.js](file:///c:/MyApps/MarineRadar/index.test.js): MongoDB, RSS, HTML, Newsletter, Swagger UI & Statik Web Dashboard entegrasyon testleri.
+- [index.test.js](file:///c:/MyApps/MarineRadar/index.test.js): MongoDB, RSS, HTML, Newsletter, Vessel, User, Swagger UI & Statik Web Dashboard entegrasyon testleri.

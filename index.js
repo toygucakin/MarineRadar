@@ -6,6 +6,9 @@ import { connectDB } from './src/config/db.js';
 import { initCronJobs } from './src/services/cronService.js';
 import newsRoutes from './src/routes/newsRoutes.js';
 import newsletterRoutes from './src/routes/newsletterRoutes.js';
+import vesselRoutes from './src/routes/vesselRoutes.js';
+import userRoutes from './src/routes/userRoutes.js';
+import { seedFleetData } from './src/data/seedFleet.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 
 // Express uygulamasını (app) başlatıyoruz
@@ -16,7 +19,13 @@ const PORT = process.env.PORT || 3000;
 
 // Veritabanı ve Cron Hizmetleri (Test modunda değilsek başlatılır)
 if (process.env.NODE_ENV !== 'test') {
-  connectDB();
+  connectDB().then(async () => {
+    try {
+      await seedFleetData();
+    } catch (e) {
+      console.warn('Otomatik filo seed uyarısı:', e.message);
+    }
+  });
   initCronJobs();
 }
 
@@ -32,6 +41,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Rota (Route) Montajları
 app.use('/api/news', newsRoutes);
 app.use('/api/newsletters', newsletterRoutes);
+app.use('/api/vessels', vesselRoutes);
+app.use('/api/users', userRoutes);
 
 // 404 Fallback Middleware
 app.use((req, res) => {
