@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { News } from '../models/News.js';
 import { matchVesselsForNewsItem } from './vesselMatcherService.js';
+import { classifyRegulationsForNewsItem } from './regulationService.js';
 
 const AXIOS_CONFIG = {
   headers: {
@@ -156,11 +157,12 @@ export const scrapeNewsById = async (newsId) => {
   newsItem.scrapedAt = new Date();
   await newsItem.save();
 
-  // Otomatik Gemi Varlık Eşleme Motorunu çalıştır
+  // Otomatik Gemi Varlık Eşleme & Regülasyon Sınıflandırmasını çalıştır
   try {
     await matchVesselsForNewsItem(newsItem);
+    await classifyRegulationsForNewsItem(newsItem);
   } catch (e) {
-    console.warn(`Gemi eşleme uyarısı (${newsId}):`, e.message);
+    console.warn(`Derin analiz uyarısı (${newsId}):`, e.message);
   }
 
   return {
@@ -169,7 +171,8 @@ export const scrapeNewsById = async (newsId) => {
     meta: {
       paragraphCount: result.paragraphCount,
       characterCount: result.characterCount,
-      matchedVesselsCount: newsItem.matchedVessels ? newsItem.matchedVessels.length : 0
+      matchedVesselsCount: newsItem.matchedVessels ? newsItem.matchedVessels.length : 0,
+      regulationsCount: newsItem.regulations ? newsItem.regulations.length : 0
     }
   };
 };
@@ -201,9 +204,10 @@ export const scrapeAllUnscrapedNews = async (limit = 30) => {
       newsItem.scrapedAt = new Date();
       await newsItem.save();
 
-      // Otomatik Gemi Varlık Eşleme
+      // Otomatik Gemi Varlık Eşleme & Regülasyon Sınıflandırması
       try {
         await matchVesselsForNewsItem(newsItem);
+        await classifyRegulationsForNewsItem(newsItem);
       } catch (e) {}
 
       successCount++;
@@ -218,6 +222,7 @@ export const scrapeAllUnscrapedNews = async (limit = 30) => {
 
       try {
         await matchVesselsForNewsItem(newsItem);
+        await classifyRegulationsForNewsItem(newsItem);
       } catch (e) {}
 
       errors.push({ newsId: newsItem.id, title: newsItem.title, url: newsItem.sourceUrl, error: err.message });

@@ -4,6 +4,7 @@ import { scrapeRssFeeds } from '../services/rssService.js';
 import { scrapeHtmlTargets } from '../services/htmlService.js';
 import { scrapeNewsById, scrapeAllUnscrapedNews } from '../services/deepScraperService.js';
 import { matchVesselsForNewsItem, matchVesselsForAllNews } from '../services/vesselMatcherService.js';
+import { classifyRegulationsForNewsItem, classifyRegulationsForAllNews } from '../services/regulationService.js';
 
 /**
  * Controller (MongoDB / Mongoose İş Mantığı Katmanı)
@@ -218,6 +219,75 @@ export const getNewsByVesselId = async (req, res, next) => {
 
     const matchedNewsList = await News.find({
       'matchedVessels.vessel': vesselId
+    }).sort({ publishedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: matchedNewsList.length,
+      data: matchedNewsList
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/news/:id/classify-regulations -> Belirli bir haber için regülasyon analizi çalıştırır
+export const classifyRegulationsSingleNews = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        success: false,
+        message: `ID değeri '${id}' olan haber bulunamadı.`
+      });
+    }
+
+    const newsItem = await News.findById(id);
+
+    if (!newsItem) {
+      return res.status(404).json({
+        success: false,
+        message: `ID değeri '${id}' olan haber bulunamadı.`
+      });
+    }
+
+    const result = await classifyRegulationsForNewsItem(newsItem);
+
+    res.status(200).json({
+      success: true,
+      message: `Regülasyon Sınıflandırması Tamamlandı: ${result.regulations.length} regülasyon konusu etiketlendi.`,
+      complianceRisk: result.complianceRisk,
+      data: newsItem
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/news/classify-regulations -> Veritabanındaki haberler için toplu regülasyon analizi çalıştırır
+export const classifyRegulationsAllNews = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit || req.body?.limit || '500', 10);
+    const result = await classifyRegulationsForAllNews(limit);
+
+    res.status(200).json({
+      success: true,
+      message: `Toplu Regülasyon Analizi Tamamlandı: ${result.classifiedNewsCount} haberde toplam ${result.totalRegulationsCount} regülasyon tespiti yapıldı.`,
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/news/regulation/:code -> Belirli bir regülasyon koduyla (EU_ETS, IMO_DCS vb.) eşleşen haberleri getirir
+export const getNewsByRegulationCode = async (req, res, next) => {
+  try {
+    const { code } = req.params;
+
+    const matchedNewsList = await News.find({
+      'regulations.code': code.toUpperCase()
     }).sort({ publishedAt: -1 });
 
     res.status(200).json({

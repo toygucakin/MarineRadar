@@ -176,6 +176,36 @@ const options = {
           }
         }
       },
+      '/api/news/classify-regulations': {
+        post: {
+          summary: 'Veritabanındaki haberlerde denizcilik regülasyon analizi ve uyumluluk risk skorlaması çalıştırır',
+          responses: {
+            200: { description: 'Toplu regülasyon sınıflandırma raporu' }
+          }
+        }
+      },
+      '/api/news/{id}/classify-regulations': {
+        post: {
+          summary: 'Belirli bir haber için IMO DCS, EU ETS, FuelEU Maritime, CII/EEXI regülasyon analizi yapar',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Regülasyon analitiği tamamlandı' }
+          }
+        }
+      },
+      '/api/news/regulation/{code}': {
+        get: {
+          summary: 'Belirli bir regülasyon koduyla (EU_ETS, CII_EEXI, IMO_DCS vb.) etiketlenmiş haberleri getirir',
+          parameters: [
+            { name: 'code', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Regülasyona özel haber listesi' }
+          }
+        }
+      },
       '/api/vessels': {
         get: {
           summary: 'Tüm gemi filosunu listeler',

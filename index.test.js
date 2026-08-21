@@ -212,6 +212,29 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
     });
   });
 
+  // POST /api/news/classify-regulations (Aşama 30 - Regülasyon ve Emisyon Analitiği Testi)
+  describe('POST /api/news/classify-regulations (Aşama 30 - Regülasyon Analitiği)', () => {
+    it('veritabanındaki haberleri regülasyonlara göre etiketleyip risk skorlarını 200 OK ile dönmelidir', async () => {
+      const response = await request(app).post('/api/news/classify-regulations');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('classifiedNewsCount');
+      expect(response.body.data).toHaveProperty('totalRegulationsCount');
+    });
+  });
+
+  // GET /api/news/regulation/:code (Aşama 30 - Regülasyona Özel Haber Filtreleme Testi)
+  describe('GET /api/news/regulation/:code (Regülasyon Kodlu Haberler)', () => {
+    it('geçerli bir regülasyon kodu verilince 200 OK ve filtrelenmiş haber listesini dönmelidir', async () => {
+      const response = await request(app).get('/api/news/regulation/EU_ETS');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
+    });
+  });
+
   // GET /api-docs (Swagger UI Dokümantasyon Testi)
   describe('GET /api-docs (Swagger UI Dokümantasyonu)', () => {
     it('Swagger UI arayüzü isteğine 200 veya 301/302 yönlendirmesi dönmelidir', async () => {

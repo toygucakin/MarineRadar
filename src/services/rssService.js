@@ -2,6 +2,7 @@ import Parser from 'rss-parser';
 import { News } from '../models/News.js';
 import { scrapeArticleContent } from './deepScraperService.js';
 import { matchVesselsForNewsItem } from './vesselMatcherService.js';
+import { classifyRegulationsForNewsItem } from './regulationService.js';
 
 const parser = new Parser({
   headers: {
@@ -116,9 +117,10 @@ export const scrapeRssFeeds = async (customFeeds = null) => {
           scrapedAt: new Date()
         });
 
-        // Gemi Varlık Eşleme Motorunu çalıştır
+        // Gemi Varlık Eşleme & Regülasyon Sınıflandırmasını çalıştır
         try {
           await matchVesselsForNewsItem(newNews);
+          await classifyRegulationsForNewsItem(newNews);
         } catch (e) {}
 
         addedNews.push(newNews);

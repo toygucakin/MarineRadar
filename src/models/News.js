@@ -74,7 +74,20 @@ const newsSchema = new mongoose.Schema({
       confidenceScore: { type: Number, min: 0, max: 1, default: 0.9 },
       mentionSnippet: { type: String, trim: true }
     }
-  ]
+  ],
+  regulations: [
+    {
+      name: { type: String, trim: true },
+      code: { type: String, trim: true },
+      impactLevel: { type: String, enum: ['High', 'Medium', 'Low'], default: 'Medium' },
+      mentionSnippet: { type: String, trim: true }
+    }
+  ],
+  complianceRisk: {
+    riskScore: { type: Number, min: 0, max: 10, default: 0 },
+    riskLevel: { type: String, enum: ['Critical', 'High', 'Moderate', 'Low', 'None'], default: 'None' },
+    summary: { type: String, trim: true }
+  }
 }, {
   timestamps: true // createdAt ve updatedAt alanlarını otomatik ekler
 });
