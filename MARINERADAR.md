@@ -64,6 +64,7 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 28 (TAMAMLANDI ✅):** Gemi (`Vessel`) ve Kullanıcı (`User / Fleet`) Veri Modelleri & Filo Atama Mimarisi geliştirildi (`src/models/Vessel.js`, `src/models/User.js`, `src/data/seedFleet.js`). IMO numarası doğrulamalı Gemi şeması ve Mongoose `.populate('assignedVessels')` destekli Kullanıcı Filo şeması oluşturuldu. A Kullanıcısına (5 Gemi) ve B Kullanıcısına (3 Gemi) filolar atandı. `GET/POST /api/vessels`, `GET/POST /api/users` ve `POST /api/users/seed` REST API endpoint'leri, Swagger OpenAPI dokümanı ve Jest testleri yazıldı.
 - **Aşama 29 (TAMAMLANDI ✅):** Akıllı Metin Analizör & Çoklu Gemi Varlık Eşleme Motoru (Multi-Vessel Entity Matcher) geliştirildi (`src/services/vesselMatcherService.js`). `News` modeline `matchedVessels` şeması eklendi. Haberlerin tam metinlerinde geçen gemiler IMO Numarası (Regex `\b\d{7}\b`) ve Gemi Adı kelime sınırları (`\bName\b`) taranarak tespit edildi; güven skoru (%90-%100) ve metin içi alıntı paragrafı (`mentionSnippet`) üretildi. `POST /api/news/match-vessels`, `POST /api/news/:id/match-vessels` ve `GET /api/news/vessel/:vesselId` REST API endpoint'leri, Swagger dokümanı, Web Dashboard haber kartları ve haber detay modalı gemi rozetleri ile Jest testleri yazıldı.
 - **Aşama 30 (TAMAMLANDI ✅):** Regülasyon ve Emisyon Metin Analitiği (Maritime Regulation Classifier & Compliance Risk Assessor) geliştirildi (`src/services/regulationService.js`). `News` modeline `regulations` ve `complianceRisk` alanları eklendi. Metinler EU ETS, EU-MRV, IMO DCS, FuelEU Maritime, CII/EEXI, Green Corridors, Alternative Fuels ve Poseidon Principles konularına göre sınıflandırıldı. Ceza/yaptırım kelimeleri üzerinden 0.0-10.0 arası Uyumluluk Risk Skoru (Critical/High/Moderate/Low) üretildi. `POST /api/news/classify-regulations`, `POST /api/news/:id/classify-regulations` ve `GET /api/news/regulation/:code` REST API endpoint'leri, Swagger OpenAPI dokümanı, Web Dashboard regülasyon pill rozetleri, detay modalı risk paneli ve Jest testleri yazıldı.
+- **Aşama 31 (TAMAMLANDI ✅):** Kullanıcı Yetkilendirme (Auth) & Kişisel Gemi Akışı REST API'leri geliştirildi (`src/middlewares/authMiddleware.js`, `src/controllers/authController.js`, `src/routes/authRoutes.js`). JWT tabanlı kimlik doğrulama katmanı eklendi. `POST /api/auth/login` (JWT token üretimi), `GET /api/auth/me` (kullanıcı profili ve atanmış gemi filosu) ve korumalı `GET /api/news/my-vessels` (oturum açan kullanıcının sadece kendi gemileriyle eşleşen özel haber akışı) REST API endpoint'leri, Swagger Bearer token dokümantasyonu ve Jest testleri yazıldı.
 
 ---
 
@@ -120,8 +121,8 @@ Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet
 - **Aşama 30 (TAMAMLANDI ✅): Regülasyon ve Emisyon Metin Analitiği (Maritime Regulation Classifier)**
   - `src/services/regulationService.js` geliştirilmesi. Derin metinlerin IMO DCS, EU-MRV, EU ETS, FuelEU Maritime, CII/EEXI, Green Corridors, Biofuel/LNG/Ammonia başlıklarına göre etiketlenmesi ve gemi uyumluluk risk skorlarının hesaplanması.
 
-- **Aşama 31 (BEKLEMEDE ⏳): Kullanıcı Yetkilendirme (Auth) & Kişisel Gemi Akışı REST API'leri**
-  - JWT tabanlı kimlik doğrulama (`src/middlewares/authMiddleware.js`), `POST /api/auth/login`, `GET /api/user/vessels` ve kullanıcının atanmış gemilerine özel haberleri dönen `GET /api/news/my-vessels` endpoint'lerinin yazılması.
+- **Aşama 31 (TAMAMLANDI ✅): Kullanıcı Yetkilendirme (Auth) & Kişisel Gemi Akışı REST API'leri**
+  - JWT tabanlı kimlik doğrulama (`src/middlewares/authMiddleware.js`), `POST /api/auth/login`, `GET /api/auth/me` ve kullanıcının atanmış gemilerine özel haberleri dönen `GET /api/news/my-vessels` endpoint'lerinin yazılması.
 
 - **Aşama 32 (BEKLEMEDE ⏳): Frontend Kullanıcı Filosu & Gemi Odaklı Haber Dashboard Arayüzü**
   - Web arayüzüne "My Fleet / Gemilerim" sekmesi, kullanıcı gemi filtresi dropdown'u ve haber detayında habere konu olan tüm gemilerin rozetler (Vessel Pills) ve metin içi alıntı kutuları (Context Snippets) ile gösterilmesi.
@@ -159,14 +160,17 @@ Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet
 - [src/controllers/newsletterController.js](file:///c:/MyApps/MarineRadar/src/controllers/newsletterController.js): Akıllı bülten derleyici katmanı.
 - [src/controllers/vesselController.js](file:///c:/MyApps/MarineRadar/src/controllers/vesselController.js): Gemi filosu CRUD iş mantığı katmanı.
 - [src/controllers/userController.js](file:///c:/MyApps/MarineRadar/src/controllers/userController.js): Kullanıcı hesabı ve gemi yetkilendirme katmanı.
+- [src/controllers/authController.js](file:///c:/MyApps/MarineRadar/src/controllers/authController.js): JWT kullanıcı oturum açma ve kişisel filo kontrol katmanı.
 - [src/routes/newsRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/newsRoutes.js): REST haber rotaları.
 - [src/routes/newsletterRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/newsletterRoutes.js): REST bülten rotaları.
 - [src/routes/vesselRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/vesselRoutes.js): REST gemi rotaları.
 - [src/routes/userRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/userRoutes.js): REST kullanıcı filosu rotaları.
+- [src/routes/authRoutes.js](file:///c:/MyApps/MarineRadar/src/routes/authRoutes.js): REST JWT kimlik doğrulama rotaları.
+- [src/middlewares/authMiddleware.js](file:///c:/MyApps/MarineRadar/src/middlewares/authMiddleware.js): JWT token doğrulama ve kullanıcı filo yetki katmanı.
 - [src/middlewares/validateNews.js](file:///c:/MyApps/MarineRadar/src/middlewares/validateNews.js): Doğrulama katmanı.
 - [src/middlewares/errorHandler.js](file:///c:/MyApps/MarineRadar/src/middlewares/errorHandler.js): Hata katmanı.
 - [public/index.html](file:///c:/MyApps/MarineRadar/public/index.html): MyCarbons kurumsal kimliğine uygun web dashboard semantik HTML5 iskeleti ve IMO-DCS & EU-MRV pill rozetleri.
 - [public/styles.css](file:///c:/MyApps/MarineRadar/public/styles.css): Resmi MyCarbons yaprak yeşili, turkuaz, mavi ve turuncu kurumsal renk paleti ve glassmorphism CSS tasarım sistemi.
 - [public/app.js](file:///c:/MyApps/MarineRadar/public/app.js): Asenkron `fetch API` haber çekme, dinamik DOM kart oluşturucu, etki puanı rozetleri ve canlı Hero istatistik hesaplayıcısı.
 - [scripts/init-env.js](file:///c:/MyApps/MarineRadar/scripts/init-env.js): `npm install` sonrasında eksik `.env` dosyasını varsayılan ayarlarla otomatik üreten betik.
-- [index.test.js](file:///c:/MyApps/MarineRadar/index.test.js): MongoDB, RSS, HTML, Newsletter, Vessel, User, Swagger UI & Statik Web Dashboard entegrasyon testleri.
+- [index.test.js](file:///c:/MyApps/MarineRadar/index.test.js): MongoDB, RSS, HTML, Newsletter, Vessel, User, Auth, Swagger UI & Statik Web Dashboard entegrasyon testleri.

@@ -235,6 +235,42 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
     });
   });
 
+  // POST /api/auth/login & GET /api/news/my-vessels (Aşama 31 - JWT Kimlik Doğrulama & Kişisel Filo Haberleri Testi)
+  describe('POST /api/auth/login & GET /api/news/my-vessels (Aşama 31 - Auth & Kişisel Akış)', () => {
+    it('geçerli e-posta ile giriş yapılınca JWT token dönmeli ve token ile kişisel filo haberleri 200 OK ile çekilmelidir', async () => {
+      // 1. Filo seeder'ı çalıştır
+      await request(app).post('/api/users/seed');
+
+      // 2. A Kullanıcısı (ahmet.armator@mycarbons.com) ile giriş yap
+      const loginRes = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'ahmet.armator@mycarbons.com', password: 'password123' });
+
+      expect(loginRes.statusCode).toBe(200);
+      expect(loginRes.body.success).toBe(true);
+      expect(loginRes.body).toHaveProperty('token');
+
+      const token = loginRes.body.token;
+
+      // 3. JWT Token kullanarak kişisel haber akışını çek (GET /api/news/my-vessels)
+      const myNewsRes = await request(app)
+        .get('/api/news/my-vessels')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(myNewsRes.statusCode).toBe(200);
+      expect(myNewsRes.body.success).toBe(true);
+      expect(myNewsRes.body).toHaveProperty('user');
+      expect(Array.isArray(myNewsRes.body.data)).toBe(true);
+    });
+
+    it('tokensız korumalı istek atılınca 401 Unauthorized dönmelidir', async () => {
+      const response = await request(app).get('/api/news/my-vessels');
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body.success).toBe(false);
+    });
+  });
+
   // GET /api-docs (Swagger UI Dokümantasyon Testi)
   describe('GET /api-docs (Swagger UI Dokümantasyonu)', () => {
     it('Swagger UI arayüzü isteğine 200 veya 301/302 yönlendirmesi dönmelidir', async () => {

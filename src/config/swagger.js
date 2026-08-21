@@ -22,6 +22,14 @@ const options = {
       }
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Giriş yaptıktan sonra alınan JWT tokenını girin.'
+        }
+      },
       schemas: {
         News: {
           type: 'object',
@@ -84,6 +92,49 @@ const options = {
       }
     },
     paths: {
+      '/api/auth/login': {
+        post: {
+          summary: 'Kullanıcı e-posta ve şifresi ile giriş yaparak JWT token üretir (Örn: ahmet.armator@mycarbons.com)',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    email: { type: 'string', example: 'ahmet.armator@mycarbons.com' },
+                    password: { type: 'string', example: 'password123' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            200: { description: 'Giriş başarılı ve JWT token üretildi' },
+            401: { description: 'Hatalı e-posta veya şifre' }
+          }
+        }
+      },
+      '/api/auth/me': {
+        get: {
+          summary: 'Giriş yapan kullanıcının profilini ve atanmış filo bilgilerini getirir',
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: 'Kullanıcı profili' },
+            401: { description: 'Token bulunamadı veya geçersiz' }
+          }
+        }
+      },
+      '/api/news/my-vessels': {
+        get: {
+          summary: 'Giriş yapan kullanıcının sadece kendi filosuyla (atanmış gemileriyle) eşleşen özel haber akışını getirir',
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: 'Kişiselleştirilmiş filo haber akışı' },
+            401: { description: 'Yetkilendirme hatası' }
+          }
+        }
+      },
       '/api/news': {
         get: {
           summary: 'Tüm haberleri veritabanından listeler',

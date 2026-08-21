@@ -8,6 +8,7 @@ import newsRoutes from './src/routes/newsRoutes.js';
 import newsletterRoutes from './src/routes/newsletterRoutes.js';
 import vesselRoutes from './src/routes/vesselRoutes.js';
 import userRoutes from './src/routes/userRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
 import { seedFleetData } from './src/data/seedFleet.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 
@@ -43,6 +44,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/newsletters', newsletterRoutes);
 app.use('/api/vessels', vesselRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
 
 // 404 Fallback Middleware
 app.use((req, res) => {

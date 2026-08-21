@@ -10,11 +10,13 @@ import {
   matchVesselsSingleNews,
   matchVesselsAllNews,
   getNewsByVesselId,
+  getMyVesselsNews,
   classifyRegulationsSingleNews,
   classifyRegulationsAllNews,
   getNewsByRegulationCode
 } from '../controllers/newsController.js';
 import { validateCreateNews } from '../middlewares/validateNews.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
@@ -24,6 +26,9 @@ const router = Router();
 
 // GET /api/news -> Tüm haberleri getirme
 router.get('/', getAllNews);
+
+// GET /api/news/my-vessels -> Giriş yapan kullanıcının kendi gemilerine özel haber akışını getirme (Korumalı)
+router.get('/my-vessels', verifyToken, getMyVesselsNews);
 
 // GET /api/news/vessel/:vesselId -> Belirli bir gemiyle eşleşen haberleri getirme
 router.get('/vessel/:vesselId', getNewsByVesselId);

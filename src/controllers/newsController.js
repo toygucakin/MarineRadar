@@ -231,6 +231,36 @@ export const getNewsByVesselId = async (req, res, next) => {
   }
 };
 
+// GET /api/news/my-vessels -> Giriş yapan kullanıcının kendi gemilerine özel kişiselleştirilmiş haber akışını getirir
+export const getMyVesselsNews = async (req, res, next) => {
+  try {
+    const userVessels = req.user.assignedVessels || [];
+    const vesselIds = userVessels.map(v => v._id || v);
+
+    if (vesselIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Kullanıcınıza henüz atanmış bir gemi bulunmuyor.',
+        count: 0,
+        data: []
+      });
+    }
+
+    const newsList = await News.find({
+      'matchedVessels.vessel': { $in: vesselIds }
+    }).sort({ publishedAt: -1, createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      user: { name: req.user.name, email: req.user.email, vesselCount: vesselIds.length },
+      count: newsList.length,
+      data: newsList
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // POST /api/news/:id/classify-regulations -> Belirli bir haber için regülasyon analizi çalıştırır
 export const classifyRegulationsSingleNews = async (req, res, next) => {
   try {
