@@ -939,7 +939,309 @@ window.openLoginFleetModal = openLoginFleetModal;
  * Render User Login & Fleet Management Modal Content
  */
 function renderLoginFleetModalContent() {
-  // ... implementation ...
+  if (!DOM.loginFleetModalContent) return;
+
+  const currentUser = appState.currentUser;
+  const isUserLoggedIn = !!currentUser;
+  const assignedVessels = isUserLoggedIn ? (currentUser.assignedVessels || []) : [];
+  const assignedVesselIds = assignedVessels.map(v => (v._id || v.id || v).toString());
+
+  // Available registered vessels to add
+  const availableVessels = appState.registeredVessels.filter(v => {
+    const vId = (v._id || v.id).toString();
+    return !assignedVesselIds.includes(vId);
+  });
+
+  if (!isUserLoggedIn) {
+    // Show Email & Password Login Form
+    DOM.loginFleetModalContent.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
+          <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; font-weight: 700; color: var(--text-heading); display: flex; align-items: center; gap: 0.5rem;">
+            🔑 Sign In to Your Fleet Account
+          </h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Enter your account email and password to access your personalized fleet news feed and manage assigned vessels.
+          </p>
+
+          <form id="form-user-login" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.3rem;">
+                Email Address:
+              </label>
+              <input type="email" id="input-login-email" required placeholder="e.g. ahmet.armator@mycarbons.com" value="ahmet.armator@mycarbons.com" style="width: 100%; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border-card); padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.9rem;">
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.3rem;">
+                Password:
+              </label>
+              <input type="password" id="input-login-password" required placeholder="Enter password" value="password123" style="width: 100%; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border-card); padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.9rem;">
+            </div>
+
+            <div id="login-error-msg" style="display: none; color: #DC2626; font-size: 0.82rem; font-weight: 600; background: #FEE2E2; padding: 0.5rem 0.75rem; border-radius: var(--radius-sm);"></div>
+
+            <button type="submit" id="btn-submit-login" class="btn-action" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 0.7rem; font-size: 0.92rem; font-weight: 700; cursor: pointer; justify-content: center; margin-top: 0.25rem;">
+              🔑 Login to Fleet Portal
+            </button>
+          </form>
+
+          <!-- Quick Fill Presets for Testing -->
+          <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed var(--border-card);">
+            <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">⚡ Quick Preset Fill (Demo Accounts):</span>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" id="btn-quick-user-a" style="background: #CCFBF1; color: #0D9488; border: 1px solid rgba(13, 148, 136, 0.3); padding: 0.3rem 0.65rem; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+                🚢 User A (5 Vessels)
+              </button>
+              <button type="button" id="btn-quick-user-b" style="background: #FEF3C7; color: #D97706; border: 1px solid rgba(217, 119, 6, 0.3); padding: 0.3rem 0.65rem; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+                🚢 User B (3 Vessels)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Shortcut -->
+        <div style="display: flex; justify-content: flex-end;">
+          <button id="modal-btn-view-all" class="btn-action" style="background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border-card);">
+            🌐 Continue as Guest (Public Feed)
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Bind form submit listener
+    const form = document.getElementById('form-user-login');
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('input-login-email').value.trim();
+        const password = document.getElementById('input-login-password').value.trim();
+        const errorDiv = document.getElementById('login-error-msg');
+        const submitBtn = document.getElementById('btn-submit-login');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Logging in...';
+        errorDiv.style.display = 'none';
+
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const result = await res.json();
+
+          if (result.success && result.token) {
+            appState.authToken = result.token;
+            appState.currentUser = result.user;
+            showToast(`Logged in as ${result.user.name}`, 'success');
+            await loadUserFleetNews();
+            showFleetBanner(result.user);
+            renderLoginFleetModalContent();
+          } else {
+            errorDiv.textContent = result.message || 'Login failed. Please check your credentials.';
+            errorDiv.style.display = 'block';
+          }
+        } catch (err) {
+          console.error('Login error:', err);
+          errorDiv.textContent = 'Connection error. Please try again.';
+          errorDiv.style.display = 'block';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '🔑 Login to Fleet Portal';
+        }
+      });
+    }
+
+    // Quick fill listeners
+    const btnQuickA = document.getElementById('btn-quick-user-a');
+    if (btnQuickA) {
+      btnQuickA.addEventListener('click', () => {
+        document.getElementById('input-login-email').value = 'ahmet.armator@mycarbons.com';
+        document.getElementById('input-login-password').value = 'password123';
+      });
+    }
+
+    const btnQuickB = document.getElementById('btn-quick-user-b');
+    if (btnQuickB) {
+      btnQuickB.addEventListener('click', () => {
+        document.getElementById('input-login-email').value = 'burak.operator@mycarbons.com';
+        document.getElementById('input-login-password').value = 'password123';
+      });
+    }
+
+    const btnViewAll = document.getElementById('modal-btn-view-all');
+    if (btnViewAll) {
+      btnViewAll.addEventListener('click', async () => {
+        appState.activeCategory = 'all';
+        await loadNewsData();
+        const modal = document.getElementById('login-fleet-modal');
+        if (modal) modal.classList.remove('active');
+      });
+    }
+
+  } else {
+    // Show Logged In Profile & Fleet Management Panel
+    DOM.loginFleetModalContent.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <!-- Logged In User Profile Card -->
+        <div style="background: var(--bg-card); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: #CCFBF1; color: #0D9488; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem;">
+              ${escapeHTML(currentUser.name ? currentUser.name.charAt(0) : 'U')}
+            </div>
+            <div>
+              <h4 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: var(--text-heading);">
+                ${escapeHTML(currentUser.name)}
+              </h4>
+              <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">
+                ${escapeHTML(currentUser.email)} • Role: ${escapeHTML(currentUser.role || 'Armatör')}
+              </p>
+            </div>
+          </div>
+
+          <button id="modal-btn-logout" class="btn-action" style="background: #FEE2E2; color: #DC2626; border: 1px solid rgba(220, 38, 38, 0.3); padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; cursor: pointer;">
+            Logout 🚪
+          </button>
+        </div>
+
+        <!-- Fleet Management Panel -->
+        <div style="background: rgba(13, 148, 136, 0.05); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid rgba(13, 148, 136, 0.25);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #0F766E; display: flex; align-items: center; gap: 0.4rem;">
+              ⚓ Your Assigned Fleet (${assignedVessels.length} Vessels):
+            </h4>
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Manage your vessels below</span>
+          </div>
+
+          <!-- Vessels List -->
+          <div style="display: flex; flex-direction: column; gap: 0.55rem; max-height: 220px; overflow-y: auto; margin-bottom: 1rem; padding-right: 0.2rem;">
+            ${assignedVessels.length > 0 ? assignedVessels.map(v => `
+              <div style="background: var(--bg-card); padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div>
+                  <strong style="color: var(--text-heading); font-size: 0.88rem;">🚢 ${escapeHTML(v.vesselName)}</strong>
+                  <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">${v.imoNumber ? 'IMO ' + escapeHTML(v.imoNumber) : escapeHTML(v.vesselType)}</span>
+                </div>
+                <button class="btn-remove-vessel" data-vessel-id="${v._id || v.id}" style="background: #FEE2E2; color: #DC2626; border: 1px solid rgba(220, 38, 38, 0.3); padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; cursor: pointer;">
+                  Remove ❌
+                </button>
+              </div>
+            `).join('') : '<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">No vessels currently assigned to your fleet.</p>'}
+          </div>
+
+          <!-- Add Vessel Form -->
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: var(--bg-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-heading);">Add Vessel to Fleet:</span>
+            <select id="modal-add-vessel-select" style="flex: 1; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border-card); padding: 0.45rem 0.65rem; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer;">
+              ${availableVessels.length > 0 ? availableVessels.map(av => `
+                <option value="${av.id || av._id}">🚢 ${escapeHTML(av.vesselName)} (${av.imoNumber ? 'IMO ' + escapeHTML(av.imoNumber) : escapeHTML(av.vesselType)})</option>
+              `).join('') : '<option value="">All registered vessels already in your fleet</option>'}
+            </select>
+            <button id="modal-btn-add-vessel" class="btn-action" style="background: #0D9488; color: white; border: none; padding: 0.45rem 0.85rem; font-size: 0.82rem;" ${availableVessels.length === 0 ? 'disabled' : ''}>
+              Add Vessel ➕
+            </button>
+          </div>
+        </div>
+
+        <!-- News Shortcuts -->
+        <div style="background: var(--bg-card); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
+          <h4 style="margin: 0 0 0.75rem 0; font-size: 0.92rem; font-weight: 700; color: var(--text-heading);">
+            📰 News Feed Navigation Shortcuts:
+          </h4>
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button id="modal-btn-view-my-fleet" class="btn-action" style="background: #CCFBF1; color: #0D9488; border: 1px solid rgba(13, 148, 136, 0.4); font-weight: 700;">
+              ⚓ View My Fleet Personal Feed (${assignedVessels.length} Vessels)
+            </button>
+            <button id="modal-btn-view-all" class="btn-action" style="background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border-card);">
+              🌐 View All News (Public Feed)
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Logout listener
+    const btnLogout = document.getElementById('modal-btn-logout');
+    if (btnLogout) {
+      btnLogout.addEventListener('click', async () => {
+        appState.authToken = null;
+        appState.currentUser = null;
+        hideFleetBanner();
+        showToast('Logged out of fleet account', 'info');
+        await loadNewsData();
+        renderLoginFleetModalContent();
+      });
+    }
+
+    // Add vessel listener
+    const btnAddVessel = document.getElementById('modal-btn-add-vessel');
+    if (btnAddVessel) {
+      btnAddVessel.addEventListener('click', async () => {
+        const vesselId = document.getElementById('modal-add-vessel-select').value;
+        if (!vesselId || !currentUser) return;
+
+        try {
+          const res = await fetch(`/api/users/${currentUser.id || currentUser._id}/vessels`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ vesselId })
+          });
+          const result = await res.json();
+          if (result.success) {
+            appState.currentUser = result.data;
+            showToast('Vessel added to your fleet!', 'success');
+            await loadUserFleetNews();
+            renderLoginFleetModalContent();
+          }
+        } catch (e) {
+          console.error('Add vessel error:', e);
+        }
+      });
+    }
+
+    // Remove vessel listeners
+    const removeBtns = DOM.loginFleetModalContent.querySelectorAll('.btn-remove-vessel');
+    removeBtns.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const vId = btn.dataset.vesselId;
+        if (!vId || !currentUser) return;
+
+        try {
+          const res = await fetch(`/api/users/${currentUser.id || currentUser._id}/vessels/${vId}`, {
+            method: 'DELETE'
+          });
+          const result = await res.json();
+          if (result.success) {
+            appState.currentUser = result.data;
+            showToast('Vessel removed from your fleet.', 'info');
+            await loadUserFleetNews();
+            renderLoginFleetModalContent();
+          }
+        } catch (e) {
+          console.error('Remove vessel error:', e);
+        }
+      });
+    });
+
+    const btnViewMyFleet = document.getElementById('modal-btn-view-my-fleet');
+    if (btnViewMyFleet) {
+      btnViewMyFleet.addEventListener('click', async () => {
+        await loadUserFleetNews();
+        const modal = document.getElementById('login-fleet-modal');
+        if (modal) modal.classList.remove('active');
+      });
+    }
+
+    const btnViewAll = document.getElementById('modal-btn-view-all');
+    if (btnViewAll) {
+      btnViewAll.addEventListener('click', async () => {
+        appState.activeCategory = 'all';
+        await loadNewsData();
+        const modal = document.getElementById('login-fleet-modal');
+        if (modal) modal.classList.remove('active');
+      });
+    }
+  }
 }
 
 /**
