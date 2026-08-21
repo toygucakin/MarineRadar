@@ -66,6 +66,7 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 30 (TAMAMLANDI ✅):** Regülasyon ve Emisyon Metin Analitiği (Maritime Regulation Classifier & Compliance Risk Assessor) geliştirildi (`src/services/regulationService.js`). `News` modeline `regulations` ve `complianceRisk` alanları eklendi. Metinler EU ETS, EU-MRV, IMO DCS, FuelEU Maritime, CII/EEXI, Green Corridors, Alternative Fuels ve Poseidon Principles konularına göre sınıflandırıldı. Ceza/yaptırım kelimeleri üzerinden 0.0-10.0 arası Uyumluluk Risk Skoru (Critical/High/Moderate/Low) üretildi. `POST /api/news/classify-regulations`, `POST /api/news/:id/classify-regulations` ve `GET /api/news/regulation/:code` REST API endpoint'leri, Swagger OpenAPI dokümanı, Web Dashboard regülasyon pill rozetleri, detay modalı risk paneli ve Jest testleri yazıldı.
 - **Aşama 31 (TAMAMLANDI ✅):** Kullanıcı Yetkilendirme (Auth) & Kişisel Gemi Akışı REST API'leri geliştirildi (`src/middlewares/authMiddleware.js`, `src/controllers/authController.js`, `src/routes/authRoutes.js`). JWT tabanlı kimlik doğrulama katmanı eklendi. `POST /api/auth/login` (JWT token üretimi), `GET /api/auth/me` (kullanıcı profili ve atanmış gemi filosu) ve korumalı `GET /api/news/my-vessels` (oturum açan kullanıcının sadece kendi gemileriyle eşleşen özel haber akışı) REST API endpoint'leri, Swagger Bearer token dokümantasyonu ve Jest testleri yazıldı.
 - **Aşama 32 (TAMAMLANDI ✅):** Frontend Kullanıcı Filosu & Gemi Odaklı Haber Dashboard Arayüzü geliştirildi (`public/index.html`, `public/app.js`). Arayüze "Account & Fleet View" kullanıcı seçici dropdown'ı (User A / User B / Public Feed), "Filter Specific Vessel" gemi seçici dropdown'ı ve "⚓ My Fleet News" özel sekmesi eklendi. Oturum açan kullanıcının yetkili gemilerine ait canlı haber bandı (Active Fleet Banner) ve dinamik JWT oturum senkronizasyonu tamamlandı.
+- **Aşama 33 (TAMAMLANDI ✅):** Zamanlanmış 4 Aşamalı Tam Veri Boru Hattı (Full Scraping & Intelligence Pipeline Engine) geliştirildi (`src/services/cronService.js`). 1. RSS/HTML Akış Kazıma ➔ 2. Derin Makale Metni Kazıma (Deep Scraper) ➔ 3. Filo Gemi Varlık Eşleme (Multi-Vessel Entity Matcher) ➔ 4. Regülasyon Sınıflandırma ve Uyumluluk Risk Skorlaması (Regulation Classifier) adımları uçtan uca tek bir orkestratörde birleştirildi. `POST /api/news/scrape/pipeline` manuel tetikleme endpoint'i, Swagger dokümantasyonu, Web Dashboard arayüzündeki "⚡ Run Full Pipeline" tetikleme butonu ve 22 geçerli Jest entegrasyon testi yazıldı.
 
 ---
 
@@ -128,7 +129,7 @@ Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet
 - **Aşama 32 (TAMAMLANDI ✅): Frontend Kullanıcı Filosu & Gemi Odaklı Haber Dashboard Arayüzü**
   - Web arayüzüne "My Fleet / Gemilerim" sekmesi, kullanıcı gemi filtresi dropdown'u ve haber detayında habere konu olan tüm gemilerin rozetler (Vessel Pills) ve metin içi alıntı kutuları (Context Snippets) ile gösterilmesi.
 
-- **Aşama 33 (BEKLEMEDE ⏳): Zamanlanmış Veri Boru Hattı (Cron Scraping Pipeline) & Test Entegrasyonu**
+- **Aşama 33 (TAMAMLANDI ✅): Zamanlanmış Veri Boru Hattı (Cron Scraping Pipeline) & Test Entegrasyonu**
   - Periyodik Cron görevine: 1. Feed Scrape -> 2. Deep Article Scrape -> 3. Vessel Matcher & Regulation Tagging adımlarının bağlanması ve Jest entegrasyon testlerinin güncellenmesi.
 
 ---

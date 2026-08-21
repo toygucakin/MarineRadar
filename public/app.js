@@ -27,6 +27,7 @@ const DOM = {
   // Controls
   searchInput: document.getElementById('search-input'),
   categoryTabs: document.getElementById('category-tabs'),
+  btnRunPipeline: document.getElementById('btn-run-pipeline'),
   btnScrapeRss: document.getElementById('btn-scrape-rss'),
   btnScrapeHtml: document.getElementById('btn-scrape-html'),
   btnScrapeDeep: document.getElementById('btn-scrape-deep'),
@@ -482,7 +483,38 @@ function setupEventListeners() {
     });
   }
 
-  // 3. RSS Scrape Button Listener
+  // 3. Run Full Pipeline Button Listener (Aşama 33)
+  if (DOM.btnRunPipeline) {
+    DOM.btnRunPipeline.addEventListener('click', async () => {
+      DOM.btnRunPipeline.disabled = true;
+      DOM.btnRunPipeline.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Running Pipeline...';
+      showToast('Executing 4-Stage Scraping Pipeline...', 'info');
+
+      try {
+        const response = await fetch('/api/news/scrape/pipeline', { method: 'POST' });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          const r = result.data;
+          showToast(`⚡ Pipeline Finished: +${r.rssAdded + r.htmlAdded} new items, ${r.deepScrapedCount} deep scraped, ${r.matchedVesselsCount} vessels matched, ${r.classifiedRegulationsCount} regulations tagged!`, 'success');
+          await loadNewsData();
+        } else {
+          showToast('Pipeline execution issue: ' + (result.message || 'Unknown error'), 'error');
+        }
+      } catch (e) {
+        console.error('Pipeline Error:', e);
+        showToast('Pipeline execution failed', 'error');
+      } finally {
+        DOM.btnRunPipeline.disabled = false;
+        DOM.btnRunPipeline.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          Run Full Pipeline
+        `;
+      }
+    });
+  }
+
+  // 4. RSS Scrape Button Listener
   if (DOM.btnScrapeRss) {
     DOM.btnScrapeRss.addEventListener('click', async () => {
       await handleScrapeTrigger(DOM.btnScrapeRss, '/api/news/scrape/rss', 'RSS');

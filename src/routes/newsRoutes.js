@@ -13,7 +13,8 @@ import {
   getMyVesselsNews,
   classifyRegulationsSingleNews,
   classifyRegulationsAllNews,
-  getNewsByRegulationCode
+  getNewsByRegulationCode,
+  runScrapingPipelineController
 } from '../controllers/newsController.js';
 import { validateCreateNews } from '../middlewares/validateNews.js';
 import { verifyToken } from '../middlewares/authMiddleware.js';
@@ -35,6 +36,9 @@ router.get('/vessel/:vesselId', getNewsByVesselId);
 
 // GET /api/news/regulation/:code -> Belirli bir regülasyon koduyla (EU_ETS, CII_EEXI vb.) eşleşen haberleri getirme
 router.get('/regulation/:code', getNewsByRegulationCode);
+
+// POST /api/news/scrape/pipeline -> 4 Aşamalı Tam Otomatik Veri Boru Hattı (Ingest ➔ Deep Scrape ➔ Vessel Match ➔ Regulation Tagging)
+router.post('/scrape/pipeline', runScrapingPipelineController);
 
 // POST /api/news/scrape/rss -> Otomatik RSS Akışı Kazıma
 router.post('/scrape/rss', scrapeRssNews);

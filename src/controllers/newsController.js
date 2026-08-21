@@ -330,3 +330,27 @@ export const getNewsByRegulationCode = async (req, res, next) => {
   }
 };
 
+// POST /api/news/scrape/pipeline -> 4 Aşamalı Tam Boru Hattını Manuel Tetikler
+export const runScrapingPipelineController = async (req, res, next) => {
+  try {
+    const { runFullPipeline } = await import('../services/cronService.js');
+    const result = await runFullPipeline('Manuel API İsteği');
+
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: '4 Aşamalı Veri Boru Hattı Başarıyla Tamamlandı!',
+        data: result.report
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: `Boru hattı hatası: ${result.error}`,
+        data: result.report
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+

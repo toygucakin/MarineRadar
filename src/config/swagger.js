@@ -173,6 +173,14 @@ const options = {
           }
         }
       },
+      '/api/news/scrape/pipeline': {
+        post: {
+          summary: '4 Aşamalı Tam Otomatik Veri Boru Hattını (Ingest ➔ Deep Scrape ➔ Vessel Match ➔ Regulation Tagging) çalıştırır',
+          responses: {
+            200: { description: '4 Aşamalı Boru Hattı Tamamlama Raporu' }
+          }
+        }
+      },
       '/api/news/scrape/rss': {
         post: {
           summary: 'Otomatik RSS akışı kazıma işlemini tetikler',

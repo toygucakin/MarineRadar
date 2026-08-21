@@ -271,6 +271,20 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
     });
   });
 
+  // POST /api/news/scrape/pipeline (Aşama 33 - 4 Aşamalı Tam Boru Hattı Testi)
+  describe('POST /api/news/scrape/pipeline (Aşama 33 - Full Pipeline)', () => {
+    it('4 aşamalı veri boru hattını çalıştırıp 200 OK ve detaylı aşama raporunu dönmelidir', async () => {
+      const response = await request(app).post('/api/news/scrape/pipeline');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('rssAdded');
+      expect(response.body.data).toHaveProperty('deepScrapedCount');
+      expect(response.body.data).toHaveProperty('matchedVesselsCount');
+      expect(response.body.data).toHaveProperty('classifiedRegulationsCount');
+    }, 30000);
+  });
+
   // GET /api-docs (Swagger UI Dokümantasyon Testi)
   describe('GET /api-docs (Swagger UI Dokümantasyonu)', () => {
     it('Swagger UI arayüzü isteğine 200 veya 301/302 yönlendirmesi dönmelidir', async () => {
