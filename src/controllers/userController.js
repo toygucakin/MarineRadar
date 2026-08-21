@@ -86,3 +86,70 @@ export const seedUsersAndFleet = async (req, res, next) => {
     next(error);
   }
 };
+
+// POST /api/users/:id/vessels -> Kullanıcı filosuna yeni gemi ekler
+export const assignVesselToUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { vesselId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(vesselId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Geçersiz Kullanıcı veya Gemi ID formatı.'
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Kullanıcı bulunamadı.' });
+    }
+
+    if (!user.assignedVessels.includes(vesselId)) {
+      user.assignedVessels.push(vesselId);
+      await user.save();
+    }
+
+    const updatedUser = await User.findById(id).populate('assignedVessels');
+
+    res.status(200).json({
+      success: true,
+      message: 'Gemi kullanıcı filosuna başarıyla eklendi.',
+      data: updatedUser
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// DELETE /api/users/:id/vessels/:vesselId -> Kullanıcı filosundan gemi çıkarır
+export const removeVesselFromUser = async (req, res, next) => {
+  try {
+    const { id, vesselId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(vesselId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Geçersiz Kullanıcı veya Gemi ID formatı.'
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Kullanıcı bulunamadı.' });
+    }
+
+    user.assignedVessels = user.assignedVessels.filter(v => v.toString() !== vesselId.toString());
+    await user.save();
+
+    const updatedUser = await User.findById(id).populate('assignedVessels');
+
+    res.status(200).json({
+      success: true,
+      message: 'Gemi kullanıcı filosundan çıkarıldı.',
+      data: updatedUser
+    });
+  } catch (error) {
+    next(error);
+  }
+};

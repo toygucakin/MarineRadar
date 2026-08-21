@@ -52,7 +52,12 @@ const DOM = {
 
   newsDetailModal: document.getElementById('news-detail-modal'),
   newsDetailModalContent: document.getElementById('news-detail-modal-content'),
-  btnCloseDetailModal: document.getElementById('btn-close-detail-modal')
+  btnCloseDetailModal: document.getElementById('btn-close-detail-modal'),
+
+  btnOpenLoginModal: document.getElementById('btn-open-login-modal'),
+  loginFleetModal: document.getElementById('login-fleet-modal'),
+  loginFleetModalContent: document.getElementById('login-fleet-modal-content'),
+  btnCloseLoginModal: document.getElementById('btn-close-login-modal')
 };
 
 /**
@@ -571,22 +576,45 @@ function setupEventListeners() {
     });
   }
 
-  // 8. Close Modal Listeners
-  if (DOM.btnCloseNewsletterModal) {
-    DOM.btnCloseNewsletterModal.addEventListener('click', () => closeModal(DOM.newsletterModal));
-  }
-  if (DOM.btnCloseArchiveModal) {
-    DOM.btnCloseArchiveModal.addEventListener('click', () => closeModal(DOM.archiveModal));
-  }
-  if (DOM.btnCloseDetailModal) {
-    DOM.btnCloseDetailModal.addEventListener('click', () => closeModal(DOM.newsDetailModal));
+  // Open Login & Fleet Management Modal
+  if (DOM.btnOpenLoginModal) {
+    DOM.btnOpenLoginModal.addEventListener('click', () => {
+      renderLoginFleetModalContent();
+      if (DOM.loginFleetModal) DOM.loginFleetModal.classList.add('active');
+    });
   }
 
-  // Close on Backdrop Click & Escape Key
+  // 8. Close Modal Listeners
+  if (DOM.btnCloseNewsletterModal) {
+    DOM.btnCloseNewsletterModal.addEventListener('click', () => {
+      DOM.newsletterModal.classList.remove('active');
+    });
+  }
+
+  if (DOM.btnCloseArchiveModal) {
+    DOM.btnCloseArchiveModal.addEventListener('click', () => {
+      DOM.archiveModal.classList.remove('active');
+    });
+  }
+
+  if (DOM.btnCloseDetailModal) {
+    DOM.btnCloseDetailModal.addEventListener('click', () => {
+      DOM.newsDetailModal.classList.remove('active');
+    });
+  }
+
+  if (DOM.btnCloseLoginModal) {
+    DOM.btnCloseLoginModal.addEventListener('click', () => {
+      if (DOM.loginFleetModal) DOM.loginFleetModal.classList.remove('active');
+    });
+  }
+
+  // Backdrop click to close modals
   window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal-backdrop')) {
-      closeModal(e.target);
-    }
+    if (e.target === DOM.newsletterModal) DOM.newsletterModal.classList.remove('active');
+    if (e.target === DOM.archiveModal) DOM.archiveModal.classList.remove('active');
+    if (e.target === DOM.newsDetailModal) DOM.newsDetailModal.classList.remove('active');
+    if (e.target === DOM.loginFleetModal) DOM.loginFleetModal.classList.remove('active');
   });
 
   window.addEventListener('keydown', (e) => {
