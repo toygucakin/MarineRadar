@@ -54,15 +54,19 @@ Sıfırdan öğrenme sürecini kolaylaştırmak amacıyla kalan zorlu konular k�
 - **Aşama 15 (TAMAMLANDI ✅):** Express Statik Sunum (`express.static`), Kapsamlı Jest Entegrasyon Testleri (`index.test.js` - 11/11 Test PASS), Docker Compose Altyapısı & GitHub Yayınlaması.
 - **Aşama 16 (TAMAMLANDI ✅):** Haber Detay Modalı HTML İskeleti ve CSS Tasarımı (`public/index.html`, `public/styles.css`), tıklanan haberlerin başlık, kaynak, yayın tarihi, tam içerik/özet metni, etki puanı ve orijinal makale yönlendirme butonlarını içeren modern Light Eco modal yapısı.
 - **Aşama 17 (TAMAMLANDI ✅):** Frontend Haber Kartı Tıklama ve Detay Gösterim Mantığı (`public/app.js`), kullanıcılar ana sayfadaki haber kartlarına veya "Detay" butonuna tıkladığında tıklanan haberin tüm detay verilerini (`data-id`) seçerek pop-up modal pencerede canlı gösterme ve kapatma işlevleri.
+- **Aşama 19 (TAMAMLANDI ✅):** HTML Scrape API Yanıt & Toast Bildirim Entegrasyonu (`public/app.js`), frontend tarafındaki HTML Scraping butonunun backend yanıtlarına göre yüzen toast bildirim kutuları ile anlık geri bildirim vermesi ve akışın senkronize güncellenmesi.
 - **Aşama 20 (TAMAMLANDI ✅):** Bülten Derleyici Backend Şema ve İlişkisel Sorgu Onarımı (`src/models/Newsletter.js`, `src/controllers/newsletterController.js`), `featuredNews` ilişkisel referans dizisi ve Mongoose `.populate()` transformatör uyumunun tam buluşması.
 - **Aşama 21 (TAMAMLANDI ✅):** Bülten Derleme Frontend & Dergi Kapağı Modal Render Düzeltmesi (`public/app.js`), derlenen bülten kapağında `featuredNews` dizisini eksiksiz çekerek öne çıkan 5 haberi kartlar, etki puanları ve kaynak bağlantıları ile canlı gösterme.
 - **Aşama 24 (TAMAMLANDI ✅):** Global İngilizce Dil Desteği & Uluslararası Arayüz Uyumlaştırması (`public/index.html`, `public/app.js`, `src/controllers/newsletterController.js`), tüm haber içerikleri İngilizce olduğu için web dashboard, arama çubuğu, bülten kapağı, stat kartları, modal pencereler, toast bildirimleri ve tarih formatlarının tam İngilizce diline çevrilmesi.
+- **Aşama 25 (TAMAMLANDI ✅):** Kazıma (Scraping) Sonrası Toast Bildirim & Akış Senkronizasyonu Düzeltmesi (`public/app.js`), haber sayısı veritabanında artmasına (ör. 138'den 139'a çıkması) rağmen arka plan cron veya doğrudan kazıma kaynaklı eşleşmelerde "0 new items found" toast bildirimi gösterilmesi sorunu, veritabanı senkronizasyon farkı (`netNewCount`) hesaplaması eklenerek tamamen çözüldü.
+- **Aşama 26 (TAMAMLANDI ✅):** Fleet Status Kurumsal Gemi Logosu Güncellemesi (`public/index.html`), ana sayfadaki "Fleet Status" kartında yer alan eski ikon, resmi myCarbons web sitesinde kullanılan kule/vinç algısını engelleyen geniş U-gövdeli, pencereli yaşam mahalline ve kavisli deniz dalgalarına sahip önden görünüşlü yeşil dökme yük gemisi (Bulk Carrier front-view ship SVG) vektörel amblemi ile güncellendi.
+- **Aşama 27 (TAMAMLANDI ✅):** Derin Metin Web Scraping Servisi (Deep Article Scraper Service) geliştirildi (`src/services/deepScraperService.js`). RSS ve HTML kaynaklarından çekilen haberlerin orijinal URL adreslerine (`sourceUrl`) bağlanarak gCaptain, Splash247, Marine Insight, Safety4Sea vb. denizcilik portallarının tüm makale metinleri (`fullContent`), paragrafları ve gürültüsüz temizlenmiş içerikleri kazındı. `News` modeline `fullContent`, `isFullyScraped` ve `scrapedAt` alanları eklendi. `POST /api/news/:id/scrape-deep` ve `POST /api/news/scrape/deep` REST API endpoint'leri, Swagger dokümantasyonu, Web Dashboard arayüzündeki "Deep Scrape Content" butonu, haber detay modalı derin metin göstericisi ve Jest entegrasyon testleri başarıyla yazıldı.
 
 ---
 
-### 🎉 20 Aşama Tamamlandı! Yeni İyileştirme Yol Haritası (Aşama 18-23)
+### 🎉 23 Aşama Tamamlandı! Güncel İyileştirme Yol Haritası
 
-MyCarbons (MarineRadar) platformunun backend bülten derleme motoru, ilişkisel MongoDB bağlamları, dergi kapağı modal render fonksiyonları ve tam İngilizce dil entegrasyonu tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
+MyCarbons (MarineRadar) platformunun backend bülten derleme motoru, ilişkisel MongoDB bağlamları, dergi kapağı modal render fonksiyonları, toast bildirim senkronizasyonları ve tam İngilizce dil entegrasyonu tamamlanmıştır. Kalan geliştirme adımları aşağıdaki mikro aşamalarda devam etmektedir:
 
 ---
 
@@ -71,14 +75,56 @@ MyCarbons (MarineRadar) platformunun backend bülten derleme motoru, ilişkisel 
 #### 🔹 Konu 2: HTML Web Scraping Servisi Onarımı ve Modernizasyonu (HTML Scraping Fix)
 - **Aşama 18 (BEKLEMEDE ⏳): HTML Scraping Backend Hata Tespiti ve Target Site Selector Güncellemesi:**
   - `src/services/htmlService.js` içerisindeki Axios User-Agent başlıklarının (browser headers), hedef sitelerin (Safety4Sea / Splash247 / IMO) güncel CSS selector'larının ve HTML parse mantığının incelenmesi/onarılması.
-- **Aşama 19 (BEKLEMEDE ⏳): HTML Scrape API Yanıt & Toast Bildirim Entegrasyonu:**
-  - Frontend `public/app.js` tarafındaki HTML Scrape isteğinin backend yanıtlarına göre hata/başarı durumlarının toast bildirimlerinde ve arayüzde doğru yansıtılmasının sağlanması.
 
 #### 🔹 Konu 4: Anahtar Kelime Analizi ve Etiket Tabanlı Haber Filtreleme (Keyword Analysis & Tag Cloud)
 - **Aşama 22 (BEKLEMEDE ⏳): Backend Anahtar Kelime Çıkarım (Keyword Extraction) & Arama API Endpoint'i:**
   - Kazınan haberlerin başlık ve özet metinlerinden en çok geçen denizcilik ve karbon terimlerinin (`IMO`, `EEXI`, `EU-MRV`, `Ammonia`, `LNG`, `Decarbonization`, `Biofuel` vb.) frekans analizi ile tespit edilmesi, `News` modeline kelime etiketleri (`keywords`) alanının eklenmesi ve `/api/news/keywords` ile `/api/news?keyword=...` endpoint'lerinin geliştirilmesi.
 - **Aşama 23 (BEKLEMEDE ⏳): Dashboard Popüler Anahtar Kelime Bulutu (Keyword Tag Cloud) & Filtreleme Arayüzü:**
   - `public/index.html`, `public/styles.css` ve `public/app.js` üzerinde popüler anahtar kelimelerin tıklanabilir etiket (pill) şeklinde gösterilmesi, bir anahtar kelimeye tıklandığında sadece o kelimenin geçtiği haberlerin canlı olarak listelenmesi.
+
+#### 🔹 Konu 5: Derin Haber Scraping, Kullanıcı-Gemi Yönetimi ve Regülasyon/Çoklu Gemi Analiz Sistemi (Deep Scraper & Multi-Vessel Fleet Analytics)
+
+Uygulamanın yeni mimari vizyonu doğrultusunda haberlerin sadece başlık/özet seviyesinde kalmayıp, makale bağlantılarına gidilerek tüm metnin kazınması (Deep Web Scraping), kullanıcı tabanlı gemi yetkilendirmesi ve çoklu gemi tespiti yapacak modüller eklenecektir.
+
+1. **Haber İçeriklerinin Detaylı Web Scraping'i (Deep Scraper Pipeline):**
+   - RSS ve HTML akışından gelen haberlerin orijinal URL'sine (`sourceUrl`) bağlanılarak haberin tüm gövde metni (`fullContent`), yazar, yayın tarihi ve detay görselleri kazınır.
+   - Bu sayede regülasyon (IMO, EU-MRV, EU ETS, CII/EEXI) ve spesifik gemi detayları ana metinden çekilebilir.
+
+2. **Kullanıcı ve Gemi Filtreleme Altyapısı (Multi-Tenant User Fleet System):**
+   - Sistemde her kullanıcının kendisiyle ilişkilendirilmiş gemi filosu tanımlanır.
+   - Örn: **A Kullanıcısı** 5 gemisini, **B Kullanıcısı** 3 gemisini takip eder. Kullanıcılar sadece yetkili oldukları gemilerin veya genel regülasyon haberlerini inceler.
+
+3. **Çoklu Gemi Tespiti ve Varlık Eşleme Motoru (Multi-Vessel Entity Matcher):**
+   - Bazı denizcilik haberlerinde birden fazla gemi adı veya IMO numarası geçebilir (örn. filo satın alımları, kaza raporları, yeşil retrofit anlaşmaları).
+   - Derin metin taraması ile haberin içinde geçen tüm gemiler (IMO No, Gemi Adı) tespit edilerek habere `matchedVessels` dizisi olarak eklenir.
+
+---
+
+##### 🗺️ Detaylı Geliştirme Aşamaları:
+
+- **Aşama 27 (TAMAMLANDI ✅): Derin Metin Web Scraping Servisi (Deep Article Scraper Service)**
+  - `src/services/deepScraperService.js` geliştirilmesi. Kazınan haberlerin `sourceUrl` bağlantısına gidilerek `Axios` ve `Cheerio` ile tam paragraf metinlerinin toplanması.
+  - `News` modeline `fullContent`, `isFullyScraped` ve `scrapedAt` alanlarının eklenmesi.
+
+- **Aşama 28 (BEKLEMEDE ⏳): Gemi (Vessel) ve Kullanıcı (User / Fleet) Veri Modelleri & Veritabanı Şemaları**
+  - `src/models/Vessel.js` (IMO Number, Gemi Adı, MMSI, Bayrak, Gemi Tipi, Şirket ID) ve `src/models/User.js` (Ad/Soyad, E-posta, Şifre, Rol, `assignedVessels: [Vessel._id]`) modellerinin oluşturulması.
+  - Kullanıcı-Gemi ilişkisel atamalarının yapılması (A Kullanıcısı: 5 Gemi, B Kullanıcısı: 3 Gemi).
+
+- **Aşama 29 (BEKLEMEDE ⏳): Akıllı Metin Analizör & Çoklu Gemi Varlık Eşleme Motoru (Multi-Vessel Entity Matcher)**
+  - `src/services/vesselMatcherService.js` yazılması. Derin makale metni (`fullContent`) üzerinde IMO No regex kalıpları (`IMO \d{7}`), gemi adı dizinleri ve fuzzy matching uygulanması.
+  - Haber metninde 1'den fazla geçen tüm gemilerin tespit edilerek `News` modelindeki `matchedVessels: [{ vesselId, imoNumber, vesselName, confidenceScore, mentionSnippet }]` yapısına kaydedilmesi.
+
+- **Aşama 30 (BEKLEMEDE ⏳): Regülasyon ve Emisyon Metin Analitiği (Maritime Regulation Classifier)**
+  - `src/services/regulationService.js` geliştirilmesi. Derin metinlerin IMO DCS, EU-MRV, EU ETS, FuelEU Maritime, CII/EEXI, Green Corridors, Biofuel/LNG/Ammonia başlıklarına göre etiketlenmesi ve gemi uyumluluk risk skorlarının hesaplanması.
+
+- **Aşama 31 (BEKLEMEDE ⏳): Kullanıcı Yetkilendirme (Auth) & Kişisel Gemi Akışı REST API'leri**
+  - JWT tabanlı kimlik doğrulama (`src/middlewares/authMiddleware.js`), `POST /api/auth/login`, `GET /api/user/vessels` ve kullanıcının atanmış gemilerine özel haberleri dönen `GET /api/news/my-vessels` endpoint'lerinin yazılması.
+
+- **Aşama 32 (BEKLEMEDE ⏳): Frontend Kullanıcı Filosu & Gemi Odaklı Haber Dashboard Arayüzü**
+  - Web arayüzüne "My Fleet / Gemilerim" sekmesi, kullanıcı gemi filtresi dropdown'u ve haber detayında habere konu olan tüm gemilerin rozetler (Vessel Pills) ve metin içi alıntı kutuları (Context Snippets) ile gösterilmesi.
+
+- **Aşama 33 (BEKLEMEDE ⏳): Zamanlanmış Veri Boru Hattı (Cron Scraping Pipeline) & Test Entegrasyonu**
+  - Periyodik Cron görevine: 1. Feed Scrape -> 2. Deep Article Scrape -> 3. Vessel Matcher & Regulation Tagging adımlarının bağlanması ve Jest entegrasyon testlerinin güncellenmesi.
 
 ---
 
@@ -95,10 +141,11 @@ MyCarbons (MarineRadar) platformunun backend bülten derleme motoru, ilişkisel 
 - [src/models/Newsletter.js](file:///c:/MyApps/MarineRadar/src/models/Newsletter.js): Mongoose `Newsletter` şema ve ilişkisel model tanımı.
 - [src/services/rssService.js](file:///c:/MyApps/MarineRadar/src/services/rssService.js): Otomatik RSS akışı kazıma ve analiz servisi.
 - [src/services/htmlService.js](file:///c:/MyApps/MarineRadar/src/services/htmlService.js): Axios & Cheerio tabanlı HTML web kazıma servisi.
+- [src/services/deepScraperService.js](file:///c:/MyApps/MarineRadar/src/services/deepScraperService.js): Orijinal haber bağlantılarından tam makale metinlerini kazıyan derin web scraping servisi.
 - [src/services/cronService.js](file:///c:/MyApps/MarineRadar/src/services/cronService.js): Node-cron periyodik arka plan görevleri servisi.
 - [Dockerfile](file:///c:/MyApps/MarineRadar/Dockerfile): Express REST API Docker imaj tanımı.
 - [.dockerignore](file:///c:/MyApps/MarineRadar/.dockerignore): Docker build hariç tutma kuralları.
-- [docker-compose.yml](file:///c:/MyApps/MarineRadar/docker-compose.yml): MongoDB ve API servis orkestrasyonu.
+- [docker-compose.yml](file:///c:/MyApps/MarineRadar/docker-compose.yml): MongoDB ve Hot-Reload (Canlı kod yenileme `volume` & `CHOKIDAR_USEPOLLING`) destekli API servis orkestrasyonu.
 - [src/data/mockNews.js](file:///c:/MyApps/MarineRadar/src/data/mockNews.js): Mock veri seti.
 - [src/controllers/newsController.js](file:///c:/MyApps/MarineRadar/src/controllers/newsController.js): MongoDB haber asenkron iş mantığı katmanı.
 - [src/controllers/newsletterController.js](file:///c:/MyApps/MarineRadar/src/controllers/newsletterController.js): Akıllı bülten derleyici katmanı.

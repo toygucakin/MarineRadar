@@ -55,7 +55,14 @@
         <div class="stat-card" id="stat-card-total">
           <div class="stat-icon-row">
             <div class="stat-icon green">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 21h20M5 18l1.5-6h11L19 18M12 4v8M12 4L9 7M12 4l3 7"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="3" x2="12" y2="6.5"></line>
+                <rect x="7" y="6.5" width="10" height="4.5" rx="1.5"></rect>
+                <path d="M3.5 11L12 8.5L20.5 11"></path>
+                <line x1="12" y1="8.5" x2="12" y2="13.5"></line>
+                <path d="M3.5 11c0 4 3.8 6 8.5 6s8.5-2 8.5-6"></path>
+                <path d="M2.5 19.5c2.5-1.2 5.5-1.2 8 0s5.5 1.2 8 0"></path>
+              </svg>
             </div>
             <span class="category-tag carbon">Fleet Status</span>
           </div>
@@ -119,6 +126,10 @@
           <button class="btn-action btn-html" id="btn-scrape-html">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
             Scrape HTML Web
+          </button>
+          <button class="btn-action btn-deep" id="btn-scrape-deep" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: 1px solid rgba(4, 120, 87, 0.4);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 12H7"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            Deep Scrape Content
           </button>
           <button class="btn-action btn-newsletter" id="btn-generate-newsletter">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
@@ -204,6 +215,6 @@
   </footer>
 
   <!-- Client JavaScript Logic -->
-  <script src="app.js?v=2.5" defer></script>
+  <script src="app.js?v=6.0" defer></script>
 </body>
 </html>

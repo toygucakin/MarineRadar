@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { News } from '../models/News.js';
 import { analyzeContent } from './rssService.js';
+import { scrapeArticleContent } from './deepScraperService.js';
 
 // HTML Kazıma için varsayılan denizcilik portal adresleri
 const DEFAULT_HTML_TARGETS = [
@@ -86,6 +87,19 @@ export const scrapeHtmlTargets = async (customTargets = null) => {
         // Kategori ve Etki Puanı Analizi
         const { category, impactScore } = analyzeContent(rawTitle, summary);
 
+        // Otomatik Derin Metin Kazıma (Deep Scraping)
+        let fullContent = summary;
+        if (sourceUrl && sourceUrl.startsWith('http')) {
+          try {
+            const deepScraped = await scrapeArticleContent(sourceUrl);
+            if (deepScraped && deepScraped.fullContent) {
+              fullContent = deepScraped.fullContent;
+            }
+          } catch (e) {
+            // Hata durumunda özeti tam metin olarak fallback yap
+          }
+        }
+
         // Veritabanı Kaydı
         const newNews = await News.create({
           title: rawTitle,
@@ -94,7 +108,10 @@ export const scrapeHtmlTargets = async (customTargets = null) => {
           sourceUrl,
           author: target.name || 'HTML Web Scraper Bot',
           impactScore,
-          publishedAt: new Date()
+          publishedAt: new Date(),
+          fullContent,
+          isFullyScraped: true,
+          scrapedAt: new Date()
         });
 
         addedNews.push(newNews);

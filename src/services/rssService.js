@@ -1,5 +1,6 @@
 import Parser from 'rss-parser';
 import { News } from '../models/News.js';
+import { scrapeArticleContent } from './deepScraperService.js';
 
 const parser = new Parser({
   headers: {
@@ -87,6 +88,19 @@ export const scrapeRssFeeds = async (customFeeds = null) => {
         // İçerik analizi ile kategori ve etki puanı üretimi
         const { category, impactScore } = analyzeContent(title, summary);
 
+        // Otomatik Derin Metin Kazıma (Deep Scraping)
+        let fullContent = summary;
+        if (sourceUrl && sourceUrl.startsWith('http')) {
+          try {
+            const deepScraped = await scrapeArticleContent(sourceUrl);
+            if (deepScraped && deepScraped.fullContent) {
+              fullContent = deepScraped.fullContent;
+            }
+          } catch (e) {
+            // Hata durumunda özeti tam metin olarak fallback yap
+          }
+        }
+
         // Veritabanına kayıt
         const newNews = await News.create({
           title,
@@ -95,7 +109,10 @@ export const scrapeRssFeeds = async (customFeeds = null) => {
           sourceUrl,
           author: item.creator || feed.title || 'RSS Bot',
           impactScore,
-          publishedAt: item.pubDate ? new Date(item.pubDate) : new Date()
+          publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+          fullContent,
+          isFullyScraped: true,
+          scrapedAt: new Date()
         });
 
         addedNews.push(newNews);

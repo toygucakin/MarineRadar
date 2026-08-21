@@ -132,6 +132,20 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
     });
   });
 
+  // POST /api/news/scrape/deep (Toplu Derin Kazıma Testi)
+  describe('POST /api/news/scrape/deep (Toplu Derin Kazıma)', () => {
+    it('içeriği eksik haberleri tarayıp 200 OK ve kazıma raporu dönmelidir', async () => {
+      const response = await request(app)
+        .post('/api/news/scrape/deep')
+        .send({ limit: 2 });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data).toHaveProperty('scrapedCount');
+      expect(response.body.data).toHaveProperty('failedCount');
+    });
+  });
+
   // GET /api-docs (Swagger UI Dokümantasyon Testi)
   describe('GET /api-docs (Swagger UI Dokümantasyonu)', () => {
     it('Swagger UI arayüzü isteğine 200 veya 301/302 yönlendirmesi dönmelidir', async () => {

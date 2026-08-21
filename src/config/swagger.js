@@ -33,6 +33,9 @@ const options = {
             sourceUrl: { type: 'string', example: 'https://gcaptain.com/news-1' },
             author: { type: 'string', example: 'MarineRadar Analiz Ekibi' },
             impactScore: { type: 'number', example: 8.5 },
+            fullContent: { type: 'string', example: 'IMO has officially announced new decarbonization guidelines...' },
+            isFullyScraped: { type: 'boolean', example: true },
+            scrapedAt: { type: 'string', format: 'date-time' },
             publishedAt: { type: 'string', format: 'date-time' }
           }
         },
@@ -81,6 +84,17 @@ const options = {
           }
         }
       },
+      '/api/news/{id}/scrape-deep': {
+        post: {
+          summary: 'Belirli bir haber için kaynak bağlantıdan tam makale metnini kazır',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Derin metin kazıma başarılı ve veritabanı güncellendi' }
+          }
+        }
+      },
       '/api/news/scrape/rss': {
         post: {
           summary: 'Otomatik RSS akışı kazıma işlemini tetikler',
@@ -94,6 +108,14 @@ const options = {
           summary: 'Otomatik HTML web sayfası kazıma işlemini tetikler',
           responses: {
             200: { description: 'HTML Kazıma raporu ve eklenen haberler' }
+          }
+        }
+      },
+      '/api/news/scrape/deep': {
+        post: {
+          summary: 'İçeriği eksik olan tüm haberlerin makale metinlerini toplu olarak kazır',
+          responses: {
+            200: { description: 'Toplu derin kazıma raporu' }
           }
         }
       },

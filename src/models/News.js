@@ -49,6 +49,19 @@ const newsSchema = new mongoose.Schema({
   publishedAt: {
     type: Date,
     default: Date.now
+  },
+  fullContent: {
+    type: String,
+    default: null,
+    trim: true
+  },
+  isFullyScraped: {
+    type: Boolean,
+    default: false
+  },
+  scrapedAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true // createdAt ve updatedAt alanlarını otomatik ekler

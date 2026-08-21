@@ -2,6 +2,7 @@ import { News } from '../models/News.js';
 import mongoose from 'mongoose';
 import { scrapeRssFeeds } from '../services/rssService.js';
 import { scrapeHtmlTargets } from '../services/htmlService.js';
+import { scrapeNewsById, scrapeAllUnscrapedNews } from '../services/deepScraperService.js';
 
 /**
  * Controller (MongoDB / Mongoose İş Mantığı Katmanı)
@@ -108,3 +109,47 @@ export const scrapeHtmlNews = async (req, res, next) => {
     next(error);
   }
 };
+
+// POST /api/news/:id/scrape-deep -> Belirli bir haber için detaylı metin kazıması tetikler
+export const scrapeDeepNewsById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        success: false,
+        message: `ID değeri '${id}' olan haber bulunamadı.`
+      });
+    }
+
+    const result = await scrapeNewsById(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Haber detaylı içeriği başarıyla kazındı ve veritabanı güncellendi.',
+      data: result.news,
+      meta: result.meta
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/news/scrape/deep -> İçeriği bulunmayan tüm haberleri toplu olarak derin metin kazımasından geçirir
+export const scrapeDeepAllNews = async (req, res, next) => {
+  try {
+    const body = req.body || {};
+    const query = req.query || {};
+    const limit = parseInt(query.limit || body.limit || '30', 10);
+    const result = await scrapeAllUnscrapedNews(limit);
+
+    res.status(200).json({
+      success: true,
+      message: `Toplu Derin Kazıma İşlemi Tamamlandı: ${result.scrapedCount} haber detaylandırıldı, ${result.failedCount} hata alındı.`,
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

@@ -25,6 +25,7 @@ const DOM = {
   categoryTabs: document.getElementById('category-tabs'),
   btnScrapeRss: document.getElementById('btn-scrape-rss'),
   btnScrapeHtml: document.getElementById('btn-scrape-html'),
+  btnScrapeDeep: document.getElementById('btn-scrape-deep'),
   btnGenerateNewsletter: document.getElementById('btn-generate-newsletter'),
 
   // Content Areas
@@ -305,7 +306,14 @@ function setupEventListeners() {
     });
   }
 
-  // 5. Generate Newsletter Button Listener
+  // 5. Deep Scrape Button Listener
+  if (DOM.btnScrapeDeep) {
+    DOM.btnScrapeDeep.addEventListener('click', async () => {
+      await handleScrapeTrigger(DOM.btnScrapeDeep, '/api/news/scrape/deep', 'Deep Article Scraper');
+    });
+  }
+
+  // 6. Generate Newsletter Button Listener
   if (DOM.btnGenerateNewsletter) {
     DOM.btnGenerateNewsletter.addEventListener('click', async () => {
       await handleGenerateNewsletter();
@@ -372,18 +380,20 @@ function setupEventListeners() {
  * Open News Detail Modal with Dynamic Content
  */
 async function openNewsDetailModal(newsId) {
-  let news = appState.allNews.find(item => (item.id || item._id) === newsId);
+  let news = null;
+
+  try {
+    const response = await fetch(`/api/news/${newsId}`);
+    const result = await response.json();
+    if (result.success && result.data) {
+      news = result.data;
+    }
+  } catch (err) {
+    console.error('Fetch news detail error:', err);
+  }
 
   if (!news) {
-    try {
-      const response = await fetch(`/api/news/${newsId}`);
-      const result = await response.json();
-      if (result.success && result.data) {
-        news = result.data;
-      }
-    } catch (err) {
-      console.error('Fetch news detail error:', err);
-    }
+    news = appState.allNews.find(item => (item.id || item._id) === newsId);
   }
 
   if (!news) {
@@ -395,9 +405,6 @@ async function openNewsDetailModal(newsId) {
   openModal(DOM.newsDetailModal);
 }
 
-/**
- * News Detail Modal Content Generator
- */
 function renderNewsDetailModalContent(news) {
   if (!DOM.newsDetailModalContent) return;
 
@@ -406,6 +413,7 @@ function renderNewsDetailModalContent(news) {
   const formattedDate = formatDate(news.publishedAt || news.createdAt);
   const sourceFeedText = getSourceFeedInfo(news);
   const targetUrl = news.sourceUrl || news.link || '#';
+  const isScraped = news.isFullyScraped || (news.fullContent && news.fullContent.length > 50);
 
   let categoryClass = '';
   switch (news.category) {
@@ -413,6 +421,13 @@ function renderNewsDetailModalContent(news) {
     case 'Alternative Fuels': categoryClass = 'fuel'; break;
     case 'Clean Energy': categoryClass = 'clean'; break;
     default: categoryClass = ''; break;
+  }
+
+  // Format full content into paragraphs if available
+  let fullContentHTML = '';
+  if (isScraped && news.fullContent) {
+    const paragraphs = news.fullContent.split('\n\n');
+    fullContentHTML = paragraphs.map(p => `<p style="margin-bottom: 0.85rem; line-height: 1.6; color: var(--text-body);">${escapeHTML(p)}</p>`).join('');
   }
 
   DOM.newsDetailModalContent.innerHTML = `
@@ -428,21 +443,45 @@ function renderNewsDetailModalContent(news) {
 
         <h2 class="news-detail-title">${escapeHTML(news.title)}</h2>
 
-        <div class="news-detail-badges">
+        <div class="news-detail-badges" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
           <span class="category-tag ${categoryClass}">${escapeHTML(news.category || 'General')}</span>
           <div class="impact-badge" style="background: #DCFCE7; border-color: rgba(22, 163, 74, 0.4); color: #15803D;">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             <span>Impact Score: ${score}</span>
           </div>
+          ${isScraped ? `
+            <span class="category-tag clean" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+              ✅ Deep Scraped Content
+            </span>
+          ` : `
+            <span class="category-tag fuel" style="font-size: 0.72rem; padding: 0.2rem 0.5rem; background: #FEF3C7; color: #D97706; border-color: rgba(217, 119, 6, 0.3);">
+              ⏳ Summary Only
+            </span>
+          `}
         </div>
       </div>
 
       <div class="news-detail-body">
-        <p style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">📄 Article Summary & Executive Brief:</p>
-        <p>${escapeHTML(news.summary || news.content || 'No summary description available for this article.')}</p>
+        <p style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.5rem;">📄 Executive Summary:</p>
+        <p style="background: rgba(16, 185, 129, 0.05); padding: 0.85rem; border-radius: var(--radius-md); border-left: 3px solid var(--brand-green); font-size: 0.92rem; margin-bottom: 1.25rem;">${escapeHTML(news.summary || news.content || 'No summary description available.')}</p>
+
+        ${isScraped && news.fullContent ? `
+          <p style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.75rem;">📖 Full Article Text (Deep Web Content):</p>
+          <div class="full-content-body" style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-card); max-height: 400px; overflow-y: auto;">
+            ${fullContentHTML}
+          </div>
+        ` : `
+          <div style="text-align: center; padding: 1.5rem; background: var(--bg-card); border-radius: var(--radius-md); border: 1px dashed var(--border-card);">
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Full article text has not been scraped yet for this news item.</p>
+            <button class="btn-action btn-deep btn-deep-scrape-single" id="btn-deep-scrape-single" data-id="${newsId}" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 0.5rem 1.25rem; font-size: 0.88rem; cursor: pointer; border-radius: var(--radius-md);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.4rem;"><path d="M12 2v20M17 12H7"></path></svg>
+              Scrape Full Article Content Now
+            </button>
+          </div>
+        `}
       </div>
 
-      <div class="news-detail-footer">
+      <div class="news-detail-footer" style="margin-top: 1.25rem; display: flex; justify-content: flex-end; align-items: center;">
         ${targetUrl && targetUrl !== '#' ? `
           <a href="${escapeHTML(targetUrl)}" target="_blank" rel="noopener noreferrer" class="btn-visit-source">
             Read Original Article (Open Source)
@@ -452,6 +491,43 @@ function renderNewsDetailModalContent(news) {
       </div>
     </div>
   `;
+
+  // Bind listener to all single article deep scrape buttons
+  const singleScrapeBtns = DOM.newsDetailModalContent.querySelectorAll('.btn-deep-scrape-single');
+  singleScrapeBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const newsIdToScrape = btn.dataset.id;
+      singleScrapeBtns.forEach(b => {
+        b.disabled = true;
+        b.textContent = 'Scraping Full Text...';
+      });
+
+      try {
+        const response = await fetch(`/api/news/${newsIdToScrape}/scrape-deep`, { method: 'POST' });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          showToast('Deep Scraping Success', 'Full article text successfully extracted and saved.', false);
+          // Refresh global state and modal view
+          await loadNewsData();
+          renderNewsDetailModalContent(result.data);
+        } else {
+          showToast('Deep Scraping Error', result.message || 'Could not extract article text.', true);
+          singleScrapeBtns.forEach(b => {
+            b.disabled = false;
+            b.textContent = 'Scrape Full Article Content Now';
+          });
+        }
+      } catch (err) {
+        console.error('Single deep scrape error:', err);
+        showToast('Connection Error', 'Failed to connect to deep scraper service.', true);
+        singleScrapeBtns.forEach(b => {
+          b.disabled = false;
+          b.textContent = 'Scrape Full Article Content Now';
+        });
+      }
+    });
+  });
 }
 
 /**
@@ -467,22 +543,35 @@ async function handleScrapeTrigger(button, endpointUrl, serviceName) {
   `;
 
   try {
+    const previousCount = appState.allNews.length;
+
     const response = await fetch(endpointUrl, { method: 'POST' });
     const result = await response.json();
 
     if (result.success) {
-      const added = (result.data && typeof result.data.addedCount === 'number') ? result.data.addedCount : (result.addedCount || 0);
-      const toastMsg = added > 0 
-        ? `${added} new articles added to database.` 
-        : 'All articles are up to date, no new items found.';
+      const scrapedDeepCount = (result.data && typeof result.data.scrapedCount === 'number') ? result.data.scrapedCount : 0;
+      const directAdded = (result.data && typeof result.data.addedCount === 'number') ? result.data.addedCount : (result.addedCount || 0);
+
+      // Refresh news from server database
+      await loadNewsData();
+
+      let toastMsg = '';
+      if (scrapedDeepCount > 0) {
+        toastMsg = `${scrapedDeepCount} article${scrapedDeepCount > 1 ? 's' : ''} deep scraped with full text content!`;
+      } else {
+        const newCount = appState.allNews.length;
+        const netNewCount = Math.max(directAdded, newCount - previousCount);
+
+        toastMsg = netNewCount > 0 
+          ? `${netNewCount} new article${netNewCount > 1 ? 's' : ''} added to feed.` 
+          : 'All articles are up to date, no new items found.';
+      }
 
       showToast(
         `${serviceName} Scraping Completed`,
         toastMsg,
         false
       );
-
-      await loadNewsData();
     } else {
       showToast('Scraping Error', result.message || 'Data scraping failed.', true);
     }
