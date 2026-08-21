@@ -272,7 +272,28 @@ function renderNewsGrid() {
 }
 
 /**
- * Render Pagination Bar (1, 2, 3, Prev, Next)
+ * Smart Truncated Pagination Helper (1 2 3 4 5 ... N)
+ */
+function getPageNumbers(currentPage, totalPages) {
+  if (totalPages <= 7) {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+    return pages;
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, '...', totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+}
+
+/**
+ * Render Pagination Bar (1 2 3 ... N, Prev, Next)
  */
 function renderPaginationControls(totalPages, totalItems) {
   const container = document.getElementById('pagination-controls-container');
@@ -288,15 +309,20 @@ function renderPaginationControls(totalPages, totalItems) {
   const startItem = (appState.currentPage - 1) * appState.itemsPerPage + 1;
   const endItem = Math.min(appState.currentPage * appState.itemsPerPage, totalItems);
 
+  const pageNumbers = getPageNumbers(appState.currentPage, totalPages);
   let pageButtonsHTML = '';
-  for (let i = 1; i <= totalPages; i++) {
-    const isActive = i === appState.currentPage;
-    pageButtonsHTML += `
-      <button class="page-btn ${isActive ? 'active' : ''}" data-page="${i}">
-        ${i}
-      </button>
-    `;
-  }
+  pageNumbers.forEach(p => {
+    if (p === '...') {
+      pageButtonsHTML += `<span class="pagination-ellipsis">...</span>`;
+    } else {
+      const isActive = p === appState.currentPage;
+      pageButtonsHTML += `
+        <button class="page-btn ${isActive ? 'active' : ''}" data-page="${p}">
+          ${p}
+        </button>
+      `;
+    }
+  });
 
   container.innerHTML = `
     <div class="pagination-info">

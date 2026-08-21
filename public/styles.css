@@ -682,6 +682,14 @@ button {
   transition: var(--transition-fast);
 }
 
+.pagination-ellipsis {
+  padding: 0.45rem 0.5rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.88rem;
+  user-select: none;
+}
+
 .page-btn:hover {
   background: #E2E8F0;
   color: var(--text-heading);
