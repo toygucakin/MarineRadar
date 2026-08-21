@@ -20,7 +20,7 @@
         <span class="radar-brand-badge">Marine Radar</span>
       </a>
 
-      <div class="header-actions" style="display: flex; align-items: center; gap: 0.6rem;">
+      <div class="header-actions" id="header-user-status-container" style="display: flex; align-items: center; gap: 0.6rem;">
         <button class="btn-docs" id="btn-open-login-modal" onclick="openLoginFleetModal()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border-color: rgba(4, 120, 87, 0.4); cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; text-decoration: none;">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
           Login / My Fleet
@@ -115,10 +115,16 @@
     <!-- Interactive Control Bar -->
     <section class="control-bar">
       <div class="control-top-row">
-        <!-- Live Search -->
-        <div class="search-input-wrap">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" id="search-input" class="search-input" placeholder="Search headline, keyword, or port...">
+        <!-- Live Search & Vessel Filter -->
+        <div class="search-input-wrap" style="display: flex; gap: 0.6rem; flex-wrap: wrap; flex: 1; min-width: 280px; position: relative;">
+          <div style="flex: 1; min-width: 220px; position: relative;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="search-input" class="search-input" placeholder="Search headline, keyword, or port...">
+          </div>
+          <select id="vessel-select-dropdown" style="background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border-card); padding: 0.65rem 0.85rem; border-radius: var(--radius-md); font-size: 0.88rem; font-weight: 600; cursor: pointer; min-width: 200px;">
+            <option value="all">⚓ All Fleet Vessels Filter</option>
+            <!-- Dynamic vessels populated via app.js -->
+          </select>
         </div>
 
         <!-- Action Trigger Buttons -->
@@ -238,6 +244,6 @@
   </footer>
 
   <!-- Client JavaScript Logic -->
-  <script src="app.js?v=12.0" defer></script>
+  <script src="app.js?v=13.0" defer></script>
 </body>
 </html>

@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initApp() {
+  updateHeaderUserBar();
   await Promise.all([
     loadNewsData(),
     loadNewslettersData(),
@@ -77,6 +78,55 @@ async function initApp() {
 
   setupEventListeners();
 }
+
+/**
+ * Update Header User Status Bar (Logged in vs Logged out)
+ */
+function updateHeaderUserBar() {
+  const container = document.getElementById('header-user-status-container');
+  if (!container) return;
+
+  const currentUser = appState.currentUser;
+  const swaggerBtnHTML = `
+    <a href="/api-docs" target="_blank" class="btn-docs" id="swagger-docs-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      API Docs (Swagger)
+    </a>
+  `;
+
+  if (currentUser) {
+    const vesselCount = (currentUser.assignedVessels || []).length;
+    container.innerHTML = `
+      <button class="btn-docs" onclick="openLoginFleetModal()" style="background: #CCFBF1; color: #0D9488; border-color: rgba(13, 148, 136, 0.4); cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700;" title="Manage Assigned Fleet (${vesselCount} Vessels)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        🚢 ${escapeHTML(currentUser.name)} (${vesselCount} Vessels)
+      </button>
+      <button onclick="logoutUser()" style="background: #FEE2E2; color: #DC2626; border: 1px solid rgba(220, 38, 38, 0.3); padding: 0.45rem 0.75rem; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.82rem; cursor: pointer;" title="Logout from Account">
+        Logout 🚪
+      </button>
+      ${swaggerBtnHTML}
+    `;
+  } else {
+    container.innerHTML = `
+      <button class="btn-docs" id="btn-open-login-modal" onclick="openLoginFleetModal()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border-color: rgba(4, 120, 87, 0.4); cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; text-decoration: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        Login / My Fleet
+      </button>
+      ${swaggerBtnHTML}
+    `;
+  }
+}
+window.updateHeaderUserBar = updateHeaderUserBar;
+
+function logoutUser() {
+  appState.authToken = null;
+  appState.currentUser = null;
+  hideFleetBanner();
+  updateHeaderUserBar();
+  showToast('Logged out of fleet account', 'info');
+  loadNewsData();
+}
+window.logoutUser = logoutUser;
 
 /**
  * Initialize Toast Container
@@ -1034,10 +1084,13 @@ function renderLoginFleetModalContent() {
           if (result.success && result.token) {
             appState.authToken = result.token;
             appState.currentUser = result.user;
-            showToast(`Logged in as ${result.user.name}`, 'success');
+            showToast(`Welcome back, ${result.user.name}!`, 'success');
             await loadUserFleetNews();
             showFleetBanner(result.user);
-            renderLoginFleetModalContent();
+            updateHeaderUserBar();
+            // Automatically close modal pop-up on successful login
+            const modal = document.getElementById('login-fleet-modal');
+            if (modal) modal.classList.remove('active');
           } else {
             errorDiv.textContent = result.message || 'Login failed. Please check your credentials.';
             errorDiv.style.display = 'block';
