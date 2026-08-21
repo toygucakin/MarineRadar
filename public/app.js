@@ -221,10 +221,11 @@ function renderNewsGrid() {
 
   // Filter Logic (Category & Search)
   let filteredNews = appState.allNews.filter(item => {
-    const matchesCategory = appState.activeCategory === 'all' || item.category === appState.activeCategory;
-    const searchLower = appState.searchQuery.toLowerCase();
+    const isSyntheticTab = appState.activeCategory === 'all' || appState.activeCategory === 'my-fleet' || appState.activeCategory === 'vessel-specific';
+    const matchesCategory = isSyntheticTab || item.category === appState.activeCategory;
+    const searchLower = (appState.searchQuery || '').toLowerCase();
     const matchesSearch = !appState.searchQuery || 
-      item.title.toLowerCase().includes(searchLower) ||
+      (item.title && item.title.toLowerCase().includes(searchLower)) ||
       (item.summary && item.summary.toLowerCase().includes(searchLower)) ||
       (item.author && item.author.toLowerCase().includes(searchLower));
 
@@ -617,6 +618,7 @@ async function loadVesselSpecificNews(vesselId) {
 
     if (result.success && Array.isArray(result.data)) {
       appState.allNews = result.data;
+      appState.activeCategory = 'vessel-specific';
       appState.currentPage = 1;
       updateStats();
       renderNewsGrid();
