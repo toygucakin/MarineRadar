@@ -207,19 +207,112 @@ button {
   background: #FFFFFF;
   border: 1.5px solid var(--brand-green);
   color: var(--brand-green);
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.85rem;
   transition: var(--transition-fast);
   box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
+  text-decoration: none;
 }
 
 .btn-docs:hover {
   background: var(--brand-green);
   color: #FFFFFF;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.25);
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.25);
+}
+
+/* Header User Status Buttons */
+.btn-header-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(4, 120, 87, 0.4);
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
+}
+
+.btn-header-user:hover {
+  background: linear-gradient(135deg, #047857 0%, #065F46 100%);
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
+}
+
+.user-vessel-badge {
+  background: rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.btn-header-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #F8FAF8;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-header-logout:hover {
+  background: #FEE2E2;
+  color: #991B1B;
+  border-color: #F87171;
+}
+
+/* Modal Vessel List & Remove Button Styling */
+.vessel-list-item {
+  background: var(--bg-card);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  transition: var(--transition-fast);
+}
+
+.vessel-list-item:hover {
+  border-color: rgba(13, 148, 136, 0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.btn-remove-vessel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #FEF2F2;
+  color: #EF4444;
+  border: 1px solid #FCA5A5;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-remove-vessel:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  border-color: #DC2626;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
 }
 
 /* ==========================================================================

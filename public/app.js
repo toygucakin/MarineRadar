@@ -99,18 +99,20 @@ function updateHeaderUserBar() {
   if (currentUser) {
     const vesselCount = (currentUser.assignedVessels || []).length;
     container.innerHTML = `
-      <button class="btn-docs" onclick="openLoginFleetModal()" style="background: #CCFBF1; color: #0D9488; border-color: rgba(13, 148, 136, 0.4); cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700;" title="Manage Assigned Fleet (${vesselCount} Vessels)">
+      <button class="btn-header-user" onclick="openLoginFleetModal()" title="Manage Fleet (${vesselCount} Vessels)">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        🚢 ${escapeHTML(currentUser.name)} (${vesselCount} Vessels)
+        <span>${escapeHTML(currentUser.name)}</span>
+        <span class="user-vessel-badge">${vesselCount} Vessels</span>
       </button>
-      <button onclick="logoutUser()" style="background: #FEE2E2; color: #DC2626; border: 1px solid rgba(220, 38, 38, 0.3); padding: 0.45rem 0.75rem; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.82rem; cursor: pointer;" title="Logout from Account">
-        Logout 🚪
+      <button class="btn-header-logout" onclick="logoutUser()" title="Logout from Account">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        Logout
       </button>
       ${swaggerBtnHTML}
     `;
   } else {
     container.innerHTML = `
-      <button class="btn-docs" id="btn-open-login-modal" onclick="openLoginFleetModal()" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border-color: rgba(4, 120, 87, 0.4); cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; text-decoration: none;">
+      <button class="btn-header-user" id="btn-open-login-modal" onclick="openLoginFleetModal()">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         Login / My Fleet
       </button>
@@ -533,6 +535,16 @@ async function loadUserFleetNews() {
 
     if (result.success && Array.isArray(result.data)) {
       appState.allNews = result.data;
+      appState.activeCategory = 'my-fleet';
+      appState.currentPage = 1;
+
+      const categoryTabs = document.getElementById('category-tabs');
+      if (categoryTabs) {
+        categoryTabs.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.category === 'my-fleet');
+        });
+      }
+
       updateStats();
       renderNewsGrid();
     }
@@ -1255,11 +1267,11 @@ function renderLoginFleetModalContent() {
         <!-- Logged In User Profile Card -->
         <div style="background: var(--bg-card); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div style="width: 42px; height: 42px; border-radius: 50%; background: #CCFBF1; color: #0D9488; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);">
               ${escapeHTML(currentUser.name ? currentUser.name.charAt(0) : 'U')}
             </div>
             <div>
-              <h4 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: var(--text-heading);">
+              <h4 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--text-heading);">
                 ${escapeHTML(currentUser.name)}
               </h4>
               <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">
@@ -1268,60 +1280,47 @@ function renderLoginFleetModalContent() {
             </div>
           </div>
 
-          <button id="modal-btn-logout" class="btn-action" style="background: #FEE2E2; color: #DC2626; border: 1px solid rgba(220, 38, 38, 0.3); padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 700; cursor: pointer;">
-            Logout 🚪
+          <button id="modal-btn-logout" class="btn-header-logout" title="Logout from account">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Logout
           </button>
         </div>
 
         <!-- Fleet Management Panel -->
-        <div style="background: rgba(13, 148, 136, 0.05); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid rgba(13, 148, 136, 0.25);">
+        <div style="background: rgba(13, 148, 136, 0.04); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid rgba(13, 148, 136, 0.2);">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
             <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #0F766E; display: flex; align-items: center; gap: 0.4rem;">
               ⚓ Your Assigned Fleet (${assignedVessels.length} Vessels):
             </h4>
-            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Manage your vessels below</span>
+            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Manage assigned vessels below</span>
           </div>
 
           <!-- Vessels List -->
-          <div style="display: flex; flex-direction: column; gap: 0.55rem; max-height: 220px; overflow-y: auto; margin-bottom: 1rem; padding-right: 0.2rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 240px; overflow-y: auto; margin-bottom: 1rem; padding-right: 0.2rem;">
             ${assignedVessels.length > 0 ? assignedVessels.map(v => `
-              <div style="background: var(--bg-card); padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+              <div class="vessel-list-item">
                 <div>
                   <strong style="color: var(--text-heading); font-size: 0.88rem;">🚢 ${escapeHTML(v.vesselName)}</strong>
                   <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">${v.imoNumber ? 'IMO ' + escapeHTML(v.imoNumber) : escapeHTML(v.vesselType)}</span>
                 </div>
-                <button class="btn-remove-vessel" data-vessel-id="${v._id || v.id}" style="background: #FEE2E2; color: #DC2626; border: 1px solid rgba(220, 38, 38, 0.3); padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; cursor: pointer;">
-                  Remove ❌
+                <button class="btn-remove-vessel" data-vessel-id="${v._id || v.id}" title="Remove vessel from your fleet">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  Remove
                 </button>
               </div>
             `).join('') : '<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">No vessels currently assigned to your fleet.</p>'}
           </div>
 
           <!-- Add Vessel Form -->
-          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: var(--bg-card); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; background: var(--bg-card); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
             <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-heading);">Add Vessel to Fleet:</span>
-            <select id="modal-add-vessel-select" style="flex: 1; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border-card); padding: 0.45rem 0.65rem; border-radius: var(--radius-sm); font-size: 0.85rem; cursor: pointer;">
+            <select id="modal-add-vessel-select" style="flex: 1; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border-card); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; cursor: pointer;">
               ${availableVessels.length > 0 ? availableVessels.map(av => `
                 <option value="${av.id || av._id}">🚢 ${escapeHTML(av.vesselName)} (${av.imoNumber ? 'IMO ' + escapeHTML(av.imoNumber) : escapeHTML(av.vesselType)})</option>
               `).join('') : '<option value="">All registered vessels already in your fleet</option>'}
             </select>
-            <button id="modal-btn-add-vessel" class="btn-action" style="background: #0D9488; color: white; border: none; padding: 0.45rem 0.85rem; font-size: 0.82rem;" ${availableVessels.length === 0 ? 'disabled' : ''}>
+            <button id="modal-btn-add-vessel" class="btn-action" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 0.5rem 0.95rem; font-size: 0.82rem; font-weight: 700;" ${availableVessels.length === 0 ? 'disabled' : ''}>
               Add Vessel ➕
-            </button>
-          </div>
-        </div>
-
-        <!-- News Shortcuts -->
-        <div style="background: var(--bg-card); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
-          <h4 style="margin: 0 0 0.75rem 0; font-size: 0.92rem; font-weight: 700; color: var(--text-heading);">
-            📰 News Feed Navigation Shortcuts:
-          </h4>
-          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
-            <button id="modal-btn-view-my-fleet" class="btn-action" style="background: #CCFBF1; color: #0D9488; border: 1px solid rgba(13, 148, 136, 0.4); font-weight: 700;">
-              ⚓ View My Fleet Personal Feed (${assignedVessels.length} Vessels)
-            </button>
-            <button id="modal-btn-view-all" class="btn-action" style="background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border-card);">
-              🌐 View All News (Public Feed)
             </button>
           </div>
         </div>
@@ -1331,13 +1330,10 @@ function renderLoginFleetModalContent() {
     // Logout listener
     const btnLogout = document.getElementById('modal-btn-logout');
     if (btnLogout) {
-      btnLogout.addEventListener('click', async () => {
-        appState.authToken = null;
-        appState.currentUser = null;
-        hideFleetBanner();
-        showToast('Logged out of fleet account', 'info');
-        await loadNewsData();
-        renderLoginFleetModalContent();
+      btnLogout.addEventListener('click', () => {
+        logoutUser();
+        const modal = document.getElementById('login-fleet-modal');
+        if (modal) modal.classList.remove('active');
       });
     }
 
@@ -1394,25 +1390,6 @@ function renderLoginFleetModalContent() {
         }
       });
     });
-
-    const btnViewMyFleet = document.getElementById('modal-btn-view-my-fleet');
-    if (btnViewMyFleet) {
-      btnViewMyFleet.addEventListener('click', async () => {
-        await loadUserFleetNews();
-        const modal = document.getElementById('login-fleet-modal');
-        if (modal) modal.classList.remove('active');
-      });
-    }
-
-    const btnViewAll = document.getElementById('modal-btn-view-all');
-    if (btnViewAll) {
-      btnViewAll.addEventListener('click', async () => {
-        appState.activeCategory = 'all';
-        await loadNewsData();
-        const modal = document.getElementById('login-fleet-modal');
-        if (modal) modal.classList.remove('active');
-      });
-    }
   }
 }
 
