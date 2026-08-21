@@ -554,6 +554,64 @@ button {
   gap: 1.5rem;
 }
 
+/* ==========================================================================
+   Pagination Controls (15 Haber / Sayfa)
+   ========================================================================== */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-card);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-main);
+  color: var(--text-heading);
+  border: 1px solid var(--border-card);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.page-btn:hover {
+  background: #E2E8F0;
+  color: var(--text-heading);
+}
+
+.page-btn.active {
+  background: var(--brand-green);
+  color: #FFFFFF;
+  border-color: var(--brand-green);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 .news-card {
   background: var(--bg-card);
   border: 1px solid var(--border-card);

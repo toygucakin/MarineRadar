@@ -12,7 +12,9 @@ const appState = {
   searchQuery: '',
   authToken: null,
   currentUser: null,
-  activeVesselFilter: 'all'
+  activeVesselFilter: 'all',
+  currentPage: 1,
+  itemsPerPage: 15
 };
 
 // DOM Element References
@@ -123,6 +125,7 @@ function logoutUser() {
   appState.currentUser = null;
   hideFleetBanner();
   updateHeaderUserBar();
+  populateVesselDropdown();
   showToast('Logged out of fleet account', 'info');
   loadNewsData();
 }
@@ -213,7 +216,7 @@ function updateStats() {
 }
 
 /**
- * Render Dynamic News Grid Component
+ * Render Dynamic News Grid Component with Pagination (15 Haber / Sayfa)
  */
 function renderNewsGrid() {
   if (!DOM.newsGridContainer) return;
@@ -230,13 +233,28 @@ function renderNewsGrid() {
     return matchesCategory && matchesSearch;
   });
 
+  const totalItems = filteredNews.length;
+  const totalPages = Math.ceil(totalItems / appState.itemsPerPage) || 1;
+
+  if (appState.currentPage > totalPages) appState.currentPage = totalPages;
+  if (appState.currentPage < 1) appState.currentPage = 1;
+
+  // Slice items for current page (15 items / page)
+  const startIndex = (appState.currentPage - 1) * appState.itemsPerPage;
+  const endIndex = Math.min(startIndex + appState.itemsPerPage, totalItems);
+  const pageNews = filteredNews.slice(startIndex, endIndex);
+
   // Visible Count Badge
   if (DOM.visibleCountBadge) {
-    DOM.visibleCountBadge.textContent = `${filteredNews.length} articles displayed`;
+    if (totalItems === 0) {
+      DOM.visibleCountBadge.textContent = '0 articles displayed';
+    } else {
+      DOM.visibleCountBadge.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} articles (Page ${appState.currentPage} of ${totalPages})`;
+    }
   }
 
   // Empty Filter State
-  if (filteredNews.length === 0) {
+  if (totalItems === 0) {
     DOM.newsGridContainer.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-card);">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="1.5" style="margin-bottom: 1rem;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -244,11 +262,96 @@ function renderNewsGrid() {
         <p style="color: var(--text-muted); font-size: 0.9rem;">Try searching with a different keyword or category.</p>
       </div>
     `;
+    renderPaginationControls(0, 0);
     return;
   }
 
-  // Render HTML Cards
-  DOM.newsGridContainer.innerHTML = filteredNews.map(news => createNewsCardHTML(news)).join('');
+  // Render HTML Cards for Current Page
+  DOM.newsGridContainer.innerHTML = pageNews.map(news => createNewsCardHTML(news)).join('');
+
+  // Render Pagination Controls
+  renderPaginationControls(totalPages, totalItems);
+}
+
+/**
+ * Render Pagination Bar (1, 2, 3, Prev, Next)
+ */
+function renderPaginationControls(totalPages, totalItems) {
+  const container = document.getElementById('pagination-controls-container');
+  if (!container) return;
+
+  if (totalPages <= 1) {
+    container.innerHTML = '';
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'flex';
+  const startItem = (appState.currentPage - 1) * appState.itemsPerPage + 1;
+  const endItem = Math.min(appState.currentPage * appState.itemsPerPage, totalItems);
+
+  let pageButtonsHTML = '';
+  for (let i = 1; i <= totalPages; i++) {
+    const isActive = i === appState.currentPage;
+    pageButtonsHTML += `
+      <button class="page-btn ${isActive ? 'active' : ''}" data-page="${i}">
+        ${i}
+      </button>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="pagination-info">
+      Showing <strong>${startItem}-${endItem}</strong> of <strong>${totalItems}</strong> articles
+    </div>
+    <div class="pagination-pages">
+      <button class="page-btn" id="btn-prev-page" ${appState.currentPage === 1 ? 'disabled' : ''}>
+        « Prev
+      </button>
+      ${pageButtonsHTML}
+      <button class="page-btn" id="btn-next-page" ${appState.currentPage === totalPages ? 'disabled' : ''}>
+        Next »
+      </button>
+    </div>
+  `;
+
+  // Page click listeners
+  container.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      appState.currentPage = parseInt(btn.dataset.page, 10);
+      renderNewsGrid();
+      scrollToNewsGridTop();
+    });
+  });
+
+  const prevBtn = document.getElementById('btn-prev-page');
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      if (appState.currentPage > 1) {
+        appState.currentPage--;
+        renderNewsGrid();
+        scrollToNewsGridTop();
+      }
+    });
+  }
+
+  const nextBtn = document.getElementById('btn-next-page');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      if (appState.currentPage < totalPages) {
+        appState.currentPage++;
+        renderNewsGrid();
+        scrollToNewsGridTop();
+      }
+    });
+  }
+}
+
+function scrollToNewsGridTop() {
+  const section = document.querySelector('.news-grid-section');
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 /**
@@ -362,14 +465,25 @@ async function loadRegisteredVessels() {
 }
 
 function populateVesselDropdown() {
-  if (!DOM.vesselSelectDropdown) return;
-  DOM.vesselSelectDropdown.innerHTML = '<option value="all">⚓ All Fleet Vessels</option>';
+  const select = document.getElementById('vessel-select-dropdown');
+  if (!select) return;
 
-  appState.registeredVessels.forEach(v => {
+  const currentUser = appState.currentUser;
+  let vesselsToDisplay = appState.registeredVessels;
+
+  if (currentUser && Array.isArray(currentUser.assignedVessels)) {
+    vesselsToDisplay = currentUser.assignedVessels;
+  }
+
+  select.innerHTML = currentUser 
+    ? `<option value="all">⚓ My Assigned Vessels (${vesselsToDisplay.length})</option>` 
+    : '<option value="all">⚓ All Fleet Vessels</option>';
+
+  vesselsToDisplay.forEach(v => {
     const opt = document.createElement('option');
     opt.value = v.id || v._id;
-    opt.textContent = `🚢 ${v.vesselName} (${v.imoNumber ? 'IMO ' + v.imoNumber : v.vesselType})`;
-    DOM.vesselSelectDropdown.appendChild(opt);
+    opt.textContent = `🚢 ${v.vesselName} (${v.imoNumber ? 'IMO ' + v.imoNumber : (v.vesselType || 'Vessel')})`;
+    select.appendChild(opt);
   });
 }
 
@@ -1088,6 +1202,7 @@ function renderLoginFleetModalContent() {
             await loadUserFleetNews();
             showFleetBanner(result.user);
             updateHeaderUserBar();
+            populateVesselDropdown();
             // Automatically close modal pop-up on successful login
             const modal = document.getElementById('login-fleet-modal');
             if (modal) modal.classList.remove('active');
@@ -1244,6 +1359,8 @@ function renderLoginFleetModalContent() {
             appState.currentUser = result.data;
             showToast('Vessel added to your fleet!', 'success');
             await loadUserFleetNews();
+            updateHeaderUserBar();
+            populateVesselDropdown();
             renderLoginFleetModalContent();
           }
         } catch (e) {
@@ -1268,6 +1385,8 @@ function renderLoginFleetModalContent() {
             appState.currentUser = result.data;
             showToast('Vessel removed from your fleet.', 'info');
             await loadUserFleetNews();
+            updateHeaderUserBar();
+            populateVesselDropdown();
             renderLoginFleetModalContent();
           }
         } catch (e) {
