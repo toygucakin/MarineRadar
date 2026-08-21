@@ -577,10 +577,11 @@ function setupEventListeners() {
   }
 
   // Open Login & Fleet Management Modal
-  if (DOM.btnOpenLoginModal) {
-    DOM.btnOpenLoginModal.addEventListener('click', () => {
-      renderLoginFleetModalContent();
-      if (DOM.loginFleetModal) DOM.loginFleetModal.classList.add('active');
+  const openLoginBtn = document.getElementById('btn-open-login-modal');
+  if (openLoginBtn) {
+    openLoginBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openLoginFleetModal();
     });
   }
 
@@ -923,6 +924,22 @@ async function handleGenerateNewsletter() {
     btn.disabled = false;
     btn.innerHTML = originalHTML;
   }
+}
+
+function openLoginFleetModal() {
+  renderLoginFleetModalContent();
+  const modal = document.getElementById('login-fleet-modal');
+  if (modal) {
+    modal.classList.add('active');
+  }
+}
+window.openLoginFleetModal = openLoginFleetModal;
+
+/**
+ * Render User Login & Fleet Management Modal Content
+ */
+function renderLoginFleetModalContent() {
+  // ... implementation ...
 }
 
 /**
