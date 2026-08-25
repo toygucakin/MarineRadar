@@ -3,8 +3,9 @@ node_modules/
 
 # Environment & Secrets
 .env
-.env.*
-.env.example
+.env.local
+.env.development
+.env.production
 
 # Logs & Debugging
 *.log

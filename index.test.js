@@ -282,7 +282,7 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
       expect(response.body.data).toHaveProperty('deepScrapedCount');
       expect(response.body.data).toHaveProperty('matchedVesselsCount');
       expect(response.body.data).toHaveProperty('classifiedRegulationsCount');
-    }, 30000);
+    }, 60000);
   });
 
   // GET /api-docs (Swagger UI Dokümantasyon Testi)

@@ -7,6 +7,8 @@ if (!fs.existsSync(envPath)) {
   const defaultContent = `PORT=3000
 MONGO_URI=mongodb://127.0.0.1:27017/marineradar
 NODE_ENV=development
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-flash-latest
 `;
   fs.writeFileSync(envPath, defaultContent, 'utf-8');
   console.log('✅ .env dosyası bulunamadı, varsayılan değerlerle otomatik oluşturuldu.');

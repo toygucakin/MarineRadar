@@ -60,12 +60,93 @@
 - **Aşama 35 (TAMAMLANDI ✅):** Akıllı Sayfa Kısaltma Motoru (Smart Truncated Pagination Engine) geliştirildi (`public/app.js`, `public/styles.css`). Haber akışı 15 haber/sayfa limitine bölündü. Sayfa sayısı kaç olursa olsun ekranı kaplamayan `1 2 3 4 5 ... N` formatında üç nokta kısaltmalı kompakt sayfalama çubuğu entegre edildi.
 - **Aşama 36 (TAMAMLANDI ✅):** Üst Menü Kullanıcı Rozeti & Modal İçi Modernized Gemi Silme Butonları (`public/styles.css`, `public/app.js`). Üst menü butonları yeşil zümrüt degrade temaya dönüştürüldü, modal içi pembe silme butonları yerine ikonlu modern `.btn-remove-vessel` butonları tasarlandı.
 - **Aşama 37 (TAMAMLANDI ✅):** Kullanıcıya Özel Gemi Seçici Dropdown & Varsayılan Kişisel Bülten Yükleyici (`public/app.js`, `public/index.html`). Oturum açıldığında arama çubuğunun yanındaki dropdown otomatik olarak kullanıcının kendi gemilerini (`⚓ My Assigned Vessels`) gösterir ve varsayılan haber akışı kullanıcının kendi gemilerine ayarlanır. Ayrıca dropdown içerisine `🌐 All Public News (Genel Haberler)` geçiş opsiyonu eklendi.
+- **Aşama 38 (TAMAMLANDI ✅):** Yapay Zeka Entegrasyon Altyapısı & API Anahtarı Konfigürasyonu (`.env`, `.env.example`, `package.json`, `scripts/init-env.js`). `@google/generative-ai` SDK paketi projeye dahil edildi, kullanıcının Gemini API anahtarı `.env` dosyasına güvenli şekilde gömüldü ve `GEMINI_MODEL=gemini-flash-latest` model konfigürasyonu tamamlandı.
+- **Aşama 39 (TAMAMLANDI ✅):** Mongoose Haber Veri Modeli (`src/models/News.js`) Yapay Zeka Alanları Revizyonu. Mongoose `newsSchema` nesnesine `aiNote`, `aiVessels`, `aiImportanceScore`, `aiCategorized` ve `aiAnalyzedAt` alanları eklendi.
+
+---
+
+## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases)
+
+- **Aşama 40 (PLANLANDI ⏳):** Google Gemini AI Analiz Servisi (`src/services/geminiService.js`) Geliştirilmesi.
+  - Prompt Mühendisliği (Prompt Engineering): Gemini Flash modeline haber başlığı, özeti ve tam metni (`fullContent`) verilerek Yapılandırılmış JSON (Structured JSON Response) istenmesi.
+  - AI ile otomatik kategori seçimi (Örn: `Alternative Fuels`, `Carbon Emissions`, `Regulations`, `Clean Energy`, `Green Ports`).
+  - Metindeki gemilerin AI varlık tespiti (`aiVessels`).
+  - 1-10 arası hassas önem skoru tayini (`impactScore` & `aiImportanceScore`).
+  - Detaylı denizcilik ve karbonsuzlaştırma yorumunun (`aiNote`) üretilmesi.
+  - `analyzeNewsWithGemini(newsId)` ve `analyzeAllUnprocessedNewsWithGemini(limit)` servis fonksiyonlarının yazılması.
+
+- **Aşama 41 (PLANLANDI ⏳):** REST API Controller & Rota Katmanı Entegrasyonu (`src/controllers/newsController.js`, `src/routes/newsRoutes.js`).
+  - `POST /api/news/:id/ai-analyze`: Belirli bir haberi anlık olarak Gemini AI ile analiz etme.
+  - `POST /api/news/ai-analyze`: Veritabanındaki işlenmemiş haberlere toplu Gemini AI analizi uygulama.
+  - Swagger UI API canlı dokümantasyonuna yeni endpoint'lerin eklenmesi (`src/config/swagger.js`).
+
+- **Aşama 42 (PLANLANDI ⏳):** Otomatik Zamanlanmış Boru Hattının 5 Aşamaya Yükseltilmesi (`src/services/cronService.js`).
+  - `runFullPipeline` boru hattı 5 Aşamalı Tam Akıllı Boru Hattı'na (`5-Stage AI Scraping Pipeline`) dönüştürülecek:
+    1. **Stage 1:** RSS & HTML Feed Ingestion
+    2. **Stage 2:** Deep Article Content Scraper
+    3. **Stage 3:** Multi-Vessel Entity Matcher
+    4. **Stage 4:** Regulation Tagging & Risk Assessor
+    5. **Stage 5 (YENİ ✅):** Google Gemini AI Commentary, Vessel Extraction, Importance Score & Categorization Engine.
+
+- **Aşama 43 (PLANLANDI ⏳):** Frontend Haber Detay Modalı & Yapay Zeka Analiz Kartı Tasarımı (`public/index.html`, `public/styles.css`, `public/app.js`).
+  - Detay modalına nane/zümrüt ve mor gradiyentli **🤖 Yapay Zeka Analiz Notu (Gemini AI Commentary)** kartının eklenmesi.
+  - Modal içerisine **🚢 Yapay Zeka Tarafından Tespit Edilen Gemiler** ve **⭐ Yapay Zeka Önem Skoru** gösterge kutularının eklenmesi.
+  - Modal içine anlık **"🤖 AI ile Analiz Et & Yorumla"** tetikleme butonunun eklenmesi.
+
+- **Aşama 44 (PLANLANDI ⏳):** Frontend Akış Kartları & Kategori Filtreleme Revizyonu (`public/app.js`, `public/styles.css`).
+  - Haber kartlarında Gemini AI tarafından kategorize edilen etiketlerin (Örn: `Alternative Fuels`) canlı gösterimi.
+  - Kartlarda AI Analizi Yapıldı rozetinin (`🤖 AI Analyzed`) konumlandırılması.
+  - Kategori filtre barında `Alternative Fuels` sekmesinin aktifleştirilmesi.
+
+- **Aşama 45 (PLANLANDI ⏳):** Otomatik Entegrasyon Testleri ve Sistem Doğrulaması (`index.test.js`).
+  - Jest & Supertest entegrasyon testlerinin 22'den yeni AI endpoint'leri ile genişletilmesi.
+  - Veritabanı ve Gemini servis yanıtlarının test ortamında doğrulanması.
+
+---
+
+## 🏗️ Geliştirme Revizyonları ve Mimarisi (Technical Revisions & Architecture)
+
+### 1. Yapay Zeka Model ve Entegrasyon Stratejisi
+- **Kullanılan Model:** `gemini-1.5-flash` / `gemini-flash-latest` (Google Generative AI).
+- **Kimlik Doğrulama:** Ortam değişkeni üzerinden `GEMINI_API_KEY` ile API çağrıları yapılır.
+- **Performans & Gecikme:** Flash modelinin yüksek hızı sayesinde haber başına ortalama ~1.2 saniye yanıt süresi elde edilmesi hedeflenmektedir.
+
+### 2. Prompt Mühendisliği ve Yapılandırılmış Yanıt (Structured Output)
+Gemini AI'ya iletilecek sistem prompt'u denizcilik, IMO regülasyonları ve karbonsuzlaştırma terminolojisine göre özelleştirilmiştir. Çıktı formatı strict JSON olarak zorlanacaktır:
+```json
+{
+  "aiNote": "Gemini AI tarafından haber içeriğinin denizcilik emisyonları, karbon yakalama ve ticari filolara etkisi üzerine yazılmış Türkçe detay yorumu...",
+  "category": "Alternative Fuels",
+  "importanceScore": 8.8,
+  "mentionedVessels": ["M/T Aegean Green", "IMO 9876543", "Ever Given"]
+}
+```
+
+### 3. Veritabanı Şema Geliştirme Revizyonu (`News.js`)
+Mongoose `newsSchema` nesnesine aşağıdaki 5 yeni alan eklenecektir:
+```javascript
+aiNote: { type: String, trim: true, default: null },
+aiVessels: [{ type: String, trim: true }],
+aiImportanceScore: { type: Number, min: 0, max: 10, default: null },
+aiCategorized: { type: Boolean, default: false },
+aiAnalyzedAt: { type: Date, default: null }
+```
+
+### 4. 5 Aşamalı Veri Boru Hattı (5-Stage Scraping Pipeline Architecture)
+```
+[1. RSS/HTML Ingestion] ➔ [2. Deep Scraper] ➔ [3. Vessel Matcher] ➔ [4. Regulation Tagging] ➔ [5. Gemini AI Engine]
+```
+Her aşama bağımsız çalışabildiği gibi `runFullPipeline` fonksiyonu ile sırayla otomatik olarak da yürütülür.
+
+### 5. UI/UX Tasarım ve Etkileşim Revizyonu
+- **Renk Paleti:** Zümrüt yeşili (`#059669`) ile yapay zeka temasını temsil eden parlak mor/violet (`#7C3AED`) degradesi harmanlanacaktır.
+- **Haber Detay Modalı:** Kullanıcı bir habere tıkladığında, makalenin orijinal özeti ve ham metninin hemen altında **"🤖 Yapay Zeka Değerlendirme Notu"** özel bir vurgu kutusunda gösterilecektir.
 
 ---
 
 ## 🛠️ Tamamlanan Proje Dosyaları
 
-- [package.json](file:///c:/MyApps/MarineRadar/package.json): Paketler (`express`, `dotenv`, `mongoose`, `rss-parser`, `axios`, `cheerio`, `node-cron`, `jsonwebtoken`, `swagger-ui-express`, `swagger-jsdoc`) ve betikler.
+- [package.json](file:///c:/MyApps/MarineRadar/package.json): Paketler (`express`, `dotenv`, `mongoose`, `rss-parser`, `axios`, `cheerio`, `node-cron`, `jsonwebtoken`, `swagger-ui-express`, `swagger-jsdoc`, `@google/generative-ai`) ve betikler.
 - [index.js](file:///c:/MyApps/MarineRadar/index.js): Express uygulaması, dotenv, DB bağlantısı, cron servisleri, Swagger UI ve rota montajları.
 - [.env](file:///c:/MyApps/MarineRadar/.env): Yerel ortam değişkenleri.
 - [.env.example](file:///c:/MyApps/MarineRadar/.env.example): Ortam değişkenleri şablonu.

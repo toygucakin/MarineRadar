@@ -87,6 +87,31 @@ const newsSchema = new mongoose.Schema({
     riskScore: { type: Number, min: 0, max: 10, default: 0 },
     riskLevel: { type: String, enum: ['Critical', 'High', 'Moderate', 'Low', 'None'], default: 'None' },
     summary: { type: String, trim: true }
+  },
+  aiNote: {
+    type: String,
+    trim: true,
+    default: null
+  },
+  aiVessels: [
+    {
+      type: String,
+      trim: true
+    }
+  ],
+  aiImportanceScore: {
+    type: Number,
+    min: [0, 'AI etki puanı 0\'dan küçük olamaz.'],
+    max: [10, 'AI etki puanı 10\'dan büyük olamaz.'],
+    default: null
+  },
+  aiCategorized: {
+    type: Boolean,
+    default: false
+  },
+  aiAnalyzedAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true // createdAt ve updatedAt alanlarını otomatik ekler
