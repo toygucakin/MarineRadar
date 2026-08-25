@@ -65,15 +65,11 @@
 - **Aşama 40 (TAMAMLANDI ✅):** Google Gemini AI Analiz Servisi (`src/services/geminiService.js`). Prompt mühendisliği ile yapılandırılmış JSON çıktısı istenerek denizcilik emisyonu ve karbonsuzlaşma odaklı Türkçe analiz yorumu (`aiNote`), otomatik kategori seçimi (`category`), hassas etki skoru (`aiImportanceScore`) ve gemi varlık tespiti (`aiVessels`) gerçekleştiren `analyzeNewsWithGemini` ve `analyzeAllUnprocessedNewsWithGemini` servisleri geliştirildi.
 - **Aşama 41 (TAMAMLANDI ✅):** REST API Controller & Rota Katmanı Entegrasyonu (`src/controllers/newsController.js`, `src/routes/newsRoutes.js`, `src/config/swagger.js`). `POST /api/news/:id/ai-analyze` ve `POST /api/news/ai-analyze` endpoint'leri eklendi, Swagger UI canlı dokümantasyonuna entegre edildi.
 - **Aşama 42 (TAMAMLANDI ✅):** Otomatik Zamanlanmış Boru Hattının 5 Aşamaya Yükseltilmesi (`src/services/cronService.js`). `runFullPipeline` boru hattı 5 Aşamalı Tam Akıllı Boru Hattı'na (`5-Stage AI Scraping Pipeline`) dönüştürüldü: 1. RSS/HTML Ingestion ➔ 2. Deep Scraper ➔ 3. Vessel Matcher ➔ 4. Regulation Tagging ➔ 5. Google Gemini AI Engine.
+- **Aşama 43 (TAMAMLANDI ✅):** Frontend Haber Detay Modalı & Yapay Zeka Analiz Kartı Tasarımı (`public/index.html`, `public/styles.css`, `public/app.js`). Detay modalına zümrüt/mor degrade kaplamalı `🤖 Google Gemini AI Decarbonization Analysis` kartı, İngilizce AI analiz notu (`aiNote`), etki puanı göstergesi (`aiImportanceScore`), AI gemi tespiti (`aiVessels`) ve anlık `Analyze with AI Now` tetikleme butonu eklendi. Ayrıca haber akış kartlarına `🤖 AI Analyzed` rozeti entegre edildi.
 
 ---
 
 ## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases)
-
-- **Aşama 43 (PLANLANDI ⏳):** Frontend Haber Detay Modalı & Yapay Zeka Analiz Kartı Tasarımı (`public/index.html`, `public/styles.css`, `public/app.js`).
-  - Detay modalına nane/zümrüt ve mor gradiyentli **🤖 Yapay Zeka Analiz Notu (Gemini AI Commentary)** kartının eklenmesi.
-  - Modal içerisine **🚢 Yapay Zeka Tarafından Tespit Edilen Gemiler** ve **⭐ Yapay Zeka Önem Skoru** gösterge kutularının eklenmesi.
-  - Modal içine anlık **"🤖 AI ile Analiz Et & Yorumla"** tetikleme butonunun eklenmesi.
 
 - **Aşama 44 (PLANLANDI ⏳):** Frontend Akış Kartları & Kategori Filtreleme Revizyonu (`public/app.js`, `public/styles.css`).
   - Haber kartlarında Gemini AI tarafından kategorize edilen etiketlerin (Örn: `Alternative Fuels`) canlı gösterimi.

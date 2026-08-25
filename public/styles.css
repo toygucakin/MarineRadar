@@ -1278,6 +1278,102 @@ button {
   color: #FFFFFF;
 }
 
+/* ==========================================================================
+   Gemini AI Analysis Component Styles (Aşama 43)
+   ========================================================================== */
+.ai-commentary-card {
+  margin-top: 1.25rem;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.07) 0%, rgba(13, 148, 136, 0.07) 100%);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.08);
+}
+
+.ai-commentary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.ai-commentary-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #6D28D9;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.ai-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.ai-score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: #F3E8FF;
+  color: #6D28D9;
+  border: 1px solid rgba(109, 40, 217, 0.25);
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+}
+
+.ai-commentary-text {
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border-left: 4px solid #7C3AED;
+  border-top: 1px solid var(--border-card);
+  border-right: 1px solid var(--border-card);
+  border-bottom: 1px solid var(--border-card);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--text-heading);
+  font-weight: 500;
+}
+
+.btn-ai-analyze {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+}
+
+.btn-ai-analyze:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+  color: #FFFFFF;
+}
+
+.btn-ai-analyze:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Media Queries */
 @media (max-width: 1024px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }

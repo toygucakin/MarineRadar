@@ -435,11 +435,18 @@ function createNewsCardHTML(news) {
     </span>
   `).join('');
 
+  const aiBadgeHTML = news.aiCategorized ? `
+    <span class="category-tag" style="font-size: 0.68rem; padding: 0.15rem 0.45rem; background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%); color: #7C3AED; border: 1px solid rgba(124, 58, 237, 0.3); font-weight: 700;">
+      🤖 AI Analyzed
+    </span>
+  ` : '';
+
   return `
     <article class="news-card" data-id="${newsId}">
       <div>
         <div class="card-top-bar" style="flex-wrap: wrap; gap: 0.35rem;">
           <span class="category-tag ${categoryClass}">${escapeHTML(news.category || 'General')}</span>
+          ${aiBadgeHTML}
           ${vesselBadgeHTML}
           ${regBadgesHTML}
           <div class="impact-badge" style="${isHighImpact ? 'background: #DCFCE7; border-color: rgba(22, 163, 74, 0.4); color: #15803D; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);' : ''}">
@@ -947,6 +954,55 @@ function renderNewsDetailModalContent(news) {
           </div>
         `}
 
+        <!-- 🤖 Google Gemini AI Analysis & Decarbonization Commentary Section (Aşama 43) -->
+        <div class="ai-commentary-card">
+          <div class="ai-commentary-header">
+            <h4 class="ai-commentary-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              🤖 Google Gemini AI Decarbonization Analysis
+            </h4>
+            <button class="btn-ai-analyze btn-ai-analyze-single" data-id="${newsId}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+              ${news.aiCategorized ? 'Re-Analyze with AI' : 'Analyze with AI Now'}
+            </button>
+          </div>
+
+          ${news.aiCategorized && news.aiNote ? `
+            <div class="ai-meta-row">
+              <span class="ai-score-badge">
+                ⭐ AI Importance Score: ${news.aiImportanceScore ? news.aiImportanceScore.toFixed(1) : score}/10
+              </span>
+              <span class="ai-score-badge" style="background: #E0E7FF; color: #3730A3; border-color: rgba(55, 48, 163, 0.25);">
+                🏷️ AI Category: ${escapeHTML(news.category || 'General')}
+              </span>
+              ${news.aiAnalyzedAt ? `
+                <span style="font-size: 0.75rem; color: var(--text-muted);">
+                  🕒 Analyzed: ${formatDate(news.aiAnalyzedAt)}
+                </span>
+              ` : ''}
+            </div>
+
+            <div class="ai-commentary-text">
+              <p style="margin: 0; line-height: 1.65;">${escapeHTML(news.aiNote)}</p>
+            </div>
+
+            ${news.aiVessels && news.aiVessels.length > 0 ? `
+              <div style="margin-top: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #6D28D9;">🚢 AI Detected Vessels:</span>
+                ${news.aiVessels.map(v => `
+                  <span style="font-size: 0.73rem; font-weight: 600; background: #F3E8FF; color: #6D28D9; padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid rgba(109, 40, 217, 0.2);">
+                    ${escapeHTML(v)}
+                  </span>
+                `).join('')}
+              </div>
+            ` : ''}
+          ` : `
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+              This article has not been analyzed by Gemini AI yet. Click <strong>"Analyze with AI Now"</strong> above to generate real-time English decarbonization commentary, precision impact scoring, and AI vessel detection.
+            </p>
+          `}
+        </div>
+
         ${(news.matchedVessels && news.matchedVessels.length > 0) ? `
           <div style="margin-top: 1.25rem; background: rgba(13, 148, 136, 0.05); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid rgba(13, 148, 136, 0.2);">
             <h4 style="font-size: 0.92rem; font-weight: 700; color: #0F766E; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
@@ -1008,6 +1064,43 @@ function renderNewsDetailModalContent(news) {
       </div>
     </div>
   `;
+
+  // Bind listener to single AI analyze buttons
+  const singleAiBtns = DOM.newsDetailModalContent.querySelectorAll('.btn-ai-analyze-single');
+  singleAiBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const targetNewsId = btn.dataset.id;
+      singleAiBtns.forEach(b => {
+        b.disabled = true;
+        b.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Analyzing with Gemini AI...';
+      });
+
+      try {
+        showToast('Gemini AI Analysis Started', 'Analyzing article with Google Gemini AI Flash...', 'info');
+        const response = await fetch(`/api/news/${targetNewsId}/ai-analyze`, { method: 'POST' });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          showToast('Gemini AI Analysis Complete', `Generated AI commentary for "${result.data.title}"`, 'success');
+          await loadNewsData();
+          renderNewsDetailModalContent(result.data);
+        } else {
+          showToast('AI Analysis Error', result.message || 'Failed to analyze article with Gemini AI.', 'error');
+          singleAiBtns.forEach(b => {
+            b.disabled = false;
+            b.innerHTML = '🤖 Try AI Analysis Again';
+          });
+        }
+      } catch (err) {
+        console.error('Single AI analyze error:', err);
+        showToast('Connection Error', 'Failed to connect to Gemini AI service.', 'error');
+        singleAiBtns.forEach(b => {
+          b.disabled = false;
+          b.innerHTML = '🤖 Try AI Analysis Again';
+        });
+      }
+    });
+  });
 
   // Bind listener to all single article deep scrape buttons
   const singleScrapeBtns = DOM.newsDetailModalContent.querySelectorAll('.btn-deep-scrape-single');
