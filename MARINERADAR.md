@@ -62,18 +62,11 @@
 - **Aşama 37 (TAMAMLANDI ✅):** Kullanıcıya Özel Gemi Seçici Dropdown & Varsayılan Kişisel Bülten Yükleyici (`public/app.js`, `public/index.html`). Oturum açıldığında arama çubuğunun yanındaki dropdown otomatik olarak kullanıcının kendi gemilerini (`⚓ My Assigned Vessels`) gösterir ve varsayılan haber akışı kullanıcının kendi gemilerine ayarlanır. Ayrıca dropdown içerisine `🌐 All Public News (Genel Haberler)` geçiş opsiyonu eklendi.
 - **Aşama 38 (TAMAMLANDI ✅):** Yapay Zeka Entegrasyon Altyapısı & API Anahtarı Konfigürasyonu (`.env`, `.env.example`, `package.json`, `scripts/init-env.js`). `@google/generative-ai` SDK paketi projeye dahil edildi, kullanıcının Gemini API anahtarı `.env` dosyasına güvenli şekilde gömüldü ve `GEMINI_MODEL=gemini-flash-latest` model konfigürasyonu tamamlandı.
 - **Aşama 39 (TAMAMLANDI ✅):** Mongoose Haber Veri Modeli (`src/models/News.js`) Yapay Zeka Alanları Revizyonu. Mongoose `newsSchema` nesnesine `aiNote`, `aiVessels`, `aiImportanceScore`, `aiCategorized` ve `aiAnalyzedAt` alanları eklendi.
+- **Aşama 40 (TAMAMLANDI ✅):** Google Gemini AI Analiz Servisi (`src/services/geminiService.js`). Prompt mühendisliği ile yapılandırılmış JSON çıktısı istenerek denizcilik emisyonu ve karbonsuzlaşma odaklı Türkçe analiz yorumu (`aiNote`), otomatik kategori seçimi (`category`), hassas etki skoru (`aiImportanceScore`) ve gemi varlık tespiti (`aiVessels`) gerçekleştiren `analyzeNewsWithGemini` ve `analyzeAllUnprocessedNewsWithGemini` servisleri geliştirildi.
 
 ---
 
 ## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases)
-
-- **Aşama 40 (PLANLANDI ⏳):** Google Gemini AI Analiz Servisi (`src/services/geminiService.js`) Geliştirilmesi.
-  - Prompt Mühendisliği (Prompt Engineering): Gemini Flash modeline haber başlığı, özeti ve tam metni (`fullContent`) verilerek Yapılandırılmış JSON (Structured JSON Response) istenmesi.
-  - AI ile otomatik kategori seçimi (Örn: `Alternative Fuels`, `Carbon Emissions`, `Regulations`, `Clean Energy`, `Green Ports`).
-  - Metindeki gemilerin AI varlık tespiti (`aiVessels`).
-  - 1-10 arası hassas önem skoru tayini (`impactScore` & `aiImportanceScore`).
-  - Detaylı denizcilik ve karbonsuzlaştırma yorumunun (`aiNote`) üretilmesi.
-  - `analyzeNewsWithGemini(newsId)` ve `analyzeAllUnprocessedNewsWithGemini(limit)` servis fonksiyonlarının yazılması.
 
 - **Aşama 41 (PLANLANDI ⏳):** REST API Controller & Rota Katmanı Entegrasyonu (`src/controllers/newsController.js`, `src/routes/newsRoutes.js`).
   - `POST /api/news/:id/ai-analyze`: Belirli bir haberi anlık olarak Gemini AI ile analiz etme.
@@ -162,6 +155,7 @@ Her aşama bağımsız çalışabildiği gibi `runFullPipeline` fonksiyonu ile s
 - [src/services/deepScraperService.js](file:///c:/MyApps/MarineRadar/src/services/deepScraperService.js): Orijinal haber bağlantılarından tam makale metinlerini kazıyan derin web scraping servisi.
 - [src/services/vesselMatcherService.js](file:///c:/MyApps/MarineRadar/src/services/vesselMatcherService.js): Haber metinlerinden geçen filoya ait gemileri tespit eden akıllı varlık eşleme motoru.
 - [src/services/regulationService.js](file:///c:/MyApps/MarineRadar/src/services/regulationService.js): Derin haber metinlerini denizcilik emisyon regülasyonlarına göre etiketleyen ve uyumluluk risk skoru (Compliance Risk) üreten servis.
+- [src/services/geminiService.js](file:///c:/MyApps/MarineRadar/src/services/geminiService.js): Google Gemini AI tabanlı yapılandırılmış haber analitiği, Türkçe emisyon değerlendirme notu (`aiNote`), otomatik kategori seçimi ve gemi tespit servisi.
 - [src/services/cronService.js](file:///c:/MyApps/MarineRadar/src/services/cronService.js): Node-cron periyodik arka plan görevleri ve 4 Aşamalı Tam Boru Hattı (`runFullPipeline`) servisi.
 - [Dockerfile](file:///c:/MyApps/MarineRadar/Dockerfile): Express REST API Docker imaj tanımı.
 - [.dockerignore](file:///c:/MyApps/MarineRadar/.dockerignore): Docker build hariç tutma kuralları.
