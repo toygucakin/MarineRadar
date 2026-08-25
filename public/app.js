@@ -414,6 +414,10 @@ function createNewsCardHTML(news) {
     case 'Carbon Emissions': categoryClass = 'carbon'; break;
     case 'Alternative Fuels': categoryClass = 'fuel'; break;
     case 'Clean Energy': categoryClass = 'clean'; break;
+    case 'Regulations': categoryClass = 'regulations'; break;
+    case 'Green Ports': categoryClass = 'ports'; break;
+    case 'Green Fleet': categoryClass = 'fleet'; break;
+    case 'Maritime & Environment': categoryClass = 'environment'; break;
     default: categoryClass = ''; break;
   }
 

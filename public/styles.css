@@ -759,6 +759,10 @@ button {
 .category-tag.carbon { background: #DCFCE7; color: #15803D; border-color: rgba(22, 163, 74, 0.3); }
 .category-tag.fuel { background: #FFEDD5; color: #C2410C; border-color: rgba(249, 115, 22, 0.3); }
 .category-tag.clean { background: #DBEAFE; color: #1E40AF; border-color: rgba(37, 99, 235, 0.3); }
+.category-tag.regulations { background: #FEF3C7; color: #B45309; border-color: rgba(217, 119, 6, 0.3); }
+.category-tag.ports { background: #E0E7FF; color: #3730A3; border-color: rgba(55, 48, 163, 0.3); }
+.category-tag.fleet { background: #CCFBF1; color: #0D9488; border-color: rgba(13, 148, 136, 0.3); }
+.category-tag.environment { background: #F3E8FF; color: #6D28D9; border-color: rgba(109, 40, 217, 0.3); }
 
 .impact-badge {
   display: flex;
