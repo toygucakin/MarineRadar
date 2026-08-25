@@ -64,18 +64,11 @@
 - **Aşama 39 (TAMAMLANDI ✅):** Mongoose Haber Veri Modeli (`src/models/News.js`) Yapay Zeka Alanları Revizyonu. Mongoose `newsSchema` nesnesine `aiNote`, `aiVessels`, `aiImportanceScore`, `aiCategorized` ve `aiAnalyzedAt` alanları eklendi.
 - **Aşama 40 (TAMAMLANDI ✅):** Google Gemini AI Analiz Servisi (`src/services/geminiService.js`). Prompt mühendisliği ile yapılandırılmış JSON çıktısı istenerek denizcilik emisyonu ve karbonsuzlaşma odaklı Türkçe analiz yorumu (`aiNote`), otomatik kategori seçimi (`category`), hassas etki skoru (`aiImportanceScore`) ve gemi varlık tespiti (`aiVessels`) gerçekleştiren `analyzeNewsWithGemini` ve `analyzeAllUnprocessedNewsWithGemini` servisleri geliştirildi.
 - **Aşama 41 (TAMAMLANDI ✅):** REST API Controller & Rota Katmanı Entegrasyonu (`src/controllers/newsController.js`, `src/routes/newsRoutes.js`, `src/config/swagger.js`). `POST /api/news/:id/ai-analyze` ve `POST /api/news/ai-analyze` endpoint'leri eklendi, Swagger UI canlı dokümantasyonuna entegre edildi.
+- **Aşama 42 (TAMAMLANDI ✅):** Otomatik Zamanlanmış Boru Hattının 5 Aşamaya Yükseltilmesi (`src/services/cronService.js`). `runFullPipeline` boru hattı 5 Aşamalı Tam Akıllı Boru Hattı'na (`5-Stage AI Scraping Pipeline`) dönüştürüldü: 1. RSS/HTML Ingestion ➔ 2. Deep Scraper ➔ 3. Vessel Matcher ➔ 4. Regulation Tagging ➔ 5. Google Gemini AI Engine.
 
 ---
 
 ## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases)
-
-- **Aşama 42 (PLANLANDI ⏳):** Otomatik Zamanlanmış Boru Hattının 5 Aşamaya Yükseltilmesi (`src/services/cronService.js`).
-  - `runFullPipeline` boru hattı 5 Aşamalı Tam Akıllı Boru Hattı'na (`5-Stage AI Scraping Pipeline`) dönüştürülecek:
-    1. **Stage 1:** RSS & HTML Feed Ingestion
-    2. **Stage 2:** Deep Article Content Scraper
-    3. **Stage 3:** Multi-Vessel Entity Matcher
-    4. **Stage 4:** Regulation Tagging & Risk Assessor
-    5. **Stage 5 (YENİ ✅):** Google Gemini AI Commentary, Vessel Extraction, Importance Score & Categorization Engine.
 
 - **Aşama 43 (PLANLANDI ⏳):** Frontend Haber Detay Modalı & Yapay Zeka Analiz Kartı Tasarımı (`public/index.html`, `public/styles.css`, `public/app.js`).
   - Detay modalına nane/zümrüt ve mor gradiyentli **🤖 Yapay Zeka Analiz Notu (Gemini AI Commentary)** kartının eklenmesi.

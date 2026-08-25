@@ -4,16 +4,18 @@ import { scrapeHtmlTargets } from './htmlService.js';
 import { scrapeAllUnscrapedNews } from './deepScraperService.js';
 import { matchVesselsForAllNews } from './vesselMatcherService.js';
 import { classifyRegulationsForAllNews } from './regulationService.js';
+import { analyzeAllUnprocessedNewsWithGemini } from './geminiService.js';
 
 /**
- * 4 Aşamalı Tam Otomatik Veri Boru Hattı (Full Pipeline Engine)
+ * 5 Aşamalı Tam Akıllı Veri Boru Hattı (5-Stage AI Scraping Pipeline Engine)
  * Stage 1: RSS & HTML Web Ingestion
  * Stage 2: Deep Article Scraper (Full Content Extraction)
  * Stage 3: Multi-Vessel Entity Matcher (IMO & Vessel Names)
  * Stage 4: Maritime Regulation Classifier & Compliance Risk Assessor
+ * Stage 5: Google Gemini AI Commentary, Vessel Extraction, Importance Score & Categorization Engine
  */
 export const runFullPipeline = async (reason = 'Zamanlanmış Pipeline') => {
-  console.log(`⚡ [Pipeline Engine] 4 Aşamalı Veri Boru Hattı Başlatıldı (${reason})...`);
+  console.log(`⚡ [Pipeline Engine] 5 Aşamalı Akıllı Veri Boru Hattı Başlatıldı (${reason})...`);
   const startTime = Date.now();
 
   const report = {
@@ -22,35 +24,42 @@ export const runFullPipeline = async (reason = 'Zamanlanmış Pipeline') => {
     deepScrapedCount: 0,
     matchedVesselsCount: 0,
     classifiedRegulationsCount: 0,
+    aiAnalyzedCount: 0,
     durationMs: 0
   };
 
   try {
     // Stage 1: RSS & HTML Ingestion
-    console.log('📌 [Stage 1/4] RSS & HTML Akış Kazıma...');
+    console.log('📌 [Stage 1/5] RSS & HTML Akış Kazıma...');
     const rssRes = await scrapeRssFeeds();
     const htmlRes = await scrapeHtmlTargets();
     report.rssAdded = rssRes.addedCount || 0;
     report.htmlAdded = htmlRes.addedCount || 0;
 
     // Stage 2: Deep Article Scraping
-    console.log('📌 [Stage 2/4] Derin Makale Metni Kazıma (Deep Scraper)...');
+    console.log('📌 [Stage 2/5] Derin Makale Metni Kazıma (Deep Scraper)...');
     const deepRes = await scrapeAllUnscrapedNews(50);
     report.deepScrapedCount = deepRes.scrapedCount || 0;
 
     // Stage 3: Multi-Vessel Entity Matching
-    console.log('📌 [Stage 3/4] Gemi Varlık Eşleme (Vessel Entity Matcher)...');
+    console.log('📌 [Stage 3/5] Gemi Varlık Eşleme (Vessel Entity Matcher)...');
     const vesselRes = await matchVesselsForAllNews(500);
     report.matchedVesselsCount = vesselRes.totalMatchesCount || 0;
 
     // Stage 4: Regulation Classification & Compliance Risk Assessment
-    console.log('📌 [Stage 4/4] Regülasyon ve Uyumluluk Analizi (Regulation Classifier)...');
+    console.log('📌 [Stage 4/5] Regülasyon ve Uyumluluk Analizi (Regulation Classifier)...');
     const regRes = await classifyRegulationsForAllNews(500);
     report.classifiedRegulationsCount = regRes.totalRegulationsCount || 0;
 
+    // Stage 5: Google Gemini AI Engine
+    console.log('📌 [Stage 5/5] Google Gemini AI Analiz Motoru (Gemini AI Engine)...');
+    const aiLimit = process.env.NODE_ENV === 'test' ? 1 : 10;
+    const aiRes = await analyzeAllUnprocessedNewsWithGemini(aiLimit);
+    report.aiAnalyzedCount = aiRes.analyzedCount || 0;
+
     report.durationMs = Date.now() - startTime;
-    console.log(`✅ [Pipeline Engine] 4 Aşamalı Boru Hattı Başarıyla Tamamlandı! (${report.durationMs} ms)`);
-    console.log(`📊 Pipeline Özeti: RSS: +${report.rssAdded}, HTML: +${report.htmlAdded}, Derin Kazınan: ${report.deepScrapedCount}, Eşleşen Gemi: ${report.matchedVesselsCount}, Regülasyon Etiketi: ${report.classifiedRegulationsCount}`);
+    console.log(`✅ [Pipeline Engine] 5 Aşamalı Akıllı Boru Hattı Başarıyla Tamamlandı! (${report.durationMs} ms)`);
+    console.log(`📊 Pipeline Özeti: RSS: +${report.rssAdded}, HTML: +${report.htmlAdded}, Derin Kazınan: ${report.deepScrapedCount}, Eşleşen Gemi: ${report.matchedVesselsCount}, Regülasyon: ${report.classifiedRegulationsCount}, Gemini AI: ${report.aiAnalyzedCount}`);
 
     return { success: true, report };
   } catch (error) {
@@ -63,7 +72,7 @@ export const runFullPipeline = async (reason = 'Zamanlanmış Pipeline') => {
  * Otomatik Zamanlanmış Görevler (Cron Jobs) Servisi
  */
 export const initCronJobs = () => {
-  // 1. Sunucu açılır açılmaz (2 saniye sonra) 1 defa tam 4 aşamalı boru hattını çalıştır
+  // 1. Sunucu açılır açılmaz (2 saniye sonra) 1 defa tam 5 aşamalı boru hattını çalıştır
   setTimeout(() => {
     runFullPipeline('Sunucu Açılış Taraması');
   }, 2000);
@@ -73,5 +82,5 @@ export const initCronJobs = () => {
     runFullPipeline('6 Saatlik Periyodik Tarama');
   });
 
-  console.log('⚡ Zamanlanmış Veri Boru Hattı Aktif: Sunucu açıldığında ve her 6 saatte bir (Ingest ➔ Deep Scrape ➔ Vessel Match ➔ Regulation Classifier) adımlarını otomatik çalıştıracak.');
+  console.log('⚡ Zamanlanmış Veri Boru Hattı Aktif: Sunucu açıldığında ve her 6 saatte bir (Ingest ➔ Deep Scrape ➔ Vessel Match ➔ Regulation Classifier ➔ Gemini AI Engine) adımlarını otomatik çalıştıracak.');
 };

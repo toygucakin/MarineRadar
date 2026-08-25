@@ -271,9 +271,9 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
     });
   });
 
-  // POST /api/news/scrape/pipeline (Aşama 33 - 4 Aşamalı Tam Boru Hattı Testi)
-  describe('POST /api/news/scrape/pipeline (Aşama 33 - Full Pipeline)', () => {
-    it('4 aşamalı veri boru hattını çalıştırıp 200 OK ve detaylı aşama raporunu dönmelidir', async () => {
+  // POST /api/news/scrape/pipeline (Aşama 42 - 5 Aşamalı Tam Akıllı Boru Hattı Testi)
+  describe('POST /api/news/scrape/pipeline (Aşama 42 - 5-Stage AI Pipeline)', () => {
+    it('5 aşamalı veri boru hattını çalıştırıp 200 OK ve detaylı aşama raporunu dönmelidir', async () => {
       const response = await request(app).post('/api/news/scrape/pipeline');
 
       expect(response.statusCode).toBe(200);
@@ -282,7 +282,8 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
       expect(response.body.data).toHaveProperty('deepScrapedCount');
       expect(response.body.data).toHaveProperty('matchedVesselsCount');
       expect(response.body.data).toHaveProperty('classifiedRegulationsCount');
-    }, 60000);
+      expect(response.body.data).toHaveProperty('aiAnalyzedCount');
+    }, 90000);
   });
 
   // POST /api/news/ai-analyze & POST /api/news/:id/ai-analyze (Aşama 41 - Gemini AI Endpoints)
