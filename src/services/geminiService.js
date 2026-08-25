@@ -50,15 +50,14 @@ You are an expert AI Analyst specializing in global maritime shipping, vessel em
 
 Analyze the following maritime news article and respond strictly in JSON format:
 
-Article Title: "${news.title}"
-Article Summary: "${news.summary}"
-Article Content: "${contentToAnalyze.substring(0, 3000)}"
+1. First, select the single best matching category from: 'Clean Energy', 'Regulations', 'Carbon Emissions', 'Green Ports', 'Maritime & Environment', 'Green Fleet', 'Alternative Fuels', 'Genel'.
+2. Second, evaluate the article's importance and impact specifically within that chosen category and assign an "aiImportanceScore" float value strictly between 5.0 and 10.0 (where 5.0 represents moderate relevance and 10.0 represents critical high-impact maritime news).
 
 Response JSON Format:
 {
-  "aiNote": "A concise, expert 2-3 sentence commentary IN ENGLISH evaluating the impact on maritime emissions, decarbonization goals, regulation compliance, or fleet operations.",
-  "category": "Choose the single best category from: 'Clean Energy', 'Regulations', 'Carbon Emissions', 'Green Ports', 'Maritime & Environment', 'Green Fleet', 'Alternative Fuels', 'Genel'",
+  "category": "Chosen category name",
   "aiImportanceScore": 8.5,
+  "aiNote": "A concise, expert 2-3 sentence commentary IN ENGLISH evaluating the impact on maritime emissions, decarbonization goals, regulation compliance, or fleet operations.",
   "aiVessels": ["An array of all vessel names and IMO numbers mentioned in the text (e.g., 'M/T Aegean Green', 'IMO 9876543'). Return empty array [] if none."]
 }
 `;
@@ -83,7 +82,6 @@ Response JSON Format:
       } catch (err) {
         lastError = err;
         console.warn(`⚠️ [Gemini AI] Model ${modelName} (Deneme ${attempt}) hata aldı: ${err.message}`);
-        // 503 veya geçici ağ hatalarında kısa bekleme
         if (err.status === 503 || err.message.includes('503')) {
           await sleep(1500);
         }
@@ -116,7 +114,12 @@ Response JSON Format:
     news.category = parsedData.category;
   }
   if (typeof parsedData.aiImportanceScore === 'number') {
-    news.aiImportanceScore = Math.min(10, Math.max(0, parsedData.aiImportanceScore));
+    const clampedScore = Math.min(10.0, Math.max(5.0, parsedData.aiImportanceScore));
+    news.aiImportanceScore = Number(clampedScore.toFixed(1));
+    news.impactScore = news.aiImportanceScore; // Primary impactScore updated to AI score!
+  } else if (!news.aiImportanceScore) {
+    news.aiImportanceScore = 6.5;
+    news.impactScore = 6.5;
   }
   if (Array.isArray(parsedData.aiVessels)) {
     news.aiVessels = parsedData.aiVessels.map(v => String(v).trim()).filter(Boolean);
@@ -160,9 +163,11 @@ export const analyzeAllUnprocessedNewsWithGemini = async (limit = 10) => {
         aiImportanceScore: updatedNews.aiImportanceScore,
         category: updatedNews.category
       });
+      await sleep(1200);
     } catch (err) {
       console.error(`⚠️ [Gemini Batch] "${news.title}" analiz edilemedi:`, err.message);
       report.failedCount++;
+      await sleep(1500);
     }
   }
 

@@ -406,7 +406,10 @@ function getSourceFeedInfo(news) {
  */
 function createNewsCardHTML(news) {
   const newsId = news.id || news._id;
-  const score = (news.impactScore || 6.0).toFixed(1);
+  const rawScore = (news.aiImportanceScore !== undefined && news.aiImportanceScore !== null)
+    ? news.aiImportanceScore
+    : (news.impactScore !== undefined && news.impactScore !== null ? news.impactScore : 6.5);
+  const score = Number(rawScore).toFixed(1);
   const isHighImpact = score >= 8.0;
 
   let categoryClass = '';
@@ -887,7 +890,10 @@ function renderNewsDetailModalContent(news) {
   if (!DOM.newsDetailModalContent) return;
 
   const newsId = news.id || news._id;
-  const score = (news.impactScore || 6.0).toFixed(1);
+  const rawScore = (news.aiImportanceScore !== undefined && news.aiImportanceScore !== null)
+    ? news.aiImportanceScore
+    : (news.impactScore !== undefined && news.impactScore !== null ? news.impactScore : 6.5);
+  const score = Number(rawScore).toFixed(1);
   const formattedDate = formatDate(news.publishedAt || news.createdAt);
   const sourceFeedText = getSourceFeedInfo(news);
   const targetUrl = news.sourceUrl || news.link || '#';

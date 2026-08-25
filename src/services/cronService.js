@@ -53,7 +53,7 @@ export const runFullPipeline = async (reason = 'Zamanlanmış Pipeline') => {
 
     // Stage 5: Google Gemini AI Engine
     console.log('📌 [Stage 5/5] Google Gemini AI Analiz Motoru (Gemini AI Engine)...');
-    const aiLimit = process.env.NODE_ENV === 'test' ? 1 : 10;
+    const aiLimit = process.env.NODE_ENV === 'test' ? 1 : 100;
     const aiRes = await analyzeAllUnprocessedNewsWithGemini(aiLimit);
     report.aiAnalyzedCount = aiRes.analyzedCount || 0;
 
