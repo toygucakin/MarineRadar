@@ -46,20 +46,20 @@ export const analyzeNewsWithGemini = async (newsId) => {
     : `${news.title}\n\n${news.summary}`;
 
   const prompt = `
-Sen küresel denizcilik sektörü, gemi emisyonları (IMO DCS, EU ETS, FuelEU Maritime) ve karbonsuzlaşma teknolojileri konusunda uzmanlaşmış bir Yapay Zeka Analistisin.
+You are an expert AI Analyst specializing in global maritime shipping, vessel emissions (IMO DCS, EU ETS, FuelEU Maritime), and decarbonization technologies.
 
-Aşağıdaki denizcilik haberini analiz et ve İSTENDİĞİ GİBİ STRICT JSON FORMATINDA YANIT VER:
+Analyze the following maritime news article and respond strictly in JSON format:
 
-Haber Başlığı: "${news.title}"
-Haber Özeti: "${news.summary}"
-Makale Metni: "${contentToAnalyze.substring(0, 3000)}"
+Article Title: "${news.title}"
+Article Summary: "${news.summary}"
+Article Content: "${contentToAnalyze.substring(0, 3000)}"
 
-Yanıt JSON Formatı:
+Response JSON Format:
 {
-  "aiNote": "Haber içeriğinin denizcilik emisyonları, karbon yakalama, regülasyon uyumu veya filo operasyonlarına etkisine dair Türkçe olarak yazılmış 2-3 cümlelik uzman değerlendirme notu.",
-  "category": "Aşağıdaki kategorilerden en uygun olan bir tanesini seç: 'Clean Energy', 'Regulations', 'Carbon Emissions', 'Green Ports', 'Maritime & Environment', 'Green Fleet', 'Alternative Fuels', 'Genel'",
+  "aiNote": "A concise, expert 2-3 sentence commentary IN ENGLISH evaluating the impact on maritime emissions, decarbonization goals, regulation compliance, or fleet operations.",
+  "category": "Choose the single best category from: 'Clean Energy', 'Regulations', 'Carbon Emissions', 'Green Ports', 'Maritime & Environment', 'Green Fleet', 'Alternative Fuels', 'Genel'",
   "aiImportanceScore": 8.5,
-  "aiVessels": ["Haberde adı geçen tüm gemi isimleri ve IMO numaraları dizisi (Örn: 'M/T Aegean Green', 'IMO 9876543'). Yoksa boş dizi [] dön."]
+  "aiVessels": ["An array of all vessel names and IMO numbers mentioned in the text (e.g., 'M/T Aegean Green', 'IMO 9876543'). Return empty array [] if none."]
 }
 `;
 
