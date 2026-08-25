@@ -63,15 +63,11 @@
 - **Aşama 38 (TAMAMLANDI ✅):** Yapay Zeka Entegrasyon Altyapısı & API Anahtarı Konfigürasyonu (`.env`, `.env.example`, `package.json`, `scripts/init-env.js`). `@google/generative-ai` SDK paketi projeye dahil edildi, kullanıcının Gemini API anahtarı `.env` dosyasına güvenli şekilde gömüldü ve `GEMINI_MODEL=gemini-flash-latest` model konfigürasyonu tamamlandı.
 - **Aşama 39 (TAMAMLANDI ✅):** Mongoose Haber Veri Modeli (`src/models/News.js`) Yapay Zeka Alanları Revizyonu. Mongoose `newsSchema` nesnesine `aiNote`, `aiVessels`, `aiImportanceScore`, `aiCategorized` ve `aiAnalyzedAt` alanları eklendi.
 - **Aşama 40 (TAMAMLANDI ✅):** Google Gemini AI Analiz Servisi (`src/services/geminiService.js`). Prompt mühendisliği ile yapılandırılmış JSON çıktısı istenerek denizcilik emisyonu ve karbonsuzlaşma odaklı Türkçe analiz yorumu (`aiNote`), otomatik kategori seçimi (`category`), hassas etki skoru (`aiImportanceScore`) ve gemi varlık tespiti (`aiVessels`) gerçekleştiren `analyzeNewsWithGemini` ve `analyzeAllUnprocessedNewsWithGemini` servisleri geliştirildi.
+- **Aşama 41 (TAMAMLANDI ✅):** REST API Controller & Rota Katmanı Entegrasyonu (`src/controllers/newsController.js`, `src/routes/newsRoutes.js`, `src/config/swagger.js`). `POST /api/news/:id/ai-analyze` ve `POST /api/news/ai-analyze` endpoint'leri eklendi, Swagger UI canlı dokümantasyonuna entegre edildi.
 
 ---
 
 ## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases)
-
-- **Aşama 41 (PLANLANDI ⏳):** REST API Controller & Rota Katmanı Entegrasyonu (`src/controllers/newsController.js`, `src/routes/newsRoutes.js`).
-  - `POST /api/news/:id/ai-analyze`: Belirli bir haberi anlık olarak Gemini AI ile analiz etme.
-  - `POST /api/news/ai-analyze`: Veritabanındaki işlenmemiş haberlere toplu Gemini AI analizi uygulama.
-  - Swagger UI API canlı dokümantasyonuna yeni endpoint'lerin eklenmesi (`src/config/swagger.js`).
 
 - **Aşama 42 (PLANLANDI ⏳):** Otomatik Zamanlanmış Boru Hattının 5 Aşamaya Yükseltilmesi (`src/services/cronService.js`).
   - `runFullPipeline` boru hattı 5 Aşamalı Tam Akıllı Boru Hattı'na (`5-Stage AI Scraping Pipeline`) dönüştürülecek:

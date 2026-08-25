@@ -14,7 +14,9 @@ import {
   classifyRegulationsSingleNews,
   classifyRegulationsAllNews,
   getNewsByRegulationCode,
-  runScrapingPipelineController
+  runScrapingPipelineController,
+  analyzeNewsWithGeminiController,
+  analyzeBatchNewsWithGeminiController
 } from '../controllers/newsController.js';
 import { validateCreateNews } from '../middlewares/validateNews.js';
 import { verifyToken } from '../middlewares/authMiddleware.js';
@@ -55,6 +57,9 @@ router.post('/match-vessels', matchVesselsAllNews);
 // POST /api/news/classify-regulations -> Veritabanındaki haberlerde toplu regülasyon analitiği çalıştırma
 router.post('/classify-regulations', classifyRegulationsAllNews);
 
+// POST /api/news/ai-analyze -> Veritabanındaki işlenmemiş haberlere toplu Google Gemini AI analizi uygulama
+router.post('/ai-analyze', analyzeBatchNewsWithGeminiController);
+
 // GET /api/news/:id -> ID bazlı haber getirme
 router.get('/:id', getNewsById);
 
@@ -66,6 +71,9 @@ router.post('/:id/match-vessels', matchVesselsSingleNews);
 
 // POST /api/news/:id/classify-regulations -> Tek haber için regülasyon sınıflandırması çalıştırma
 router.post('/:id/classify-regulations', classifyRegulationsSingleNews);
+
+// POST /api/news/:id/ai-analyze -> Tek haber için anlık Google Gemini AI analizi çalıştırma
+router.post('/:id/ai-analyze', analyzeNewsWithGeminiController);
 
 // POST /api/news -> Manuel yeni haber ekleme (Önce validateCreateNews middleware'i çalışır)
 router.post('/', validateCreateNews, createNews);

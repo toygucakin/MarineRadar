@@ -44,7 +44,12 @@ const options = {
             fullContent: { type: 'string', example: 'IMO has officially announced new decarbonization guidelines...' },
             isFullyScraped: { type: 'boolean', example: true },
             scrapedAt: { type: 'string', format: 'date-time' },
-            publishedAt: { type: 'string', format: 'date-time' }
+            publishedAt: { type: 'string', format: 'date-time' },
+            aiNote: { type: 'string', example: 'Yapay Zeka Değerlendirmesi: Bu gelişme denizcilik karbonsuzlaşma hedefleri açısından kritik bir dönüm noktasıdır.' },
+            aiVessels: { type: 'array', items: { type: 'string' }, example: ['M/T Aegean Green', 'IMO 9876543'] },
+            aiImportanceScore: { type: 'number', example: 8.8 },
+            aiCategorized: { type: 'boolean', example: true },
+            aiAnalyzedAt: { type: 'string', format: 'date-time' }
           }
         },
         Newsletter: {
@@ -262,6 +267,27 @@ const options = {
           ],
           responses: {
             200: { description: 'Regülasyona özel haber listesi' }
+          }
+        }
+      },
+      '/api/news/ai-analyze': {
+        post: {
+          summary: 'Veritabanındaki işlenmemiş haberlere toplu Google Gemini AI analizi uygular',
+          responses: {
+            200: { description: 'Toplu Gemini AI analizi tamamlandı' }
+          }
+        }
+      },
+      '/api/news/{id}/ai-analyze': {
+        post: {
+          summary: 'Belirli bir haberi anlık olarak Google Gemini AI ile analiz eder ve Türkçe değerlendirme notunu üretir',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            200: { description: 'Gemini AI analizi başarılı' },
+            400: { description: 'Geçersiz haber ID formatı' },
+            404: { description: 'Haber bulunamadı' }
           }
         }
       },

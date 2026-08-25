@@ -5,6 +5,7 @@ import { scrapeHtmlTargets } from '../services/htmlService.js';
 import { scrapeNewsById, scrapeAllUnscrapedNews } from '../services/deepScraperService.js';
 import { matchVesselsForNewsItem, matchVesselsForAllNews } from '../services/vesselMatcherService.js';
 import { classifyRegulationsForNewsItem, classifyRegulationsForAllNews } from '../services/regulationService.js';
+import { analyzeNewsWithGemini, analyzeAllUnprocessedNewsWithGemini } from '../services/geminiService.js';
 
 /**
  * Controller (MongoDB / Mongoose İş Mantığı Katmanı)
@@ -349,6 +350,46 @@ export const runScrapingPipelineController = async (req, res, next) => {
         data: result.report
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/news/:id/ai-analyze -> Tek bir haberi Google Gemini AI ile analiz eder
+export const analyzeNewsWithGeminiController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: `Geçersiz haber ID formatı: '${id}'`
+      });
+    }
+
+    const newsItem = await analyzeNewsWithGemini(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Haber Google Gemini AI ile başarıyla analiz edildi ve güncellendi.',
+      data: newsItem
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/news/ai-analyze -> Veritabanındaki işlenmemiş haberlere toplu Gemini AI analizi uygular
+export const analyzeBatchNewsWithGeminiController = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit || req.body?.limit || '10', 10);
+    const result = await analyzeAllUnprocessedNewsWithGemini(limit);
+
+    res.status(200).json({
+      success: true,
+      message: `Toplu Gemini AI Analizi Tamamlandı: ${result.analyzedCount}/${result.totalFound} haber başarıyla analiz edildi.`,
+      data: result
+    });
   } catch (error) {
     next(error);
   }
