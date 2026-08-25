@@ -59,10 +59,24 @@ app.use(errorHandler);
 
 // Otomatik testlerde port çakışmasını önlemek için
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`🚀 MyCarbons API Sunucusu http://localhost:${PORT} üzerinde çalışıyor.`);
-    console.log(`📖 Canlı Swagger API Dokümantasyonu: http://localhost:${PORT}/api-docs`);
-  });
+  const startServer = (portToUse) => {
+    const numericPort = parseInt(portToUse, 10);
+    const server = app.listen(numericPort, () => {
+      console.log(`🚀 MyCarbons API Sunucusu http://localhost:${numericPort} üzerinde çalışıyor.`);
+      console.log(`📖 Canlı Swagger API Dokümantasyonu: http://localhost:${numericPort}/api-docs`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.warn(`⚠️ Port ${numericPort} dolu (Docker/WSL kullanımda olabilir), Port ${numericPort + 1} deneniyor...`);
+        startServer(numericPort + 1);
+      } else {
+        console.error('Sunucu başlatma hatası:', err);
+      }
+    });
+  };
+
+  startServer(PORT);
 }
 
 // Testler için dışa aktarım
