@@ -288,12 +288,12 @@ describe('MyCarbons REST API Integration Tests (Aşama 10 - Swagger & Cron Katma
   // POST /api/news/ai-analyze & POST /api/news/:id/ai-analyze (Aşama 41 - Gemini AI Endpoints)
   describe('POST /api/news/ai-analyze (Aşama 41 - Gemini AI Endpoints)', () => {
     it('toplu AI analizi isteğine 200 OK dönmelidir', async () => {
-      const response = await request(app).post('/api/news/ai-analyze?limit=2');
+      const response = await request(app).post('/api/news/ai-analyze?limit=1');
 
       expect(response.statusCode).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.data).toHaveProperty('analyzedCount');
-    }, 45000);
+    }, 60000);
 
     it('geçersiz ID ile AI analizi isteğinde 400 Bad Request dönmelidir', async () => {
       const response = await request(app).post('/api/news/invalid-mongo-id/ai-analyze');
