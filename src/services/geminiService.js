@@ -11,7 +11,7 @@ const getGeminiModel = (overrideModel) => {
     throw new Error('GEMINI_API_KEY ortam değişkeni tanımlanmamış.');
   }
 
-  const modelName = overrideModel || process.env.GEMINI_MODEL || 'gemini-flash-latest';
+  const modelName = overrideModel || process.env.GEMINI_MODEL || 'gemini-3.5-flash';
   const genAI = new GoogleGenerativeAI(apiKey);
   
   return genAI.getGenerativeModel({
@@ -64,7 +64,9 @@ Response JSON Format:
 `;
 
   const candidateModels = [
-    process.env.GEMINI_MODEL || 'gemini-flash-latest',
+    process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+    'gemini-3.5-flash-lite',
+    'gemini-flash-lite-latest',
     'gemini-3.6-flash'
   ];
 
