@@ -1025,37 +1025,6 @@ function renderNewsDetailModalContent(news) {
             </div>
           </div>
         ` : ''}
-
-        ${(news.regulations && news.regulations.length > 0) || (news.complianceRisk && news.complianceRisk.riskScore > 0) ? `
-          <div style="margin-top: 1.25rem; background: rgba(245, 158, 11, 0.05); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid rgba(245, 158, 11, 0.25);">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
-              <h4 style="font-size: 0.92rem; font-weight: 700; color: #B45309; margin: 0; display: flex; align-items: center; gap: 0.4rem;">
-                📜 Maritime Regulations & Compliance Analysis (${news.regulations ? news.regulations.length : 0}):
-              </h4>
-              ${news.complianceRisk ? `
-                <span style="font-size: 0.73rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px; ${news.complianceRisk.riskLevel === 'Critical' || news.complianceRisk.riskLevel === 'High' ? 'background: #FEE2E2; color: #DC2626; border: 1px solid rgba(220, 38, 38, 0.3);' : 'background: #FEF3C7; color: #D97706; border: 1px solid rgba(217, 119, 6, 0.3);'}">
-                  Risk Score: ${news.complianceRisk.riskScore}/10 (${news.complianceRisk.riskLevel})
-                </span>
-              ` : ''}
-            </div>
-            ${news.complianceRisk && news.complianceRisk.summary ? `
-              <p style="font-size: 0.85rem; color: var(--text-heading); font-weight: 500; margin-bottom: 0.75rem; background: var(--bg-card); padding: 0.65rem; border-radius: var(--radius-md); border-left: 3px solid #D97706;">
-                ${escapeHTML(news.complianceRisk.summary)}
-              </p>
-            ` : ''}
-            <div style="display: flex; flex-direction: column; gap: 0.55rem;">
-              ${(news.regulations || []).map(r => `
-                <div style="background: var(--bg-card); padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
-                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.2rem;">
-                    <strong style="color: #B45309; font-size: 0.85rem;">📋 ${escapeHTML(r.name)}</strong>
-                    <span style="font-size: 0.68rem; font-weight: 700; background: #FEE2E2; color: #991B1B; padding: 0.1rem 0.4rem; border-radius: 4px;">Impact: ${escapeHTML(r.impactLevel)}</span>
-                  </div>
-                  ${r.mentionSnippet ? `<p style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; margin: 0;">"${escapeHTML(r.mentionSnippet)}"</p>` : ''}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        ` : ''}
       </div>
 
       <div class="news-detail-footer" style="margin-top: 1.25rem; display: flex; justify-content: flex-end; align-items: center;">
