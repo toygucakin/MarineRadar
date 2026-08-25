@@ -91,7 +91,11 @@ Response JSON Format:
   }
 
   if (!responseText) {
-    throw new Error(`Gemini AI çağrısı başarısız oldu: ${lastError ? lastError.message : 'Yanıt alınamadı'}`);
+    let cleanMsg = lastError ? lastError.message : 'Yanıt alınamadı';
+    if (cleanMsg.includes('429') || cleanMsg.includes('Quota exceeded')) {
+      cleanMsg = 'Google Gemini API kota limitine ulaşıldı (429 Rate Limit). Google ücretsiz planında kısa süreli istek sınırına takılındı. Lütfen 15-20 saniye bekleyip tekrar deneyin.';
+    }
+    throw new Error(cleanMsg);
   }
 
   // JSON Temizleme ve Ayrıştırma

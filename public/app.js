@@ -962,7 +962,7 @@ function renderNewsDetailModalContent(news) {
         <div class="ai-commentary-card">
           <div class="ai-commentary-header">
             <h4 class="ai-commentary-title">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 12v3M3 12h3m12 0h3m-3.5-6.5l-2.1 2.1m-8.8 8.8l-2.1 2.1m0-13l2.1 2.1m8.8 8.8l2.1 2.1"></path><circle cx="12" cy="12" r="3"></circle></svg>
               🤖 Google Gemini AI Decarbonization Analysis
             </h4>
             <button class="btn-ai-analyze btn-ai-analyze-single" data-id="${newsId}">
