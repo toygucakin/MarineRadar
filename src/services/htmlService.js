@@ -3,6 +3,9 @@ import * as cheerio from 'cheerio';
 import { News } from '../models/News.js';
 import { analyzeContent } from './rssService.js';
 import { scrapeArticleContent } from './deepScraperService.js';
+import { matchVesselsForNewsItem } from './vesselMatcherService.js';
+import { classifyRegulationsForNewsItem } from './regulationService.js';
+import { analyzeNewsWithGemini } from './geminiService.js';
 
 // HTML Kazıma için varsayılan denizcilik portal adresleri
 const DEFAULT_HTML_TARGETS = [
@@ -113,6 +116,17 @@ export const scrapeHtmlTargets = async (customTargets = null) => {
           isFullyScraped: true,
           scrapedAt: new Date()
         });
+
+        // Gemi Varlık Eşleme, Regülasyon Sınıflandırması & Otomatik Google Gemini AI Analizi
+        try {
+          await matchVesselsForNewsItem(newNews);
+          await classifyRegulationsForNewsItem(newNews);
+          if (process.env.GEMINI_API_KEY || process.env.NODE_ENV === 'test') {
+            await analyzeNewsWithGemini(newNews._id || newNews.id);
+          }
+        } catch (e) {
+          console.warn(`⚠️ [HTML Auto-AI] "${newNews.title}" AI analizi uyarısı: ${e.message}`);
+        }
 
         addedNews.push(newNews);
         addedCount++;

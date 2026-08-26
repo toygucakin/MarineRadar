@@ -2,7 +2,7 @@ import { News } from '../models/News.js';
 import mongoose from 'mongoose';
 import { scrapeRssFeeds } from '../services/rssService.js';
 import { scrapeHtmlTargets } from '../services/htmlService.js';
-import { scrapeNewsById, scrapeAllUnscrapedNews } from '../services/deepScraperService.js';
+import { scrapeNewsById, scrapeAllUnscrapedNews, sanitizeArticleText } from '../services/deepScraperService.js';
 import { matchVesselsForNewsItem, matchVesselsForAllNews } from '../services/vesselMatcherService.js';
 import { classifyRegulationsForNewsItem, classifyRegulationsForAllNews } from '../services/regulationService.js';
 import { analyzeNewsWithGemini, analyzeAllUnprocessedNewsWithGemini } from '../services/geminiService.js';
@@ -16,10 +16,18 @@ export const getAllNews = async (req, res, next) => {
   try {
     const newsList = await News.find().sort({ publishedAt: -1 });
 
+    const sanitizedNews = newsList.map(item => {
+      const doc = item.toObject({ virtuals: true });
+      if (doc.fullContent) {
+        doc.fullContent = sanitizeArticleText(doc.fullContent);
+      }
+      return doc;
+    });
+
     res.status(200).json({
       success: true,
-      count: newsList.length,
-      data: newsList
+      count: sanitizedNews.length,
+      data: sanitizedNews
     });
   } catch (error) {
     next(error);
@@ -48,9 +56,14 @@ export const getNewsById = async (req, res, next) => {
       });
     }
 
+    const doc = newsItem.toObject({ virtuals: true });
+    if (doc.fullContent) {
+      doc.fullContent = sanitizeArticleText(doc.fullContent);
+    }
+
     res.status(200).json({
       success: true,
-      data: newsItem
+      data: doc
     });
   } catch (error) {
     next(error);
@@ -87,9 +100,17 @@ export const scrapeRssNews = async (req, res, next) => {
     const { feeds } = req.body || {};
     const result = await scrapeRssFeeds(feeds);
 
+    if (result.addedCount > 0) {
+      try {
+        await analyzeAllUnprocessedNewsWithGemini(result.addedCount);
+      } catch (aiErr) {
+        console.warn('⚠️ [scrapeRssNews] Otomatik AI analizi tamamlama uyarısı:', aiErr.message);
+      }
+    }
+
     res.status(200).json({
       success: true,
-      message: `RSS Kazıma İşlemi Tamamlandı: ${result.addedCount} yeni haber veritabanına eklendi, ${result.skippedCount} mevcut haber atlandı.`,
+      message: `RSS Kazıma İşlemi Tamamlandı: ${result.addedCount} yeni haber veritabanına eklendi ve AI analizinden geçirildi, ${result.skippedCount} mevcut haber atlandı.`,
       data: result
     });
   } catch (error) {
@@ -103,9 +124,17 @@ export const scrapeHtmlNews = async (req, res, next) => {
     const { targets } = req.body || {};
     const result = await scrapeHtmlTargets(targets);
 
+    if (result.addedCount > 0) {
+      try {
+        await analyzeAllUnprocessedNewsWithGemini(result.addedCount);
+      } catch (aiErr) {
+        console.warn('⚠️ [scrapeHtmlNews] Otomatik AI analizi tamamlama uyarısı:', aiErr.message);
+      }
+    }
+
     res.status(200).json({
       success: true,
-      message: `HTML Kazıma İşlemi Tamamlandı: ${result.addedCount} yeni haber veritabanına eklendi, ${result.skippedCount} mevcut haber atlandı.`,
+      message: `HTML Kazıma İşlemi Tamamlandı: ${result.addedCount} yeni haber veritabanına eklendi ve AI analizinden geçirildi, ${result.skippedCount} mevcut haber atlandı.`,
       data: result
     });
   } catch (error) {
@@ -251,11 +280,19 @@ export const getMyVesselsNews = async (req, res, next) => {
       'matchedVessels.vessel': { $in: vesselIds }
     }).sort({ publishedAt: -1, createdAt: -1 });
 
+    const sanitizedNews = newsList.map(item => {
+      const doc = item.toObject({ virtuals: true });
+      if (doc.fullContent) {
+        doc.fullContent = sanitizeArticleText(doc.fullContent);
+      }
+      return doc;
+    });
+
     res.status(200).json({
       success: true,
       user: { name: req.user.name, email: req.user.email, vesselCount: vesselIds.length },
-      count: newsList.length,
-      data: newsList
+      count: sanitizedNews.length,
+      data: sanitizedNews
     });
   } catch (error) {
     next(error);
@@ -383,7 +420,8 @@ export const analyzeNewsWithGeminiController = async (req, res, next) => {
 export const analyzeBatchNewsWithGeminiController = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit || req.body?.limit || '10', 10);
-    const result = await analyzeAllUnprocessedNewsWithGemini(limit);
+    const force = req.query.force === 'true' || req.body?.force === true;
+    const result = await analyzeAllUnprocessedNewsWithGemini(limit, force);
 
     res.status(200).json({
       success: true,

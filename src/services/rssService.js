@@ -3,6 +3,7 @@ import { News } from '../models/News.js';
 import { scrapeArticleContent } from './deepScraperService.js';
 import { matchVesselsForNewsItem } from './vesselMatcherService.js';
 import { classifyRegulationsForNewsItem } from './regulationService.js';
+import { analyzeNewsWithGemini } from './geminiService.js';
 
 const parser = new Parser({
   headers: {
@@ -117,11 +118,16 @@ export const scrapeRssFeeds = async (customFeeds = null) => {
           scrapedAt: new Date()
         });
 
-        // Gemi Varlık Eşleme & Regülasyon Sınıflandırmasını çalıştır
+        // Gemi Varlık Eşleme, Regülasyon Sınıflandırması & Otomatik Google Gemini AI Analizi
         try {
           await matchVesselsForNewsItem(newNews);
           await classifyRegulationsForNewsItem(newNews);
-        } catch (e) {}
+          if (process.env.GEMINI_API_KEY || process.env.NODE_ENV === 'test') {
+            await analyzeNewsWithGemini(newNews._id || newNews.id);
+          }
+        } catch (e) {
+          console.warn(`⚠️ [RSS Auto-AI] "${newNews.title}" AI analizi uyarısı: ${e.message}`);
+        }
 
         addedNews.push(newNews);
         addedCount++;

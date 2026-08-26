@@ -50,8 +50,13 @@ const GENERIC_SELECTORS = [
   'main p'
 ];
 
-// Temizlenecek gereksiz paragraf kalıpları (Reklam, Telif Hakkı, Sosyal Medya, Bülten Aboneliği)
+// Temizlenecek gereksiz paragraf kalıpları (Reklam, Disclaimer, Telif Hakkı, Sosyal Medya, Yazar Bilgileri)
 const NOISE_PATTERNS = [
+  /disclaimer/i,
+  /for general purposes only/i,
+  /not liable for any loss/i,
+  /at your own risk/i,
+  /no warranties of any kind/i,
   /subscribe to/i,
   /follow us on/i,
   /all rights reserved/i,
@@ -60,8 +65,45 @@ const NOISE_PATTERNS = [
   /read next:/i,
   /also read:/i,
   /photo credit:/i,
-  /share this article/i
+  /image credit:/i,
+  /share this article/i,
+  /written by/i,
+  /reported by/i,
+  /posted by/i,
+  /terms of use/i,
+  /privacy policy/i,
+  /cookie policy/i,
+  /advertisement/i
 ];
+
+/**
+ * Makale metninden disclaimer, yazar, reklam ve tekrarlayan paragrafları ayıklayan temizlik fonksiyonu
+ */
+export const sanitizeArticleText = (text = '') => {
+  if (!text || typeof text !== 'string') return '';
+
+  const paragraphs = text.split(/\n\s*\n/);
+  const seen = new Set();
+  const cleaned = [];
+
+  for (let p of paragraphs) {
+    const trimmed = p.trim();
+    if (!trimmed || trimmed.length < 25) continue;
+
+    // Disclaimer, yazar, telif hakkı ve reklam desenlerini filtresi
+    const isNoise = NOISE_PATTERNS.some(pattern => pattern.test(trimmed));
+    if (isNoise) continue;
+
+    // Aynı paragrafların mükerrer (duplicate) eklenmesini engelle
+    const normalized = trimmed.toLowerCase();
+    if (seen.has(normalized)) continue;
+    seen.add(normalized);
+
+    cleaned.push(trimmed);
+  }
+
+  return cleaned.join('\n\n');
+};
 
 /**
  * Verilen haber linkinden (sourceUrl) makalenin tüm detaylı içeriğini kazır.
@@ -74,8 +116,8 @@ export const scrapeArticleContent = async (sourceUrl) => {
   const response = await axios.get(sourceUrl, AXIOS_CONFIG);
   const $ = cheerio.load(response.data);
 
-  // Gereksiz öğeleri DOM'dan kaldır (script, style, iframe, ads, comments)
-  $('script, style, iframe, noscript, header, footer, nav, .comments, .sidebar, .related-posts, .advertisement, .ad-box').remove();
+  // Gereksiz öğeleri DOM'dan kaldır (script, style, iframe, ads, comments, disclaimers, metadata)
+  $('script, style, iframe, noscript, header, footer, nav, .comments, .sidebar, .related-posts, .advertisement, .ad-box, .disclaimer, .disclaimers, .copyright, .author-info, .entry-meta, .post-meta, .widget').remove();
 
   // Domain bazlı seçicileri kontrol et
   let paragraphs = [];
@@ -118,17 +160,15 @@ export const scrapeArticleContent = async (sourceUrl) => {
     });
   }
 
-  // Paragrafları gürültü filtrelerinden geçir ve temizle
-  const cleanedParagraphs = paragraphs.filter(p => {
-    if (p.length < 25) return false;
-    return !NOISE_PATTERNS.some(pattern => pattern.test(p));
-  });
-
-  const fullContent = cleanedParagraphs.join('\n\n');
+  // Paragrafları birleştirip gürültü temizleme fonksiyonundan geçir
+  const rawText = paragraphs.join('\n\n');
+  const fullContent = sanitizeArticleText(rawText);
 
   if (!fullContent || fullContent.length < 50) {
     throw new Error('Haber sayfasından yeterli metin içeriği kazınamadı.');
   }
+
+  const cleanedParagraphs = fullContent.split(/\n\s*\n/);
 
   return {
     fullContent,
