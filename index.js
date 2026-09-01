@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import 'dotenv/config';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './src/config/swagger.js';
@@ -33,8 +34,26 @@ if (process.env.NODE_ENV !== 'test') {
 // Gelen isteklerdeki JSON verilerini otomatik ayrıştırmak için middleware
 app.use(express.json());
 
-// Statik Web Dashboard Dosyalarını Sunma (public/index.html)
-app.use(express.static('public'));
+// Çapraz Alan Kaynak Paylaşımı (CORS) Middleware Yapılandırması
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(null, true);
+    }
+  },
+  credentials: true
+}));
+
+// Statik Web Dashboard Dosyalarını Sunma (Opsiyonel / SERVE_STATIC)
+if (process.env.SERVE_STATIC !== 'false') {
+  app.use(express.static('public'));
+}
 
 // Canlı İnteraktif Swagger API Dokümantasyonu (/api-docs)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

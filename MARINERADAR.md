@@ -71,12 +71,32 @@
 - **Aşama 46 (TAMAMLANDI ✅):** Otomatik Geçmiş Haber Backfill & Anlık Google Gemini AI Analiz Boru Hattı (`src/services/rssService.js`, `src/services/htmlService.js`, `src/controllers/newsController.js`, `src/services/cronService.js`). Bilgisayar/sunucu kapalıyken kaçırılan tüm haberlerin açılışta (`Sunucu Açılış Taraması`) otomatik toplanması ve çekilen her yeni haberin anında 5 aşamalı akıllı boru hattı üzerinden Google Gemini AI ile analiz edilmesi sağlandı.
 - **Aşama 47 (TAMAMLANDI ✅):** Gemini AI Prompt İçerik Gömmesi & Anlam Kayması Onarımı (`src/services/geminiService.js`, `src/controllers/newsController.js`). Gemini AI istemcisine haber başlığı, özeti ve kazınmış metninin eksiksiz iletilmesi sağlandı. Metin ile AI yorumu arasındaki uyumsuzluk (anlam kayması) giderildi ve yeniden analiz etme (`force=true`) yeteneği eklendi.
 - **Aşama 48 (TAMAMLANDI ✅):** Derin Web Metin Temizleyici & Disclaimer/Gürültü Filtresi (`src/services/deepScraperService.js`, `src/controllers/newsController.js`). Haber metinlerinden yasal sorumluluk reddi beyanları (`Disclaimer: ...`), yazar bilgileri, reklamlar, telif uyarıları ve tekrarlayan paragraflar otomatik temizlendi (`sanitizeArticleText`). Tüm veritabanı ve API çıktıları sterilize edildi.
+- **Aşama 49 (TAMAMLANDI ✅):** Monorepo Bağımlılık Analizi ve Repozituvar Ayrıştırma Planı (`MARINERADAR.md`, `implementation_plan.md`). Frontend (`public/`) ile Backend (`src/`, `index.js`) bileşenleri haritalandı, `MarineRadar-Backend` ve `MarineRadar-Frontend` çift repozituvar mimarisi, 17 REST API endpoint analizi, CORS stratejisi ve geçiş planı tamamlandı.
+- **Aşama 50 (TAMAMLANDI ✅):** Backend Repozituvar Ayrıştırması (`index.js`, `package.json`, `.env`, `.env.example`, `docker-compose.yml`, `scripts/init-env.js`). Express REST API servisine `cors` middleware paketi entegre edildi, dinamik `CORS_ORIGIN` değişkeni tanımlandı, `SERVE_STATIC` konfigüre edilebilir kılındı ve API katmanı bağımsız `MarineRadar-Backend` deposuna sterilize edildi. 24/24 Jest entegrasyon testi ile doğrulandı.
 
 ---
 
-## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases)
+## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases - Frontend & Backend Repo Decoupling)
 
-- **Tüm Planlanan Aşamalar Tamamlandı! 🎉 Proje Üretim ve Yayınlama Aşamasında.**
+- **Aşama 51: Frontend Repozituvar Ayrıştırması & Modern Yapılandırma (`MarineRadar-Frontend` Isolating):**
+  - `public/` dizinindeki HTML5, CSS3 ve Vanilla JS istemci kodlarının bağımsız `MarineRadar-Frontend` deposuna taşınması.
+  - İsteğe bağlı olarak Vite veya modern bundler altyapısına geçiş yapılması ve bağımsız frontend geliştirme sunucusunun (`npm run dev`) kurgulanması.
+  - Hardcoded/göreceli olan `/api/...` API istek yollarının dinamik ortam değişkenine (`VITE_API_BASE_URL` / `process.env.API_BASE_URL`) bağlanması ve modüler bir API Client / Fetch katmanına dönüştürülmesi.
+
+- **Aşama 52: Çapraz Alan Kimlik Doğrulama & Güvenlik Uyumlaştırması (Cross-Origin Auth & Security Alignment):**
+  - Ayrıştırılmış istemci-sunucu mimarisinde JWT token yönetimi (`Authorization: Bearer <token>`), LocalStorage / HttpOnly Cookie saklama stratejisinin doğrulanması.
+  - Cross-Origin isteklerinde 401 Unauthorized ve 403 Forbidden gibi hata yanıtlarının frontend toast bildirimleri ve oturum yönlendirme mantığı ile uyumlaştırılması.
+
+- **Aşama 53: Bağımsız Docker Konteynırlaştırma ve CI/CD Boru Hatları (Independent Docker & GitHub Actions):**
+  - Backend için bağımsız `MarineRadar-Backend` Dockerfile (Node.js + MongoDB orkestrasyonu) oluşturulması.
+  - Frontend için Nginx / Caddy tabanlı prodüksiyon sunum Dockerfile'ı (`MarineRadar-Frontend`) hazırlanması.
+  - Her iki depo için ayrı `.github/workflows/` altında otomatik test, linting ve canlıya dağıtım (Vercel, Render, Railway veya Docker Hub) CI/CD boru hatlarının kurgulanması.
+
+- **Aşama 54: Uçtan Uca (E2E) Doğrulama, Dokümantasyon ve GitHub Yayınlaması (Release & Documentation):**
+  - Ayrılmış iki repo üzerinde backend Jest entegrasyon testlerinin ve frontend canlı API erişim testlerinin uçtan uca doğrulanması.
+  - Her iki depo için kapsamlı `README.md` kurulum, `.env` yapılandırması ve mimari dokümantasyonlarının yazılması.
+  - GitHub üzerinde `MarineRadar-Backend` ve `MarineRadar-Frontend` repolarının oluşturularak kodların yayınlanması.
+
 
 ---
 
@@ -160,3 +180,5 @@ Her aşama bağımsız çalışabildiği gibi `runFullPipeline` fonksiyonu ile s
 - [public/styles.css](file:///c:/MyApps/MarineRadar/public/styles.css): Yaprak yeşili eco-design tasarım sistemi, zümrüt degrade üst menü butonları, modern gemi silme butonları ve sayfalama CSS kuralları.
 - [public/app.js](file:///c:/MyApps/MarineRadar/public/app.js): Asenkron REST API istemci mantığı, akıllı sayfa kısaltma motoru (`1 2 3 ... N`), oturum doğrulaması ve canlı haber süzme.
 - [index.test.js](file:///c:/MyApps/MarineRadar/index.test.js): 22/22 geçen MongoDB, RSS, HTML, Newsletter, Vessel, User, Auth, Scrape Pipeline, Swagger UI & Dashboard entegrasyon testleri.
+- [implementation_plan.md](file:///C:/Users/Toygu%20%C3%87ak%C4%B1n/.gemini/antigravity-ide/brain/6344a5b4-aed2-41f8-ba78-e863d2449b60/implementation_plan.md): Aşama 49 monorepo bağımlılık analizi ve `MarineRadar-Backend` / `MarineRadar-Frontend` çift repozituvar ayrıştırma mimari planı.
+
