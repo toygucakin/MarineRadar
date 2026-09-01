@@ -73,15 +73,11 @@
 - **Aşama 48 (TAMAMLANDI ✅):** Derin Web Metin Temizleyici & Disclaimer/Gürültü Filtresi (`src/services/deepScraperService.js`, `src/controllers/newsController.js`). Haber metinlerinden yasal sorumluluk reddi beyanları (`Disclaimer: ...`), yazar bilgileri, reklamlar, telif uyarıları ve tekrarlayan paragraflar otomatik temizlendi (`sanitizeArticleText`). Tüm veritabanı ve API çıktıları sterilize edildi.
 - **Aşama 49 (TAMAMLANDI ✅):** Monorepo Bağımlılık Analizi ve Repozituvar Ayrıştırma Planı (`MARINERADAR.md`, `implementation_plan.md`). Frontend (`public/`) ile Backend (`src/`, `index.js`) bileşenleri haritalandı, `MarineRadar-Backend` ve `MarineRadar-Frontend` çift repozituvar mimarisi, 17 REST API endpoint analizi, CORS stratejisi ve geçiş planı tamamlandı.
 - **Aşama 50 (TAMAMLANDI ✅):** Backend Repozituvar Ayrıştırması (`index.js`, `package.json`, `.env`, `.env.example`, `docker-compose.yml`, `scripts/init-env.js`). Express REST API servisine `cors` middleware paketi entegre edildi, dinamik `CORS_ORIGIN` değişkeni tanımlandı, `SERVE_STATIC` konfigüre edilebilir kılındı ve API katmanı bağımsız `MarineRadar-Backend` deposuna sterilize edildi. 24/24 Jest entegrasyon testi ile doğrulandı.
+- **Aşama 51 (TAMAMLANDI ✅):** Frontend Repozituvar Ayrıştırması & Modern Yapılandırma (`public/app.js`, `public/index.html`, `MarineRadar-Frontend/`). İstemci kodlarındaki tüm 17 REST API endpoint çağrısı dinamik `API_BASE_URL` (`window.ENV.API_BASE_URL` / `VITE_API_BASE_URL`) ile soyutlandı. Bağımsız `MarineRadar-Frontend` repozituvar klasörü (Vite dev server, `.env.example`, `README.md`, `package.json`) oluşturuldu.
 
 ---
 
 ## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases - Frontend & Backend Repo Decoupling)
-
-- **Aşama 51: Frontend Repozituvar Ayrıştırması & Modern Yapılandırma (`MarineRadar-Frontend` Isolating):**
-  - `public/` dizinindeki HTML5, CSS3 ve Vanilla JS istemci kodlarının bağımsız `MarineRadar-Frontend` deposuna taşınması.
-  - İsteğe bağlı olarak Vite veya modern bundler altyapısına geçiş yapılması ve bağımsız frontend geliştirme sunucusunun (`npm run dev`) kurgulanması.
-  - Hardcoded/göreceli olan `/api/...` API istek yollarının dinamik ortam değişkenine (`VITE_API_BASE_URL` / `process.env.API_BASE_URL`) bağlanması ve modüler bir API Client / Fetch katmanına dönüştürülmesi.
 
 - **Aşama 52: Çapraz Alan Kimlik Doğrulama & Güvenlik Uyumlaştırması (Cross-Origin Auth & Security Alignment):**
   - Ayrıştırılmış istemci-sunucu mimarisinde JWT token yönetimi (`Authorization: Bearer <token>`), LocalStorage / HttpOnly Cookie saklama stratejisinin doğrulanması.
@@ -181,4 +177,6 @@ Her aşama bağımsız çalışabildiği gibi `runFullPipeline` fonksiyonu ile s
 - [public/app.js](file:///c:/MyApps/MarineRadar/public/app.js): Asenkron REST API istemci mantığı, akıllı sayfa kısaltma motoru (`1 2 3 ... N`), oturum doğrulaması ve canlı haber süzme.
 - [index.test.js](file:///c:/MyApps/MarineRadar/index.test.js): 22/22 geçen MongoDB, RSS, HTML, Newsletter, Vessel, User, Auth, Scrape Pipeline, Swagger UI & Dashboard entegrasyon testleri.
 - [implementation_plan.md](file:///C:/Users/Toygu%20%C3%87ak%C4%B1n/.gemini/antigravity-ide/brain/6344a5b4-aed2-41f8-ba78-e863d2449b60/implementation_plan.md): Aşama 49 monorepo bağımlılık analizi ve `MarineRadar-Backend` / `MarineRadar-Frontend` çift repozituvar ayrıştırma mimari planı.
+- [MarineRadar-Frontend/](file:///c:/MyApps/MarineRadar/MarineRadar-Frontend): Bağımsız frontend repozituvar klasörü (`package.json`, `index.html`, `styles.css`, `app.js`, `.env.example`, `README.md`).
+
 
