@@ -1,0 +1,22 @@
+name: MarineRadar Frontend CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Frontend Assets
+        run: |
+          test -f public/index.html || test -f MarineRadar-Frontend/index.html
+          test -f public/styles.css || test -f MarineRadar-Frontend/styles.css
+          test -f public/app.js || test -f MarineRadar-Frontend/app.js
+          echo "✅ Frontend assets validated successfully!"

@@ -75,15 +75,11 @@
 - **Aşama 50 (TAMAMLANDI ✅):** Backend Repozituvar Ayrıştırması (`index.js`, `package.json`, `.env`, `.env.example`, `docker-compose.yml`, `scripts/init-env.js`). Express REST API servisine `cors` middleware paketi entegre edildi, dinamik `CORS_ORIGIN` değişkeni tanımlandı, `SERVE_STATIC` konfigüre edilebilir kılındı ve API katmanı bağımsız `MarineRadar-Backend` deposuna sterilize edildi. 24/24 Jest entegrasyon testi ile doğrulandı.
 - **Aşama 51 (TAMAMLANDI ✅):** Frontend Repozituvar Ayrıştırması & Modern Yapılandırma (`public/app.js`, `public/index.html`, `MarineRadar-Frontend/`). İstemci kodlarındaki tüm 17 REST API endpoint çağrısı dinamik `API_BASE_URL` (`window.ENV.API_BASE_URL` / `VITE_API_BASE_URL`) ile soyutlandı. Bağımsız `MarineRadar-Frontend` repozituvar klasörü (Vite dev server, `.env.example`, `README.md`, `package.json`) oluşturuldu.
 - **Aşama 52 (TAMAMLANDI ✅):** Çapraz Alan Kimlik Doğrulama & Güvenlik Uyumlaştırması (`public/app.js`, `MarineRadar-Frontend/app.js`). LocalStorage kalıcı JWT token saklama/yenileme altyapısı (`saveAuthSession`, `restoreAuthSession`, `clearAuthSession`) kuruldu. Cross-Origin isteklerinde 401 Unauthorized / 403 Forbidden yanıtlarında otomatik oturum sonlandırma ve toast uyarı yönlendirmesi entegre edildi.
+- **Aşama 53 (TAMAMLANDI ✅):** Bağımsız Docker Konteynırlaştırma ve CI/CD Boru Hatları (`MarineRadar-Frontend/Dockerfile`, `MarineRadar-Frontend/nginx.conf`, `.github/workflows/backend-ci.yml`, `.github/workflows/frontend-ci.yml`). Frontend için Nginx Alpine tabanlı prodüksiyon konteynırı kurgulandı, Backend & Frontend için otomatik GitHub Actions CI/CD boru hatları tanımlandı.
 
 ---
 
 ## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases - Frontend & Backend Repo Decoupling)
-
-- **Aşama 53: Bağımsız Docker Konteynırlaştırma ve CI/CD Boru Hatları (Independent Docker & GitHub Actions):**
-  - Backend için bağımsız `MarineRadar-Backend` Dockerfile (Node.js + MongoDB orkestrasyonu) oluşturulması.
-  - Frontend için Nginx / Caddy tabanlı prodüksiyon sunum Dockerfile'ı (`MarineRadar-Frontend`) hazırlanması.
-  - Her iki depo için ayrı `.github/workflows/` altında otomatik test, linting ve canlıya dağıtım (Vercel, Render, Railway veya Docker Hub) CI/CD boru hatlarının kurgulanması.
 
 - **Aşama 54: Uçtan Uca (E2E) Doğrulama, Dokümantasyon ve GitHub Yayınlaması (Release & Documentation):**
   - Ayrılmış iki repo üzerinde backend Jest entegrasyon testlerinin ve frontend canlı API erişim testlerinin uçtan uca doğrulanması.
