@@ -74,14 +74,11 @@
 - **Aşama 49 (TAMAMLANDI ✅):** Monorepo Bağımlılık Analizi ve Repozituvar Ayrıştırma Planı (`MARINERADAR.md`, `implementation_plan.md`). Frontend (`public/`) ile Backend (`src/`, `index.js`) bileşenleri haritalandı, `MarineRadar-Backend` ve `MarineRadar-Frontend` çift repozituvar mimarisi, 17 REST API endpoint analizi, CORS stratejisi ve geçiş planı tamamlandı.
 - **Aşama 50 (TAMAMLANDI ✅):** Backend Repozituvar Ayrıştırması (`index.js`, `package.json`, `.env`, `.env.example`, `docker-compose.yml`, `scripts/init-env.js`). Express REST API servisine `cors` middleware paketi entegre edildi, dinamik `CORS_ORIGIN` değişkeni tanımlandı, `SERVE_STATIC` konfigüre edilebilir kılındı ve API katmanı bağımsız `MarineRadar-Backend` deposuna sterilize edildi. 24/24 Jest entegrasyon testi ile doğrulandı.
 - **Aşama 51 (TAMAMLANDI ✅):** Frontend Repozituvar Ayrıştırması & Modern Yapılandırma (`public/app.js`, `public/index.html`, `MarineRadar-Frontend/`). İstemci kodlarındaki tüm 17 REST API endpoint çağrısı dinamik `API_BASE_URL` (`window.ENV.API_BASE_URL` / `VITE_API_BASE_URL`) ile soyutlandı. Bağımsız `MarineRadar-Frontend` repozituvar klasörü (Vite dev server, `.env.example`, `README.md`, `package.json`) oluşturuldu.
+- **Aşama 52 (TAMAMLANDI ✅):** Çapraz Alan Kimlik Doğrulama & Güvenlik Uyumlaştırması (`public/app.js`, `MarineRadar-Frontend/app.js`). LocalStorage kalıcı JWT token saklama/yenileme altyapısı (`saveAuthSession`, `restoreAuthSession`, `clearAuthSession`) kuruldu. Cross-Origin isteklerinde 401 Unauthorized / 403 Forbidden yanıtlarında otomatik oturum sonlandırma ve toast uyarı yönlendirmesi entegre edildi.
 
 ---
 
 ## 🔮 Gelecek Aşamalar (Planned Roadmap / Future Phases - Frontend & Backend Repo Decoupling)
-
-- **Aşama 52: Çapraz Alan Kimlik Doğrulama & Güvenlik Uyumlaştırması (Cross-Origin Auth & Security Alignment):**
-  - Ayrıştırılmış istemci-sunucu mimarisinde JWT token yönetimi (`Authorization: Bearer <token>`), LocalStorage / HttpOnly Cookie saklama stratejisinin doğrulanması.
-  - Cross-Origin isteklerinde 401 Unauthorized ve 403 Forbidden gibi hata yanıtlarının frontend toast bildirimleri ve oturum yönlendirme mantığı ile uyumlaştırılması.
 
 - **Aşama 53: Bağımsız Docker Konteynırlaştırma ve CI/CD Boru Hatları (Independent Docker & GitHub Actions):**
   - Backend için bağımsız `MarineRadar-Backend` Dockerfile (Node.js + MongoDB orkestrasyonu) oluşturulması.

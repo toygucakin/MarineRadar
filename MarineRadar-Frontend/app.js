@@ -80,10 +80,50 @@ document.addEventListener('DOMContentLoaded', () => {
   initApp();
 });
 
+function saveAuthSession(token, user) {
+  appState.authToken = token;
+  appState.currentUser = user;
+  try {
+    localStorage.setItem('marineradar_token', token);
+    localStorage.setItem('marineradar_user', JSON.stringify(user));
+  } catch (e) {
+    console.warn('LocalStorage save error:', e);
+  }
+}
+
+function clearAuthSession() {
+  appState.authToken = null;
+  appState.currentUser = null;
+  try {
+    localStorage.removeItem('marineradar_token');
+    localStorage.removeItem('marineradar_user');
+  } catch (e) {
+    console.warn('LocalStorage clear error:', e);
+  }
+  hideFleetBanner();
+  updateHeaderUserBar();
+  populateVesselDropdown();
+}
+
+function restoreAuthSession() {
+  try {
+    const token = localStorage.getItem('marineradar_token');
+    const userStr = localStorage.getItem('marineradar_user');
+    if (token && userStr) {
+      appState.authToken = token;
+      appState.currentUser = JSON.parse(userStr);
+      showFleetBanner(appState.currentUser);
+    }
+  } catch (e) {
+    clearAuthSession();
+  }
+}
+
 async function initApp() {
+  restoreAuthSession();
   updateHeaderUserBar();
   await Promise.all([
-    loadNewsData(),
+    appState.authToken ? loadUserFleetNews() : loadNewsData(),
     loadNewslettersData(),
     loadRegisteredVessels()
   ]);
@@ -129,11 +169,7 @@ function updateHeaderUserBar() {
 window.updateHeaderUserBar = updateHeaderUserBar;
 
 function logoutUser() {
-  appState.authToken = null;
-  appState.currentUser = null;
-  hideFleetBanner();
-  updateHeaderUserBar();
-  populateVesselDropdown();
+  clearAuthSession();
   showToast('Logged out of fleet account', 'info');
   loadNewsData();
 }
@@ -575,8 +611,7 @@ async function loginUserAndLoadFleetNews(userKey) {
     const result = await res.json();
 
     if (result.success && result.token) {
-      appState.authToken = result.token;
-      appState.currentUser = result.user;
+      saveAuthSession(result.token, result.user);
 
       // Load personalized news feed for logged in user
       await loadUserFleetNews();
@@ -596,6 +631,14 @@ async function loadUserFleetNews() {
     const res = await fetch(`${API_BASE_URL}/api/news/my-vessels`, {
       headers: { 'Authorization': `Bearer ${appState.authToken}` }
     });
+
+    if (res.status === 401 || res.status === 403) {
+      clearAuthSession();
+      await loadNewsData();
+      showToast('Session expired or unauthorized. Please log in again.', 'warning');
+      return;
+    }
+
     const result = await res.json();
 
     if (result.success && Array.isArray(result.data)) {
@@ -1331,8 +1374,7 @@ function renderLoginFleetModalContent() {
           const result = await res.json();
 
           if (result.success && result.token) {
-            appState.authToken = result.token;
-            appState.currentUser = result.user;
+            saveAuthSession(result.token, result.user);
             showToast(`Welcome back, ${result.user.name}!`, 'success');
             await loadUserFleetNews();
             showFleetBanner(result.user);
@@ -1473,9 +1515,16 @@ function renderLoginFleetModalContent() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ vesselId })
           });
+
+          if (res.status === 401 || res.status === 403) {
+            clearAuthSession();
+            showToast('Session expired. Please log in again.', 'error');
+            return;
+          }
+
           const result = await res.json();
           if (result.success) {
-            appState.currentUser = result.data;
+            saveAuthSession(appState.authToken, result.data);
             showToast('Vessel added to your fleet!', 'success');
             await loadUserFleetNews();
             updateHeaderUserBar();
@@ -1499,9 +1548,16 @@ function renderLoginFleetModalContent() {
           const res = await fetch(`${API_BASE_URL}/api/users/${currentUser.id || currentUser._id}/vessels/${vId}`, {
             method: 'DELETE'
           });
+
+          if (res.status === 401 || res.status === 403) {
+            clearAuthSession();
+            showToast('Session expired. Please log in again.', 'error');
+            return;
+          }
+
           const result = await res.json();
           if (result.success) {
-            appState.currentUser = result.data;
+            saveAuthSession(appState.authToken, result.data);
             showToast('Vessel removed from your fleet.', 'info');
             await loadUserFleetNews();
             updateHeaderUserBar();
