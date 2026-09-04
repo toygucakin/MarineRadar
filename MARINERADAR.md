@@ -77,6 +77,7 @@
 - **Aşama 52 (TAMAMLANDI ✅):** Çapraz Alan Kimlik Doğrulama & Güvenlik Uyumlaştırması (`public/app.js`, `MarineRadar-Frontend/app.js`). LocalStorage kalıcı JWT token saklama/yenileme altyapısı (`saveAuthSession`, `restoreAuthSession`, `clearAuthSession`) kuruldu. Cross-Origin isteklerinde 401 Unauthorized / 403 Forbidden yanıtlarında otomatik oturum sonlandırma ve toast uyarı yönlendirmesi entegre edildi.
 - **Aşama 53 (TAMAMLANDI ✅):** Bağımsız Docker Konteynırlaştırma ve CI/CD Boru Hatları (`MarineRadar-Frontend/Dockerfile`, `MarineRadar-Frontend/nginx.conf`, `.github/workflows/backend-ci.yml`, `.github/workflows/frontend-ci.yml`). Frontend için Nginx Alpine tabanlı prodüksiyon konteynırı kurgulandı, Backend & Frontend için otomatik GitHub Actions CI/CD boru hatları tanımlandı.
 - **Aşama 54 (TAMAMLANDI ✅):** Uçtan Uca (E2E) Doğrulama, Dokümantasyon ve GitHub Yayınlaması ([MarineRadar-Backend](https://github.com/toygucakin/MarineRadar-Backend), [MarineRadar-Frontend](https://github.com/toygucakin/MarineRadar-Frontend)). Proje iki bağımsız GitHub repozituvarına başarıyla ayrıştırıldı, `README.md` dokümantasyonları güncellendi, 24/24 Jest entegrasyon testi ile doğrulandı ve kodlar canlı GitHub repolarında yayınlandı.
+- **Aşama 55 (TAMAMLANDI ✅):** Frontend Port Yeniden Yapılandırması (`4000`). Frontend Dashboard servisinin varsayılan çalıştırma ve Docker portu `5173`'ten `4000`'e güncellendi. Backend CORS izinleri (`CORS_ORIGIN`), Vite geliştirme betiği (`vite --port 4000`), Docker Compose port eşlemeleri (`4000:80`) ve README dokümantasyonları uyumlaştırıldı.
 
 ---
 
@@ -133,6 +134,7 @@ Her aşama bağımsız çalışabildiği gibi `runFullPipeline` fonksiyonu ile s
 - [index.js](file:///c:/MyApps/MarineRadar/index.js): Express uygulaması, dotenv, DB bağlantısı, cron servisleri, Swagger UI ve rota montajları.
 - [.env](file:///c:/MyApps/MarineRadar/.env): Yerel ortam değişkenleri.
 - [.env.example](file:///c:/MyApps/MarineRadar/.env.example): Ortam değişkenleri şablonu.
+- [.gitignore](file:///c:/MyApps/MarineRadar/.gitignore): Git ortam değişkenleri, loglar ve hassas dosya koruma kuralları.
 - [src/config/db.js](file:///c:/MyApps/MarineRadar/src/config/db.js): Mongoose veritabanı bağlantı modülü.
 - [src/config/swagger.js](file:///c:/MyApps/MarineRadar/src/config/swagger.js): Swagger OpenAPI 3.0 dokümantasyon konfigürasyonu (BearerAuth dahil).
 - [src/models/News.js](file:///c:/MyApps/MarineRadar/src/models/News.js): Mongoose `News` şema ve model tanımı (`fullContent`, `matchedVessels`, `regulations`, `complianceRisk`).

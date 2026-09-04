@@ -22,7 +22,7 @@
 4. **Swagger UI İnteraktif Dokümantasyon:**
    - `/api-docs` adresi üzerinden canlı API test platformu.
 5. **CORS & Esnek İstemci Desteği:**
-   - `cors` middleware ile `MarineRadar-Frontend` (`http://localhost:5173`) çapraz alan erişim desteği.
+   - `cors` middleware ile `MarineRadar-Frontend` (`http://localhost:4000`) çapraz alan erişim desteği.
 
 ---
 
@@ -39,7 +39,7 @@ PORT=3000
 MONGO_URI=mongodb://127.0.0.1:27017/marineradar
 NODE_ENV=development
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-CORS_ORIGIN=http://localhost:5173,http://localhost:3000
+CORS_ORIGIN=http://localhost:4000,http://localhost:3000
 SERVE_STATIC=true
 ```
 
