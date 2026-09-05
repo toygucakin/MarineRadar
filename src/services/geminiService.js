@@ -174,7 +174,13 @@ Response JSON Format:
  * @returns {Promise<Object>} Toplu analiz raporu
  */
 export const analyzeAllUnprocessedNewsWithGemini = async (limit = 10, force = false) => {
-  const query = force ? {} : { aiCategorized: { $ne: true } };
+  const query = force ? {} : {
+    $or: [
+      { aiCategorized: { $ne: true } },
+      { aiNote: null },
+      { aiNote: { $exists: false } }
+    ]
+  };
   const unprocessedNews = await News.find(query).limit(limit);
 
   const report = {

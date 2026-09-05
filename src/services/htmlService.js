@@ -122,6 +122,7 @@ export const scrapeHtmlTargets = async (customTargets = null) => {
           await matchVesselsForNewsItem(newNews);
           await classifyRegulationsForNewsItem(newNews);
           if (process.env.GEMINI_API_KEY || process.env.NODE_ENV === 'test') {
+            await new Promise(resolve => setTimeout(resolve, 1500));
             await analyzeNewsWithGemini(newNews._id || newNews.id);
           }
         } catch (e) {
